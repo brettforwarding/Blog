@@ -7,6 +7,10 @@ module Blog
     erb :index
   end
   
+  get '/beta' do
+    erb :indexbeta
+  end
+  
   get '/time' do
     thetime = "Time.now: " + Time.now.to_s
     erb :time, :locals => {:thetime => thetime}
