@@ -1,0 +1,281 @@
+html
+{ height: 100%;}
+
+*
+{ margin: 0;
+  padding: 0;}
+
+body
+{ font: normal .80em arial, sans-serif;
+  background: #FFF;
+  color: #5D5D5D;}
+
+p
+{ padding: 0 0 20px 0;
+  line-height: 1.7em;
+  font-size: 120% }
+
+img
+{ border: 0;}
+
+h1, h2, h3, h4, h5, h6 
+{ font: normal 175% 'lucida sans unicode', arial, sans-serif;
+  color: #4E3C2A;
+  margin: 0 0 15px 0;
+  padding: 15px 0 5px 0;}
+
+h1
+{color: #B08A5E;}
+
+h2
+{ font: normal 165% 'lucida sans unicode', arial, sans-serif;}
+
+h3
+{ font: normal 125% 'lucida sans unicode', arial, sans-serif;
+  padding: 0 0 5px 0;
+  color: #F14E23;}
+
+h4, h5, h6
+{ margin: 0;
+  padding: 0 0 5px 0;
+  font: normal 120% arial, sans-serif;
+  line-height: 1.5em;}
+
+h5, h6
+{ font: italic 95% arial, sans-serif;
+  color: #888;
+  padding-bottom: 15px;}
+
+h6
+{ color: #362C20;}
+
+a, a:hover
+{ background: transparent;
+  outline: none;
+  text-decoration: underline;
+  color: #B08A5E;}
+
+a:hover
+{ text-decoration: none;
+  color: #B08A5E;}
+
+ul
+{ margin: 2px 0 22px 30px;
+  line-height: 1.7em;
+  font-style: italic;
+  font-size: 120%;}
+
+ol
+{ margin: 8px 0 22px 20px;}
+
+ol li
+{ margin: 0 0 11px 0;}
+
+#main, #header, #banner, #menubar, #site_content, #footer
+{ margin-left: auto; 
+  margin-right: auto;}
+
+#main
+{ width: 1055px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  background: transparent url(../images/notepad/background.png) repeat-y;}
+
+#header
+{ background: transparent url(../images/notepad/header.png) no-repeat;
+  width: 1055px;
+  padding: 0px 0 0 0;
+}
+
+#banner
+{ width: 950px;
+  position: relative;
+  height: 467px;
+  padding: 0px 0px 0px 0px;
+  background: transparent;
+}
+
+#banner a
+{ margin-top: 230px;
+  margin-left: 30px;
+  float: left;
+  font: normal 400% sans-serif;
+  text-decoration: none;
+}
+
+#menubar
+{ width: 950px;
+  float: left;
+  height: 35px;
+  margin: -40px 0 0 55px;
+  border-bottom: 1px solid #5F5F5F;
+} 
+
+ul#menu
+{ float: left;
+  margin: 0;}
+
+ul#menu li
+{ float: left;
+  padding: 0 0 0 9px;
+  list-style: none;
+  margin: 2px 0 0 1px;
+  background: #FFF url(../images/notepad/tab.png) no-repeat 0 0;}
+
+ul#menu li a
+{ font: normal 110% arial, sans-serif;
+  display: block; 
+  float: left; 
+  height: 21px;
+  padding: 7px 29px 4px 20px;
+  text-align: center;
+  color: #FFF;
+  text-decoration: none;
+  background: #FFF url(../images/notepad/tab.png) no-repeat 100% 0;} 
+
+ul#menu li.tab_selected a
+{ height: 21px;
+  padding: 7px 25px 4px 16px;}
+
+ul#menu li.selected
+{ margin: 2px 0 0 1px;
+  background: #FFF url(../images/notepad/tab_selected.png) no-repeat 0 0;}
+
+ul#menu li.selected a, ul#menu li.selected a:hover
+{ background: #FFF url(../images/notepad/tab_selected.png) no-repeat 100% 0;
+  color: #FFF;}
+
+ul#menu li a:hover
+{ color: #B08A5E;}
+
+#site_content
+{ width: 950px;
+  overflow: hidden;
+  margin: 0 auto;
+  padding: 0;
+  background: transparent;
+} 
+
+.sidebar_container
+{ float: right;
+  width: 250px;
+  padding: 0;}
+
+.sidebar_top
+{ float: left;
+  width: 250px;
+  height: 15px;
+  background: url(../images/notepad/side_top.png) no-repeat;}
+
+.sidebar_base
+{ float: left;
+  width: 250px;
+  height: 15px;
+  background: url(../images/notepad/side_base.png) no-repeat;}
+
+.sidebar
+{ float: right;
+  width: 250px;
+  padding: 0;
+  background: url(../images/notepad/side_back.png) repeat-y;
+  margin-top: 20px;
+  margin-bottom: 20px;}
+
+.sidebar h4
+{ font-size: 105%;}
+
+.sidebar ul li, .sidebar ul li.selected
+{ list-style: none; 
+  margin: 15px 0;
+  padding: 0;}
+
+.sidebar li.selected, .sidebar li:hover
+{ color: #5D5D5D;
+  text-decoration: none;} 
+
+.sidebar_item
+{ padding: 0 0 0 15px;
+  width: 240px;}
+
+.sidebar_item h1
+{ padding: 20px 0 10px 0;
+  margin: 0;}
+
+.content_item
+{ width: 640px;
+  margin-bottom: 20px;}
+
+#content
+{ text-align: left;
+  width: 640px;
+  padding: 0;
+  margin: 0 20px 0 0;
+  float: left;
+}
+
+#footer
+{ width: 1055px;
+  font: normal 100% "lucida sans unicode", arial, sans-serif;
+  height: 130px;
+  padding: 15px 0 10px 0;
+  text-align: center; 
+  background: #595959;
+  color: #000;
+  background: transparent url(../images/notepad/footer.png) no-repeat;
+}
+
+#footer a, #footer a:hover
+{ color: #000;
+  background: #FFF;
+  text-decoration: underline;}
+
+#footer a:hover
+{ text-decoration: none;}
+
+.form_settings
+{ margin: 15px 0 0 0;}
+
+.form_settings p
+{ padding: 0 0 4px 0;}
+
+.form_settings span
+{ float: left; 
+  width: 280px; 
+  text-align: left;}
+  
+.form_settings input, .form_settings textarea
+{ padding: 2px; 
+  width: 299px; 
+  font: 100% arial; 
+  border: 1px solid #E5E5DB; 
+  background: #FFF; 
+  color: #47433F;}
+  
+.form_settings .submit
+{ font: 100% arial; 
+  border: 1px solid; 
+  width: 99px; 
+  margin: 0 0 0 206px; 
+  height: 26px;
+  padding: 2px 0 3px 0;
+  cursor: pointer; 
+  background: #3B3B3B; 
+  color: #FFF;}
+
+ul.links
+{ margin: 0;}
+
+ul.links li
+{ list-style: none;
+  padding: 8px 0;}
+
+ul.links li a, ul.links li a:hover
+{ padding: 0 0 0 28px;
+  background: transparent left center;
+  color: #B08A5E;
+  text-decoration: underline;} 
+
+ul.links li a:hover
+{ color: #B08A5E;
+  text-decoration: none;} 
+ 

@@ -15,4 +15,8 @@ module Blog
     thetime = "Time.now: " + Time.now.to_s
     erb :time, :locals => {:thetime => thetime}
   end
+  
+  get '/jennifer' do
+    erb :indexj
+  end
 end
