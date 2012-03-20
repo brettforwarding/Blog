@@ -2,7 +2,7 @@ require_relative "blog/version"
 require "sinatra"
 require "erb"
 
-module blog
+module Blog
   get '/' do
     erb :index
   end
