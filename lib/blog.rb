@@ -1,3 +1,4 @@
+require_relative "blog/version"
 require "sinatra"
 require "erb"
 
