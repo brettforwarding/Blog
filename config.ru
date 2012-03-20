@@ -1,4 +1,4 @@
 $:.push File.expand_path("../lib", __FILE__)
-require 'simpleheroku.rb'
+require 'blog.rb'
 
 run Sinatra::Application
