@@ -5,7 +5,65 @@
 
 </head>
 <body onload="init()">
+<div id="wrap">
 
-  <h1> Sorts </h1>
-  <div id="content">
+<div id="header">
+<a name="top">&nbsp;</a><br />
+<h1><a href="/">Ruby Newbie</a></h1>
+<h2>Weekly blog by Brett Morin</h2>
+</div>
+<div id="contentbar"> 
+
+<div class="contentbarleft">
+Navigation :
+</div>
+
+<div class="contentbarright">
+Articles :
+</div>
+
+</div>
+
+<div id="content">
+
+<div class="right"> 
+<h3>Sorting Algorithms</h3>  
+  <form action="/sorts" method="post" accept-charset="utf-8">
+    <h2>Input</h2><br />  
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="numbersin">Enter numbers separated by commas:</label><br />
+    <% if numbers_in %>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="numbersin" name="post[numbers_in]" value=<%= numbers_in %> />
+    <% else %>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="numbersin" name="post[numbers_in]" />
+    <% end %>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Run Sorts" /><br /> 
+    <br /> 
+    <h2>Output</h2><br />   
+    <% if numbers_in %>
+    <!--  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>You entered:</label>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= numbers_in %><br />  -->
+      <table>
+      <tr>
+        <td><label>Bubble sort:</label></td>
+        <td><%= bubble_sorted %></td></tr>
+      <tr>
+        <td><label>My Sort:</label></td>
+        <td><%= brett_sorted %></td></tr>
+      </table
+    <% end %>
+  </form>
+
+</div>
+
+<div class="left"> 
+
+</div>
+<div style="clear: both;"> </div>
+
+</div>
+<a href="#top">back to top</a><br />
+<div id="footer">
+Designed by <a href="http://www.free-css-templates.com/">Free CSS Templates</a>, Thanks to <a href="http://www.openwebdesign.org/">Web Design Dubai</a>
+</div>
+
 </div>
