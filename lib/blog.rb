@@ -38,7 +38,7 @@ module Blog
   get '/showcode/:code' do |code|
     #filecontent = File.open("#{code}.rb", "r") { |f| f.read }
     #filecontent = File.read("#{code}.rb")
-    filecontents = File.read("test_sort.rb")
+    filecontents = File.read("lib/test_sort.rb")
     filecontent = "blah"
     erb :showcode, :locals => {:filecontent => filecontent, :code => code}
   end  
