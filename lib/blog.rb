@@ -36,10 +36,8 @@ module Blog
   end
   
   get '/showcode/:code' do |code|
-    filecontent = File.open("lib/#{code}.rb", "r") { |f| f.read }
-    #filecontent = File.read("#{code}.rb")
-    #filecontents = File.read("lib/test_sort.rb")
-    #filecontent = "blah"
+    filecontent = File.open("lib/#{code}.rb", "r") { |f| f.read } # works on Heroku
+    #filecontent = File.open("lib/#{code}.rb", "r") { |f| f.read } # works locally
     erb :showcode, :locals => {:filecontent => filecontent, :code => code}
   end  
   
