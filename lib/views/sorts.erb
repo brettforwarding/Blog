@@ -39,24 +39,46 @@ Articles :
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Run Sorts" /><br /> 
     <br /> 
     <h2>Output</h2><br />   
-    <% if numbers_in %>
+    
     <!--  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>You entered:</label>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= numbers_in %><br />  -->
       <table>
       <tr>
-        <td><label>Bubble sort:</label></td>
+        <td><a href="showcode/sort" class="tip2">Bubble sort:<span>Click to see the code.</span></td>
+        <% if numbers_in %>
         <td><%= bubble_sorted %></td></tr>
+        <% end %>
       <tr>
-        <td><label>My Sort:</label></td>
+        <td><a href="showcode/sort" class="tip2">My Sort:<span>Click to see the code.</span></a></td>
+        <% if numbers_in %>
         <td><%= brett_sorted %></td></tr>
+        <% end %>
       </table
-    <% end %>
+    
   </form>
 
 </div>
 
 <div class="left"> 
+<h2>Completed:</h2>
+<ul> 
+<li><a href="showcode/test_sort" class="tip2">Unit Tests<span>Click to see the code.</span></a></li>
+<li>Bubble Sort</li>
+<li>My Sort (made up by me)</li>
+<li>Test sorts</li>
+<li>Modify Web Pages to Show Code</li>
+</ul>
 
+<h2>Still outstanding:</h2>
+<ul> 
+<li>Form Validation</li>
+<li>Selection Sort</li>
+<li>Insertion Sort</li>
+<li>Expand Unit Tests</li>
+<li>Data Set Generator</li>
+<li>Process Timer</li>
+<li>Abstract Sort Class</li>
+</ul>
 </div>
 <div style="clear: both;"> </div>
 
