@@ -25,8 +25,6 @@ module Sort
       return input
     end
   end
-  # mysort = BubbleSort.new
-  # puts "#{mysort.do_sort([1,9,3,8,2,4,25,13,6])}"
   
   class BrettSort
     def do_sort(ary)
@@ -40,7 +38,7 @@ module Sort
           end
         end
         return ary
-      else 
+      else # not end condition
         sum=0
         ary.each do |x|
           sum += x
@@ -61,7 +59,6 @@ module Sort
           end
           i += 1
         end
-        #puts "sorting.  size=#{sz}, i=#{i}, avg=#{avg}, hi=#{hi}, array=#{ary.join ","}, ary1=#{ary[0..(hi)].join ","}, ary2=#{ary[-(sz-(hi)-1)..-1].join ","}"
         if sz-hi-1 <1 # special condition, last array item only larger than avg or they are all equal, split on last item
           do_sort(ary[0..(hi-1)]).concat(do_sort(ary[-(sz-(hi))..-1])) 
         else
@@ -70,7 +67,6 @@ module Sort
       end
     end
   end
-  # mysort = BrettSort.new
-  # puts "#{mysort.do_sort([1,9,3,8,2,4,25,13,6])}"
+
   
 end

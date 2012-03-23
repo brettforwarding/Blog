@@ -135,6 +135,20 @@ color: #A3D74F;
 .right h2 a:hover {
 color: #fff;
 }
+.right p {
+font-size: 12px;
+line-height: 20px;
+color: #eee;
+}
+.right ol {
+font-size: 12px;
+margin-left: 0; 
+padding-left: 40px;
+}
+.right ol li {
+font-size: 12px;
+color: #eee;
+}
 
 .left {
 float: left;
