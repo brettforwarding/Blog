@@ -34,8 +34,10 @@ module Blog
     brett_sorted = "#{brettsort.do_sort(numbers_in.split(',').map(&:to_i))}"
     selectionsort = Sort::SelectionSort.new
     selection_sorted = "#{selectionsort.do_sort(numbers_in.split(',').map(&:to_i))}"
+    insertionsort = Sort::InsertionSort.new
+    insertion_sorted = "#{insertionsort.do_sort(numbers_in.split(',').map(&:to_i))}"
     
-    erb :sorts, :locals => {:numbers_in => numbers_in, :bubble_sorted => bubble_sorted, :brett_sorted => brett_sorted, :selection_sorted => selection_sorted}
+    erb :sorts, :locals => {:numbers_in => numbers_in, :bubble_sorted => bubble_sorted, :brett_sorted => brett_sorted, :selection_sorted => selection_sorted, :insertion_sorted => insertion_sorted}
   end
   
   get '/showcode/:code' do |code|

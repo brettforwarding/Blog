@@ -1,6 +1,6 @@
-# BUBBLE SORT
+# Sort Algoritms
 #
-# Richard Buckland youtube Data Structures and Algorthims inspired
+# Richard Buckland Lectures on youtube (Data Structures and Algorthims - COMP1927 UNSW) inspired
 
 module Sort
   class BubbleSort
@@ -88,10 +88,31 @@ module Sort
           ary[smallestposn]=temp
           swap = false
         end
-      puts "i=#{i}, j=#{j}, sp=#{smallestposn}"
-      puts ary.length
       end
       return ary
+    end
+  end
+  class InsertionSort
+    def do_sort(ary)  # Using unshift, push and concat to make output array
+      outary = []
+      outary.push ary[0]
+      for i in 1...ary.length
+        j = outary.length - 1
+        if ary[i] < outary[j]
+          #find correct position
+          while (j >= 0) && ary[i] < outary[j]
+            j -= 1
+          end
+          if j < 0 then # is smallest so far, goes at the beginning
+            outary.unshift(ary[i])
+          else # goes between other elements in the sorted list
+            outary = (outary[0..j].push ary[i]) + outary[(j + 1)...outary.length] # unverified
+          end
+        else # is biggest so far, goes at the end
+          outary.push ary[i]      
+        end
+      end
+      return outary
     end
   end
 
