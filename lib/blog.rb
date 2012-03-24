@@ -42,8 +42,7 @@ module Blog
     #File.open("lib/views/jenny/milestones.erb", 'w') {|f| f.write(milestones_new) } # works on Heroku
     #File.open("views/jenny/latest.erb", 'w') {|f| f.write(latest_new) } # works locally
     #File.open("views/jenny/milestones.erb", 'w') {|f| f.write(milestones_new) } # works locally
-    puts "hey"
-    puts milestones_new
+    "Latest:<br /> #{latest_new}!<br /> #{milestones_new}!"
     #redirect '/jennifer'
   end
   
