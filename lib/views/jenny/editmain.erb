@@ -1,0 +1,59 @@
+
+<head>
+  <title>Jennifer's Baby Blog</title>
+  <meta name="description" content="content" />
+  <meta name="keywords" content="enter your keywords here" />
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" type="text/css" href="/css/stylej.css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<div id="header">
+<h1><a href="#">Baby Blog</a></h1>
+<h2>because "the baby wants it"</h2>
+</div>
+
+<div id="menu">
+<table>
+  <tr>
+    <td>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Clickey 1</a></li>
+        <li><a href="#">Clickey 2</a></li>
+        <li><a href="#">Clickey 3</a></li>
+        <li><a href="#">Clickey 4</a></li>
+      </ul>
+    </td><td>
+      <img src="../images/stewie.jpeg" alt="stewie pic" style="padding: 0 0 0 300px;">
+    </td>
+  </tr>
+</table>
+</div>
+
+<div id="content">
+
+<div class="main">
+  <form action="/jennifer/edit" method="post" accept-charset="utf-8">
+    <label for="lbleditlatest">Edit Latest Stuff:</label><br />
+    <textarea id="txtlatest" name="post[latest_new]" COLS=104 ROWS=20><%= latest_file_content %></TEXTAREA><br />
+    <label for="lbleditmilestones">Edit Milestones:</label><br />
+    <textarea id="txtmilestones" name="post[milestones_new]" COLS=104 ROWS=20><%= milestones_file_content %></TEXTAREA><br />
+    <span  style="padding: 10 0 0 330px;">&nbsp;</span><input type="submit" value="Save All" /><br />
+  </form>
+<br /><br />
+<img src="../images/picj.jpg" alt="Example pic" style="border: 3px solid #ccc;" />
+</div>
+
+</div>
+
+<div id="bottom"> </div>
+
+<div id="footer">
+Designed by Brett
+</div>
+
+</div>
+

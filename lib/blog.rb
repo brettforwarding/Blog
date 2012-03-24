@@ -25,6 +25,22 @@ module Blog
     erb :indexj
   end
   
+  get '/jennifer/edit' do
+    latest_file_content = File.open("views/jenny/latest.erb", "r") { |f| f.read } # works on Heroku
+    milestones_file_content = File.open("views/jenny/milestones.erb", "r") { |f| f.read } # works on Heroku
+    #filecontent = File.open("lib/#{code}.rb", "r") { |f| f.read } # works locally
+    erb "/jenny/editmain".to_sym, :locals => {:latest_file_content => latest_file_content, :milestones_file_content => milestones_file_content}
+  end
+  
+  post '/jennifer/edit' do
+    @post = params[:post]
+    latest_new = @post[:latest_new]
+    milestones_new = @post[:milestones_new]
+    File.open("views/jenny/latest.erb", 'w') {|f| f.write(latest_new) }
+    File.open("views/jenny/milestones.erb", 'w') {|f| f.write(milestones_new) }
+    redirect '/jennifer'
+  end
+  
   get '/sorts' do
     erb :sorts, :locals => {:numbers_in => nil}
   end
