@@ -92,8 +92,14 @@ module Sort
       return ary
     end
   end
+  
   class InsertionSort
-    def do_sort(ary)  # Using unshift, push and concat to make output array
+    def do_sort(ary)  
+      # Using unshift, push and concatenation to make sorted output array (outary)
+      # I'm not sure of the time savings of using these built-in functions,
+      # but I hope it's better than bumping all greater elements after insertion
+      # Best case - already sorted, insert at the end, each time - O(n) complexity
+      # Worst case - reverse sorted, search full outary each time - O(n^2)
       outary = []
       outary.push ary[0]
       for i in 1...ary.length
@@ -106,7 +112,7 @@ module Sort
           if j < 0 then # is smallest so far, goes at the beginning
             outary.unshift(ary[i])
           else # goes between other elements in the sorted list
-            outary = (outary[0..j].push ary[i]) + outary[(j + 1)...outary.length] # unverified
+            outary = (outary[0..j].push ary[i]) + outary[(j + 1)...outary.length] 
           end
         else # is biggest so far, goes at the end
           outary.push ary[i]      
