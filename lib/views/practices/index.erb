@@ -9,7 +9,7 @@
 
 <div id="header">
 <a name="top">&nbsp;</a><br />
-<h1><a href="/">Ruby Newbie</a></h1>
+<h1><a href="#">Ruby Newbie</a></h1>
 <h2>Weekly blog by Brett Morin</h2>
 </div>
 
@@ -29,48 +29,23 @@ Articles :
 <div id="content">
 
 <div class="right"> 
-<% if content == "weekly" %>
-  <a name="Week15">&nbsp;</a><br />
-  <h2><a href="#Week15">Week 15</a></h2>
-  <%= erb :week15 %>
-  <br />
-  <a name="Week14">&nbsp;</a><br />
-  <h2><a href="#Week14">Week 14</a></h2>
-  <%= erb :week14 %>
-  <br />
-  <a name="Week13">&nbsp;</a><br />
-  <h2><a href="#Week13">Week 13</a></h2>
-  <%= erb :week13 %>
-  <br />
-  <a name="Week12">&nbsp;</a><br />
-  <h2><a href="#Week12">Week 12</a></h2>
-  <br />
-  <img src="images/sinatra.png" alt="Sinatra 404 image" style="border: 0px solid #ccc;" />
-  <br /><br />
-  <p>I love how simple Sinatra is.</p>
-<% else %>
-  <%= erb content.to_sym %>
-<% end %>
+
+<a name="feedbackloop">&nbsp;</a><br />
+<h2><a href="#feedbackloop">Feedback Loop</a></h2>
+<%= erb :'practices/feedbackloop' %>
+
 
 </div>
 
 <div class="left"> 
 <h2>Deliberately Practicing: </h2>
 <ul> 
-<li><a href="/practices/dsa">Algorithms and Data Structures</a></li>
-<li><a href="/practices/feedbackloop">Feedback loop</a></li>
-<li><a href="/practices/math">Mathematics</a></li>
-<li><a href="/practices/politics">Politics: Libertarian</a></li>
-<li><a href="/practices/ruby">Ruby</a></li>
-<li><a href="/practices/writing">Writing Skills</a></li>
-</ul>
-
-<h2>Archives</h2>
-<ul>
-<li><a href="#Week15">Week 15</a></li> 
-<li><a href="#Week14">Week 14</a></li> 
-<li><a href="#Week13">Week 13</a></li> 
-<li><a href="#Week12">Week 12</a></li> 
+<li><a href="/Practices/dsa">Algorithms and Data Structures</a></li>
+<li><a href="/Practices/feedbackloop">Feedback loop</a></li>
+<li><a href="/Practices/math">Mathematics</a></li>
+<li><a href="/Practices/politics">Politics: Libertarian</a></li>
+<li><a href="/Practices/ruby">Ruby</a></li>
+<li><a href="/Practices/wirting">Writing Skills</a></li>
 </ul>
 
 <h2>My Code:</h2>
@@ -86,6 +61,13 @@ Articles :
 <li><a href="http://www.girlwithcomputer.com/category/sinatra/">Sinatra by Girl with Computer</a></li> 
 </ul>
 
+<h2>Archives</h2>
+<ul>
+<li><a href="#Week15">Week 15</a></li> 
+<li><a href="#Week14">Week 14</a></li> 
+<li><a href="#Week13">Week 13</a></li> 
+<li><a href="#Week12">Week 12</a></li> 
+</ul>
 
 </div>
 

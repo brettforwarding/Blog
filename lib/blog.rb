@@ -5,7 +5,7 @@ require "erb"
 
 module Blog
   get '/' do
-    erb :index
+    erb :index, :locals => {:content => "weekly"}
   end
   
   get '/beta' do
@@ -46,4 +46,9 @@ module Blog
     erb :showcode, :locals => {:filecontent => filecontent, :code => code}
   end  
   
+  get '/practices/:practicetype' do |pt|
+    #pt = ":'practices/" + pt + "'"
+    pt = 'practices/' + pt
+    erb :index, :locals => {:content => pt}
+  end
 end
