@@ -17,6 +17,10 @@ module Blog
     erb :time, :locals => {:thetime => thetime}
   end
   
+  get '/jwrite' do
+    erb :indexj2
+  end
+  
   get '/jennifer' do
     erb :indexj
   end
