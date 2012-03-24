@@ -68,5 +68,31 @@ module Sort
     end
   end
 
-  
+  class SelectionSort
+    def do_sort(ary)  # Done with swap instead of 2 arrays
+      outermax = ary.length - 2
+      innermax = ary.length - 1
+      for i in 0..outermax
+        swap = false
+        smallestposn = i
+        for j in i..innermax
+          if ary[j] < ary[smallestposn]
+            smallestposn = j
+            swap = true
+          end
+        end
+        if swap == true
+          #swap unfilled slot with smallest
+          temp = ary[i]
+          ary[i]=ary[smallestposn]
+          ary[smallestposn]=temp
+          swap = false
+        end
+      puts "i=#{i}, j=#{j}, sp=#{smallestposn}"
+      puts ary.length
+      end
+      return ary
+    end
+  end
+
 end
