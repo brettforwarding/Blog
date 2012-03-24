@@ -36,13 +36,14 @@ module Blog
   
   post '/jennifer/edit' do
     @post = params[:post]
-    latest_new = @post[:latest_new]
-    milestones_new = @post[:milestones_new]
-    File.open("lib/views/jenny/latest.erb", 'w') {|f| f.write(latest_new) } # works on Heroku
-    File.open("lib/views/jenny/milestones.erb", 'w') {|f| f.write(milestones_new) } # works on Heroku
+    #latest_new = @post[:latest_new]
+    #milestones_new = @post[:milestones_new]
+    #File.open("lib/views/jenny/latest.erb", 'w') {|f| f.write(latest_new) } # works on Heroku
+    #File.open("lib/views/jenny/milestones.erb", 'w') {|f| f.write(milestones_new) } # works on Heroku
     #File.open("views/jenny/latest.erb", 'w') {|f| f.write(latest_new) } # works locally
     #File.open("views/jenny/milestones.erb", 'w') {|f| f.write(milestones_new) } # works locally
-    redirect '/jennifer'
+    "What up, yo"
+    #redirect '/jennifer'
   end
   
   get '/sorts' do
