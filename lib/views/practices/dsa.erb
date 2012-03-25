@@ -9,32 +9,42 @@
 <h2>The Art of Computer Programming</h2>
 <span style="font-size:10px">(reference, title, chapter, point and footnote refer to <a href="/practices/feedbackloop">feedback loop</a> and NOT those elements in TAOCP)</span>
 <br />
+*Note: The feedback loop has been modified to match "chapter" with chapters in the book to avoid confusuion, "section" was added to be the level above "point"
+<b>Feedback loop:  </b>
+
+<ol>
+  <li>Since this book is already organized for teaching, I will only do the following feedback procedures:
+    <ol style="list-style-type:lower-alpha">
+      <li>Notes</li>
+      <li>Summary (end of chapter, after exercises, summary on what I learned)</li>
+    </ol>
+</ol>
 <b>Reference: <i>The Art of Computer Programming</i>: Volume 1</i></b<br />
 <ol>
-  <li><b>Title: TOACP Vol 1 - Preface</b></li>
+  <li><b>Section: TOACP Vol 1 - Preface</b></li>
     <ol style="list-style-type: lower-alpha;">
-      <li><b>Chapter: Pre-requisites: </b></li>
+      <li><b>Section: Pre-requisites: </b></li>
 	      <ol style="list-style-type: lower-roman;">
 	        <li>Point:  Very basic programming</li>
 		      <li>Point:  Exposure to assembler recommended.</li>
         </ol>
-	    <li><b>Chapter: Subject of this Volume</b></li>
+	    <li><b>Section: Subject of this Volume</b></li>
 	      <ol style="list-style-type: lower-roman;">
 	        <li>Point:  Boring name: Non-numerical Analysis</li>
 	        <li>Point:  Good name:  Analysis of Algorithms</li>
 	        <li>Point:  Knuth's Description:  The theory of the properties of particular computer algorithms</li>
         </ol>
-	    <li><b>Chapter: Goals</b></li>
+	    <li><b>Section: Goals</b></li>
 	      <ol style="list-style-type: lower-roman;">
 	        <li>Point:  Show that building a computer program from a set of instructions is like building a mathematical proof from a set of axioms.</li>
 		      <li>Point:  Choose machine-oriented language over algebraic language (ex: ALGOL, FORTRAN) to most accurately describe a computer algorithm</li>
         </ol>
-	    <li><b>Chapter: MIX</b></li>
+	    <li><b>Section: MIX</b></li>
 	      <ol style="list-style-type: lower-roman;">
 	        <li>Point:  USE MIX simulator to run programs done as excercises</li>
 		      <li>Point:  </li>
         </ol>
-	    <li><b>Chapter: Exercise Legend</b></li>
+	    <li><b>Section: Exercise Legend</b></li>
 	      <ol style="list-style-type: lower-roman;">
 	        <li>Score = 00:  Extremely easy, can almost always be done in your head.</li>
 	        <li>Score = 10:  Simple problem to make you think about the material.  Probably take less than 1 minute.</li>
@@ -48,23 +58,80 @@
 		      <li>Arrowhead >:  Recommended.  Very instructional.  At the minimum, all recommended, and scores <= 10 should be done.</li>
         </ol>
       </ol>
-    <li><b>Title: TOACP Vol 1 - Basic Concepts (chapter 1) </b></li>
+    <li><b>Section: TOACP Vol 1 - Basic Concepts (chapter 1) </b></li>
       <ol style="list-style-type: lower-alpha;">
-        <li><b>Chapter: Algorithm notation: </b></li>
+        <li><b>Section: Algorithm notation: </b></li>
 	        <ol style="list-style-type: lower-roman;">
 	          <li>Example: E1 (means Euclid's Algorithm step 1)</li>
 		        <li>Example: 1.1E1 (same as E1 but referenced outside chapter 1 so chapter and section included)</li>
 		        <li>Example: m <- n (m gets assigned the value of n)</li>
+		        <li>Algorithms start at step 1 and steps are sequential unless otherwise noted<li>
+		        <li>Example:  Algorithm prefaced with condition like If r = 0, ... but condition fails (r != 0)**, then no action is taken (...)</li>
+		        <li>Heavy vertical line (II)** indicates end of algorithm</li>
+		        <li>For indexed items (v1, v2, v3, ... vn)** , a notation of v[j] could be used to represent the jth element (vj)**  and, likewise, a2,3 ** could be a[2,3]
           </ol>
+          <li>First algorithm</li>
+	        <ol style="list-style-type: lower-roman;">
+	          <li>Always attempt on paper first!</li>
+	          <li>Use algorithm E (Euclid's Algorithm of page 1), m = 119, n=544</li>
+	          <li>Paraphrased description and solved on paper -> see Excercises section
+	        </ol>
+          
       </ol>
   </ol><br />
 <br />
 <b>Footnotes:</b><br />
 <ol>
+  <li>** to indicate notation change because I can't reproduce the symbol(s) used in the book</li>
+  <li>Alright, lost my paper notes and I don't feel like writing notes twice at the moment, so I'm going back to taking notes directly on the computer - for now</li>
   <li>TAKE PAPER NOTES FIRST from now on - transcribe before taking a break.  Noted while reading page 3</li>
   <li>Side-track: Einstein's Theory for the diffusion equation for Brownian particles...How I got there:  Knuth mentioned <b>Stochastic properties of particular algorithms</b> as a "real" world application of the computer-friendly algorithmic math that a "purist" mathematician would enjoy...So I had to look up <a href="http://en.wikipedia.org/wiki/Stochastic_properties">Stochastic properties</a> which lead to <a href="http://en.wikipedia.org/wiki/Brownian_motion">Brownian motion</a>, which I remembered from that famous pollen-jiggling-on-water-proof-of-atom-existance I learned years ago.  After an external interuption though, I figured I'd better get back to the book before losing my place in the book.</li>
   <li>While reading Knuth's defense for using machine-oriented language MIX to write the books computer algorithms, I thought to myself that it was this choice that really made me choose to read his book over a more modern language approach to his subject matter - losing touch with machine instructions is uncomfortable for a computer scientist imo, even though (or maybe especially because) I really prefer to work mostly with highly abstracted language.</li>
 </ol>
+<br />
+<br />
+<b>Excercises</b>
+<ol>
+  <li>Chapter 1 - Basic Concepts</li>
+    <ol style="list-style-type: lower-alpha;">
+      <li>Solve E for m = 119, n = 544</li>
+      <li>Algorithm description:</li>
+	      <ol style="list-style-type: lower-roman;">
+	        <li>E (Euclid's Algorithm)</li>
+	        <li>given n,m where n>0, m>0</li>
+	        <li>find greatest x where remainder r = 0 for n/x and m/x</li>
+	      </ol>
+	    <li>Algorithm Solution Steps:</li>
+	      <ol style="list-style-type: lower-roman;">
+	        <li>E1: m/n , get remainder r</li>
+	        <li>E2: If r = 0, x = n, exit</li>
+	        <li>E3: m<-n, n<-r, return to E1
+	      </ol>
+	    <li>Solution for m = 119, n = 544:</li>
+	      <ol style="list-style-type: lower-roman;">
+	        <li>E1: m/n = 119/544, r = 119</li>
+	        <li>E2: If r = 0, false</li>
+	        <li>E3: m<-544, n<-119</li>
+	        <li>E1: m/n = 544/119, r = 68</li>
+	        <li>E2: If r = 0, false</li>
+	        <li>E3: m<-119, n<-68</li>
+	        <li>E1: m/n = 119/68, r = 51</li>
+	        <li>E2: If r = 0, false</li>
+	        <li>E3: m<-68, n<-51</li>
+	        <li>E1: m/n = 68/51, r = 17</li>
+	        <li>E2: If r = 0, false</li>
+	        <li>E3: m<-51, n<-17</li>
+	        <li>E1: m/n = 51/17, r = 0</li>
+	        <li>E2: If r = 0, true, x = 17</li>
+	      </ol>
+	  </ol>
+</ol>  
+	    
+	    
+	    
+	      
+      
+  
 </p>
 
 
