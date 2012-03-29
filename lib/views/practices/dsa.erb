@@ -6,6 +6,102 @@
     </ol>
 <br />
 <br />
+<h2>UNSW Comp 1927 Data Structures and Algorithms - presented by Prof. Richard Buckland</h2>
+<ol>
+  <li>Lecture 8 - 10</li>
+    <ol style="list-style-type: lower-alpha;">
+      <li>Merge Sort: Calculating complexity</li>
+        <ol style="list-style-type: lower-roman;">
+          <li>Let T(n) be related to the time-based sorting solution function with respect to the number of elements "n"</li>
+          <li>Since merge sort involves splitting the set of n into two equal sets, sorting them and then merging them (recursively), then</li>
+          <li><b>T(n) = n + T(n/2) + T(n/2)</b></li>
+          <li>so that for any call to sort set "n", T(n) will take 1 pass to find the mid-point + the same T function but acting on each half as the function is called again for each of those halves</li>
+          <li>given this, we can show that this equation is true by substituting nlogn for T(n), therefore</li>
+          <li>nlogn = n + (n/2)log(n/2) + (n/2)log(n/2) ... reducing this gives</li>
+          <li>nlogn = n + nlog(n/2) ...further reduction gives </li>
+          <li>nlogn = n + n(logn - log2) ...reducing again to</li>
+          <li>nlogn = n + nlogn - n  ...which balances nicely as</li>
+          <li>nlogn = nlogn</li>
+          <li><b>Complexity of Merge Sort is O(nlogn)</b></li>
+          <li> * note that the log base is 2</li>
+        </ol>
+      <li>How good is nlogn complexity></li>
+        <ol style="list-style-type: lower-roman;">
+          <li>if n = 1 billion then n^2 complexity gives 1 billion x 1 billion = 1 x 10^18 (sextillion??)</li>
+          <li>if n = 1 billion then nlogn complexity gives 1 billion x log(1 billion) = 30 billion<li>
+          <li><b>That is a big difference!!</b></li>
+        </ol>
+      <li>Disadvantages to Merge Sort:</li>
+        <ol style="list-style-type: lower-roman;">
+          <li>Recursion is resource heavy - big disadvantage for very large number sets</li>
+          <li>nlogn can be improved upon in many cases</li>
+        </ol>
+      <li>Why base 2?  That is, why are computers base 2?</li>
+        <ol style="list-style-type: lower-roman;">
+          <li>Buckland said he wanted students to think on this and would answer it in a future lesson</li>
+          <li>He did mention that base 2 predated the computer and mentioned Claude Shannon</li>
+          <li>Claude Shannon was the father of Information Theory and the proposer, definer and solver of digitization - in base 2</li>
+          <li>Without knowing it in too much detail, I imagine it was the Shannon's use of Boolean Logic to enable digitization that led to base 2</li>
+        </ol>
+      <li>Quick Sort</li>
+        <ol style="list-style-type: lower-roman;">
+          <li>Mentioned briefly as the best of the general sorts</li>
+          <li>Unlike merge sort, it is not recursive</li>
+          <li>Many implementations have been made that improve upon nlogn that are fairly complex so generally we use one of the best of these</li>
+          <li>Based on picking a Pivot value and spliting based on the pivot</li>
+        </ol>
+      <li>Bucket Sort</li>
+        <ol style="list-style-type: lower-roman;">
+          <li>Uses indexing</li>
+          <li>No longer doing compares with neighbors, key is applied to determine what "bucket" to place value in</li>
+          <li>Not covered in-depth in lecture</li>
+        </ol>
+      <li>Counting Sort</li>
+        <ol style="list-style-type: lower-roman;">
+          <li>Uses indexing</li>
+          <li>Index built as the contiguous values from n(min) to n(max)</li>
+          <li>Works best when n is close to the size of the key (verify)</li>
+          <li>Pass 1: Get min/max for index</li>
+          <li>Pass 2: In a count array of equal size to index, store the counts of each value</li>
+          <li>Pass 2b: Create a sum array of equal size to index, pass over count array and insert into sum array the running sum of count array values</li>
+          <li>Pass 3: Insert into output array (size n) each value n into the array position equal to the sum at the position in the sum array of the value of n and then update the sum value in the sum array by +1 at that position (difficult to explain, easy to see)</li>
+          <li>So, if the value of n is 25 partway through the list, then look at the sum value in the sum array at position 25 (let say it's 6).  Then put value 25 into the output array at position 6.  Then update the value in the sum array at position 25 to 7.  Now continue to the next n and repeat.</li>
+          <li>One guy in the class said he came up with this on his own when Buckland asked us at the beginning of the course to invent our own sorts...hmmm...I doubt you would come up with this without creating at least a few other sorts first - I estimate about a minimum of 3 weeks on a student's schedule - he must be a genius (or more likely, he had outside knowledge)</li>
+        </ol>
+      <li>Create your own sort to try to improve on nlogn complexity</li>
+        <ol style="list-style-type: lower-roman;">
+          <li>Buckland is emphasising this as an important process to learning data structures.  Do it before you are "corrupted" by the knowledge of well-honed sorting techniques</li>
+          <li>I definitely see the value in this.  I have to do it now.  I created my average sort at the beginning which was similar to merge sort and on the way towards quick sort but I need to try the next step and really attack specific case scenarios and what optimizations could I make in those cases BEFORE I see the amazing sorts already created by the world at large and never have to put my brain through this discovery process</li>
+        </ol>
+      <li>My next sort</li>
+        <ol style="list-style-type: lower-roman;">
+          <li>List of possible starting assumptions</li>
+            <ol>
+              <li>Required to reverse-sort on list that is known to be sorted</li>
+              <li>Required to sort a list that has a small number of values out of order</li>
+              <li>Required to reverse-sort on list that has a small number of values out of order</li>
+              <li>List has no duplication of values (combine with other assumptions)</li>
+              <li>List has a high number of duplicate values</li>
+              <li>List has a low number of duplicate values (combine with other assumptions)</li>
+              <li>Distribution is very likely to be around a small number of unknown points</li>
+              <li>Distribution is going to be around a small number of known points</li>
+              <li>Distribution is very likely to have void zones around unknown points</li>
+              <li>Distribution is very likely to have void zones around known points</li>
+              <li>Distribution is very likely to follow a known formula</li>
+              <li>System attributes are known for sorting computer</li>
+            </ol>
+          <li>Easiest cases first</li>
+            <ol>
+              <li>Appended to known, sorted:  Size n is known, list is sorted except for a known number of entries at beginning or end of list</li>
+              <li>Reverse-sort a sorted list</li>
+              <li></li>
+            </ol>
+        </ol>
+      <li></li>
+    </ol>
+</ol>
+<br />
+<br />
 <h2>The Art of Computer Programming</h2>
 <span style="font-size:10px">(reference, title, chapter, point and footnote refer to <a href="/practices/feedbackloop">feedback loop</a> and NOT those elements in TAOCP)</span>
 <br />
