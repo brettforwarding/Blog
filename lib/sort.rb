@@ -151,5 +151,5 @@ module Sort
       end
       return ary
     end
-
+  end
 end
