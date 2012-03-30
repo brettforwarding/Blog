@@ -134,7 +134,7 @@ module Sort
           max = val
         end
       end
-      countary.new((max - min + 1), 0)
+      countary = Array.new((max - min + 1), 0)
       ary.each do |val|
         countary[val - min] += 1
       end
