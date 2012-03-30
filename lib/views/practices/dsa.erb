@@ -27,7 +27,7 @@
         </ol>
       <li>How good is nlogn complexity></li>
         <ol style="list-style-type: lower-roman;">
-          <li>if n = 1 billion then n^2 complexity gives 1 billion x 1 billion = 1 x 10^18 (sextillion??)</li>
+          <li>if n = 1 billion then n^2 complexity gives 1 billion x 1 billion = 1 quintillion (1 x 10^18) </li>
           <li>if n = 1 billion then nlogn complexity gives 1 billion x log(1 billion) = 30 billion<li>
           <li><b>That is a big difference!!</b></li>
         </ol>
@@ -92,9 +92,24 @@
             </ol>
           <li>Easiest cases first</li>
             <ol>
-              <li>Appended to known, sorted:  Size n is known, list is sorted except for a known number of entries at beginning or end of list</li>
+              <li>Small unsorted list appended to known, sorted:  Size n is known, list is sorted except for a known number of entries at beginning or end of list</li>
               <li>Reverse-sort a sorted list</li>
               <li></li>
+            </ol>
+          <li>Sorts for easiest cases</li>
+            <ol>
+              <li>Small unsorted list appended to known, sorted:  <b>Insertion Sort</b> starting at 1st unsorted element</li>
+              <li>Reverse-sort a sorted list:  <b>loop</b> - reverse traversal of list to insert in forward traversal of output list (simple loop, not a sort)</li>
+              <li></li>
+            </ol>
+          <li>My second sort -> Counting sort with loop (instead of running sum)</li>
+            <ol>
+              <li>run through list n to get min and max</li>
+              <li>create count array of size max - min + 1, values all zero</li>
+              <li>run through list n and add +1 to value in countarray[n[i]-min] </li>
+              <li>create output array of size n</li>
+              <li>for each element in count array, add element position + min into successive slots in output array for each value of count array (inner loop)</li>
+              <li>Prediction: more efficient than counting sort shown by Buckland because it involves one less pass (and one less array).</li>
             </ol>
         </ol>
       <li></li>

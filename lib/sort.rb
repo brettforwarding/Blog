@@ -121,5 +121,35 @@ module Sort
       return outary
     end
   end
+  
+  class BrettCountSort
+    def do_sort(ary)
+      n = ary.length
+      min = 0
+      max = 0
+      ary.each do |val|
+        if val < min
+          min = val
+        elsif val > max
+          max = val
+        end
+      end
+      countary.new((max - min + 1), 0)
+      ary.each do |val|
+        countary[val - min] += 1
+      end
+      key = min
+      i = 0
+      countary.each do |val|
+        j = 0
+        while j < val
+          ary[i] = key
+          i += 1
+          j += 1
+        end
+        key += 1
+      end
+      return ary
+    end
 
 end
