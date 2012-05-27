@@ -1,153 +1,225 @@
-New Dev Machine Build Plan<br \> <br \> 
-<br \> <br \> 
-1) Virtual Box<br \> 
-  a) Read manual<br \> 
-  b) Read online<br \> 
-  c) Make notes on what interesting things can be done<br \> 
-  d) Make install plan<br \> 
-  e) Make room for it<br \> 
-    i) Backup laptop HDD<br \> 
-    ii) Create install/rescue disk<br \> 
-    iii) Move 40GB to external HDD<br \> 
-    iv) Create recovery notes and blog them<br \> 
-    v) Store any passwords<br \> 
-      1) Get password keeper<br \> 
-2) Read up on new ruby versions<br \> 
-  a) Current Ruby version<br \> 
-  b) Highest compatible version with Heroku/Git<br \> 
-  c) Any alternative to Heroku?  <vps><br \> 
-    i) Is it possible to push to both web servers with same git repo?<br \> 
-  d) Review all components needed and version they are stable with<br \> 
-    i) Bundler<br \> 
-    ii) Unit tester<br \> 
-    iii) Version control<br \> 
-    iv) Virtual box Ruby enhancement?<br \> 
-    v) Search for other helpful ones<br \> 
-  e) List versions (2 or 3) in a table with features<br \> 
-  f) Choose versions<br \> 
-  g) Blog table, choice and reason for choice<br \> 
-3) Search for ruby dev virtualbox packages<br \> 
-  a) Does it match up with previous choice<br \> 
-  b) If there is no match to wants, plan to create one<br \> 
-4) Start installation process<br \> 
-  i) If not using a pre-packages VirtualBox machine then document the install <b>rigorously!</b><br \> 
+<p>
+<b>New Dev Machine Build Plan</b><br \> 
+<br \>
+
+<ol>
+  <li> Virtual Box</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Read manual<br \> 
+    <li> Read online</li> 
+    <li> Make notes on what interesting things can be done</li>
+    <li> Make install plan</li>
+    <li> Make room for it</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Backup laptop HDD</li>
+      <li> Create install/rescue disk</li>
+      <li> Move 40GB to external HDD</li>
+      <li> Create recovery notes and blog them</li>
+      <li> Store any passwords</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Get password keeper</li>
+      </ol>
+    </ol>
+  </ol>
+  <li> Read up on new ruby versions</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Current Ruby version</li>
+    <li> Highest compatible version with Heroku/Git</li>
+    <li> Any alternative to Heroku?  <vps></li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Is it possible to push to both web servers with same git repo?</li>
+    </ol>
+    <li> Review all components needed and version they are stable with</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Bundler</li>
+      <li> Unit tester</li>
+      <li> Version control</li>
+      <li> Virtual box Ruby enhancement?</li>
+      <li> Search for other helpful ones</li>
+    </ol>
+    <li> List versions (2 or 3) in a table with features</li>
+    <li> Choose versions</li>
+    <li> Blog table, choice and reason for choice</li>
+  </ol>
+  <li> Search for ruby dev virtualbox packages</li> 
+  <ol style="list-style-type: lower-roman;">
+    <li> Does it match up with previous choice</li>
+    <li> If there is no match to wants, plan to create one</li>
+  </ol>
+  <li> Start installation process</li> 
+  <ol style="list-style-type: lower-roman;">
+    <li> If not using a pre-packages VirtualBox machine then document the install <b>rigorously!</b></li>
+  </ol>
+</ol>  
   <br \> 
 Notes:<br \> 
   - Heroku alternative: VPS (Virtual Private Server)<br \> 
   - Ruby language derivative: Rubinius -> adds JIT compiling to Ruby (mostly for speed reasons)<br \> 
   <br \> 
 <br \> 
+</p>
+<p> 
+<b>Ruby Install Plan</b><br \> 
+<br \> 
+Install Plan guide found at: <br \>
+&nbsp;&nbsp;<a href="http://blog.binarybalance.com.au/2011/10/31/compiling-ruby-1-9-3-on-debian-squeeze">http://blog.binarybalance.com.au/2011/10/31/compiling-ruby-1-9-3-on-debian-squeeze</a><br \> 
 <br \> 
 <br \> 
-Ruby Install Plan<br \> 
-<br \> 
-Install Plan guide found at: http://blog.binarybalance.com.au/2011/10/31/compiling-ruby-1-9-3-on-debian-squeeze<br \> 
-<br \> 
-<br \> 
-1) Install system ruby (should be 1.8.7 on #!10)<br \> 
-  sudo aptitude install ruby<br \> 
-2) Install rvm (may encounter issues due to backports)<br \> 
-  $ bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )<br \> 
- *note: curl git and svn already installed from cb-welcome scripts<br \> 
-3) Install more requirements<br \> 
+<ol>
+  <li> Install system ruby (should be 1.8.7 on #!10)</li> 
+  sudo aptitude install ruby<br \>
+  <li> Install rvm (may encounter issues due to backports)</li>
+  $ bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )<br />
+ *note: curl git and svn already installed from cb-welcome scripts<br />
+  <li> Install more requirements</li>
   sudo aptitude install build-essential libreadline6-dev git-core zlib1g-dev l<br \> 
-4) Set-up Git<br \> 
-5) Setup for Heroku push<br \> 
-6) Setup requirements for local compile and testing (Sinatra and web server)<br \> 
-7) Test locally<br \> 
-  http://localhost:4567/<br \> 
-8) Setup Thin webserver<br \> 
+  <li> Set-up Git</li>
+  <li> Setup for Heroku push</li>
+  <li> Setup requirements for local compile and testing (Sinatra and web server)</li>
+  <li> Test locally</li>
+  http://localhost:4567/<br />
+  <li> Setup Thin webserver</li>
+</ol> 
 <br \> 
 <br \> 
-<br \> 
-<br \> 
-<br \> 
-<br \> 
-Ruby Install Progress<br \> 
-1) Ruby 1.8.7 installed (patch 302)<br \> 
-2) RVM installed<br \> 
-  a) Check command: ls -la ~/ | grep .rvm<br \> 
-  b) Return: drwxr-xr-x 23 brett brett 4096 May 26 10:07 .rvm<br \> 
-3) Test RVM "type rvm | head -1" did not return rvm is a function but...<br \> 
-  a) Return: rvm is /home/brett/.rvm/bin/rvm<br \> 
-4) Add command to bash profile<br \> 
-  a)echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bash_profile<br \> 
-  b) test RVM "type rvm | head -1" - failed<br \> 
-5) Add command to bashrc<br \> 
-  a) Found this on website: http://www.andrewsturges.com/2011/05/installing-rvm-ruby-version-manager-on.html<br \> 
-  b) echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bashrc<br \> 
-  c) test RVM "type rvm | head -1" - success (returns rvm is a function)<br \> 
-6) Installed more requirements<br \> 
-  a) ran: sudo aptitude install build-essential libreadline6-dev git-core zlib1g-dev l<br \> 
-7) Installed ruby 1.9.3<br \> 
-  a) command: rvm install 1.9.3<br \> 
-  b) install successful<br \> 
-  c) test: rvm use 1.9.3<br \> 
-  d) result: Using /home/brett/.rvm/gems/ruby-1.9.3-p194<br \> 
-  e) test: ruby -v<br \> 
-  f) result: ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-linux]<br \> 
-8) Setup git<br \> 
-  a) ssh key (instructions at http://help.github.com/linux-set-up-git/ )<br \> 
-    i) check if one exists: cd ~/.ssh<br \> 
-      1) Return: bash: cd: /home/brett/.ssh: No such file or directory<br \> 
-    ii) Generate key: ssh-keygen -t rsa -C "brettforwarding@gmail.com"<br \> 
-      1) Return: Enter passphrase:<br \> 
-      2) entered: mo....1<br \> 
-      3) confirmed<br \> 
-      4) Return: Your identification has been saved in /home/brett/.ssh/id_rsa. Your public key has been saved in /home/brett/.ssh/id_rsa.pub.<br \> 
-    iii) Copy public key by opening file in text editory Geany: geany ~/.ssh/id_rsa.pub<br \> 
-    iv) Login to github and add ssh key (3rd one there all with title brettforwarding@gmail.com - not sure about the titles )<br \> 
-  b) set globals<br \> 
-    i) username: git config --global user.name "Brett"<br \> 
-    ii) email: git config --global user.email "brettforwarding@gmail.com"<br \> 
-  c) Checkout blog repository: git clone git@github.com:brettforwarding/Blog.git<br \> 
-    i) cloning...blah,blah...continue?: yes<br \> 
-    ii) Enter passphrase for key '/home/brett/.ssh/id_rsa': mo....1<br \> 
-    iii) counting, compressing, totals, receiving objects, receiving deltas => done<br \> 
-    iv) path: ~/mystuff/projects/blog/Blog<br \> 
-    v) oops! hmmm...remove blog folder and contents and redo?  I think so<br \> 
-    vi) from projects folder: rm -rf blog<br \> 
-    vii) clone again<br \> 
-    viii) path: ~/mystuff/projects/Blog<br \> 
-  d) test update<br \> 
-    i) Edit file: geany ./lib/views/week20.erb<br \> 
-    ii) update in Geany and save<br \> 
-    iii) git add . && commit -m "blah, blah"<br \> 
-    iv) git push git@github.com:brettforwarding/Blog.git master<br \> 
-    v) Verify on github:  Edit successful<br \> 
-9) Setup Heroku requirements<br \> 
-  a) Get requirements from site: https://toolbelt.heroku.com/linux<br \> 
-  b) Run command from site: wget -qO- https://toolbelt.heroku.com/install.sh | sh<br \> 
-  c) Test heroku login on site: mo.... was successful<br \> 
-  d) login from shell: heroku login<br \> 
-    i) email, password<br \> 
-    i) authentication successful<br \> 
-  e) add heroku remote to git<br \> 
-    i) git remote add heroku git@heroku.com:floating-beach-3672.git<br \> 
-    ii) verify: git remote -v<br \> 
-    iii) Result: <br \> 
-      1) heroku	git@heroku.com:floating-beach-3672.git (fetch)<br \> 
+</p>
+<p> 
+<b>Ruby Install Progress</b><br \>
+<br \>
+<ol>
+  <li> Ruby 1.8.7 installed (patch 302)</li>
+  <li> RVM installed</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Check command: ls -la ~/ | grep .rvm</li>
+    <li> Return: drwxr-xr-x 23 brett brett 4096 May 26 10:07 .rvm</li>
+  </ol>
+  <li> Test RVM "type rvm | head -1" did not return rvm is a function but...</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Return: rvm is /home/brett/.rvm/bin/rvm</li>
+  </ol>
+  <li> Add command to bash profile</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li>echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bash_profile</li>
+    <li> test RVM "type rvm | head -1" - failed</li>
+  </ol>
+  <li> Add command to bashrc</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Found this on website: http://www.andrewsturges.com/2011/05/installing-rvm-ruby-version-manager-on.html</li>
+    <li> echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bashrc</li>
+    <li> test RVM "type rvm | head -1" - success (returns rvm is a function)</li>
+  </ol>
+  <li> Installed more requirements</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> ran: sudo aptitude install build-essential libreadline6-dev git-core zlib1g-dev l</li>
+  </ol>
+  <li> Installed ruby 1.9.3</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> command: rvm install 1.9.3</li>
+    <li> install successful</li>
+    <li> test: rvm use 1.9.3</li>
+    <li> result: Using /home/brett/.rvm/gems/ruby-1.9.3-p194</li>
+    <li> test: ruby -v</li>
+    <li> result: ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-linux]</li>
+  </ol>
+  <li> Setup git</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> ssh key (instructions at http://help.github.com/linux-set-up-git/ )</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> check if one exists: cd ~/.ssh</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Return: bash: cd: /home/brett/.ssh: No such file or directory</li>
+      </ol>
+      <li> Generate key: ssh-keygen -t rsa -C "brettforwarding@gmail.com"</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Return: </li>
+        <ol>
+          <li>Enter passphrase:</li>
+          <li> entered: mo....1</li>
+          <li> confirmed</li>
+          <li> Return: Your identification has been saved in /home/brett/.ssh/id_rsa. Your public key has been saved in /home/brett/.ssh/id_rsa.pub.</li>
+        </ol>
+      </ol>
+      <li> Copy public key by opening file in text editory Geany: geany ~/.ssh/id_rsa.pub</li>
+      <li> Login to github and add ssh key (3rd one there all with title brettforwarding@gmail.com - not sure about the titles )</li>
+    </ol>
+    <li> set globals</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> username: git config --global user.name "Brett"</li>
+      <li> email: git config --global user.email "brettforwarding@gmail.com"</li>
+    </ol>
+    <li> Checkout blog repository: git clone git@github.com:brettforwarding/Blog.git</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> cloning...blah,blah...continue?: yes</li>
+      <li> Enter passphrase for key '/home/brett/.ssh/id_rsa': mo....1</li>
+      <li> counting, compressing, totals, receiving objects, receiving deltas => done</li>
+      <li> path: ~/mystuff/projects/blog/Blog</li>
+      <li> oops! hmmm...remove blog folder and contents and redo?  I think so</li>
+      <li> from projects folder: rm -rf blog</li>
+      <li> clone again</li>
+      <li> path: ~/mystuff/projects/Blog</li>
+    </ol>
+    <li> test update</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Edit file: geany ./lib/views/week20.erb</li>
+      <li> update in Geany and save</li>
+      <li> git add . && commit -m "blah, blah"</li>
+      <li> git push git@github.com:brettforwarding/Blog.git master</li>
+      <li> Verify on github:  Edit successful</li>
+    </ol>
+  </ol>
+  <li> Setup Heroku requirements</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Get requirements from site: https://toolbelt.heroku.com/linux</li>
+    <li> Run command from site: wget -qO- https://toolbelt.heroku.com/install.sh | sh</li>
+    <li> Test heroku login on site: mo.... was successful</li>
+    <li> login from shell: heroku login</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> email, password</li>
+      <li> authentication successful</li>
+    </ol>
+    <li> add heroku remote to git</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> git remote add heroku git@heroku.com:floating-beach-3672.git</li>
+      <li> verify: git remote -v</li>
+      <li> Result: </li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> heroku	git@heroku.com:floating-beach-3672.git (fetch)</li>
          heroku	git@heroku.com:floating-beach-3672.git (push)<br \> 
          origin	git@github.com:brettforwarding/Blog.git (fetch)<br \> 
          origin	git@github.com:brettforwarding/Blog.git (push)<br \> 
-    iv) add ssh key to heroku: heroku keys:add<br \> 
-      1) Result: Found existing public key: /home/brett/.ssh/id_rsa.pub  Uploading SSH public key /home/brett/.ssh/id_rsa.pub... done<br \> 
-  f) push local git repo to heroku<br \> 
-    i) git push heroku master<br \> 
-  g) Verify in web browser that change showed up<br \> 
-    i) Successful<br \> 
-10) Install Sinatra<br \> 
-  a) Check installed gems: gem list<br \> 
-    i) Result:<br \> 
-      1) bundler (1.1.3)<br \> 
-         rake (0.9.2.2)<br \> 
-         rubygems-bundler (1.0.2)<br \> 
-         rvm (1.11.3.3)<br \> 
-  b) gem install sinatra<br \> 
-  c) Sinatra and dependencies installed<br \> 
-  d) gem list<br \> 
-  e) Result: <br \> 
-    i) bundler (1.1.3)<br \> 
+      </ol>
+      <li> add ssh key to heroku: heroku keys:add</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Result: Found existing public key: /home/brett/.ssh/id_rsa.pub  Uploading SSH public key /home/brett/.ssh/id_rsa.pub... done</li>
+      </ol>
+    </ol>
+    <li> push local git repo to heroku</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> git push heroku master</li>
+    </ol>
+    <li> Verify in web browser that change showed up</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Successful</li>
+    </ol>
+  </ol>
+  <li> Install Sinatra</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Check installed gems: gem list</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Result:</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> bundler (1.1.3)</li>
+         rake (0.9.2.2)<br \>
+         rubygems-bundler (1.0.2)<br \>
+         rvm (1.11.3.3)<br \>
+      </ol>
+    </ol>
+    <li> gem install sinatra</li>
+    <li> Sinatra and dependencies installed</li>
+    <li> gem list</li>
+    <li> Result: </li>
+    <ol style="list-style-type: lower-roman;">
+      <li> bundler (1.1.3)</li>
        rack (1.4.1)<br \> 
        rack-protection (1.2.0)<br \> 
        rake (0.9.2.2)<br \> 
@@ -155,16 +227,27 @@ Ruby Install Progress<br \>
        rvm (1.11.3.3)<br \> 
        sinatra (1.3.2)<br \> 
        tilt (1.3.3)<br \> 
-11) Test Blog locally<br \> 
-  a) from prompt: brett@crunchbang:~/mystuff/projects/Blog/lib$ ruby blog.rb<br \> 
-    i) webrick web server started<br \> 
-    ii) Verified http://localhost:4567<br \> 
-      1) Successfully displayed blog<br \> 
-12) Install Thin web server<br \> 
-  a) gem install thin<br \> 
-  b) gem list<br \> 
-    i) Result:<br \> 
-      1) bundler (1.1.3)<br \> 
+    </ol>
+  </ol>
+  <li> Test Blog locally</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> from prompt: brett@crunchbang:~/mystuff/projects/Blog/lib$ ruby blog.rb</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> webrick web server started</li>
+      <li> Verified http://localhost:4567</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Successfully displayed blog</li>
+      </ol>
+    </ol>
+  </ol>
+  <li> Install Thin web server</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> gem install thin</li>
+    <li> gem list</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Result:</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> bundler (1.1.3)</li>
          daemons (1.1.8)<br \> 
          eventmachine (0.12.10)<br \> 
          rack (1.4.1)<br \> 
@@ -175,20 +258,32 @@ Ruby Install Progress<br \>
          sinatra (1.3.2)<br \> 
          thin (1.3.1)<br \> 
          tilt (1.3.3)<br \> 
-   c) Test loads by default<br \> 
-     i) ruby blog.rb<br \> 
-       1) Result: loaded WEBrick -> that's a fail<br \> 
-     ii) edit config.ru<br \> 
-       1) added: gem 'thin'<br \> 
-     iii) bundle install<br \> 
-     iv) ruby blog.rb<br \> 
-       1) Result: loaded WEBrick -> that's another fail<br \> 
-     v) Test thin on it's own: thin start<br \> 
-     vi) returns openssl error exactly as described in: https://rvm.io/packages/openssl/<br \> 
-     vii) Follow instructions<br \> 
-       1) remove rvm path and reinstall -> this crashed, reverted to snapshot<br \> 
-       2) tried to find openssl path -not sure what to choose<br \> 
-       3) give up, use WEBrick<br \> 
-<br \> 
-     <br \> 
-<br \> 
+       </ol>
+     </ol>
+     <li> Test loads by default</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> ruby blog.rb</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Result: loaded WEBrick -> that's a fail</li>
+      </ol>
+       <li> edit config.ru</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> added: gem 'thin'</li>
+      </ol>
+       <li> bundle install</li>
+       <li> ruby blog.rb</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Result: loaded WEBrick -> that's another fail</li>
+      </ol>
+       <li> Test thin on it's own: thin start</li>
+       <li> returns openssl error exactly as described in: https://rvm.io/packages/openssl/</li>
+       <li> Follow instructions</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> remove rvm path and reinstall -> this crashed, reverted to snapshot</li>
+        <li> tried to find openssl path -not sure what to choose</li>
+        <li> give up, use WEBrick</li>
+      </ol>
+    </ol>
+  </ol>
+</ol> 
+</p>
