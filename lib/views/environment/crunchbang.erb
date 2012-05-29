@@ -56,6 +56,272 @@ Notes:<br \>
   - Heroku alternative: VPS (Virtual Private Server)<br \> 
   - Ruby language derivative: Rubinius -> adds JIT compiling to Ruby (mostly for speed reasons)<br \> 
   <br \> 
+<b>HERE WE GO!</b><br />
+<br />
+<ol>
+  <li>Choice of VM Software: Oracle VirtualBox</li>
+  <li>Reason: Open Source (i.e. free!)
+  <li>Installing VirtualBox</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li>Install File:</li>
+    <ol style="list-style-type: lower-roman;">
+      <li>Filename: VirtualBox-4.1.16-78094-Win.exe</li>
+      <li>Source: <a href="http://download.virtualbox.org/virtualbox/4.1.16/VirtualBox-4.1.16-78094-Win.exe">http://download.virtualbox.org/virtualbox/4.1.16/VirtualBox-4.1.16-78094-Win.exe</a></li>
+      <li>Size: 93 MB</li>
+    </ol>
+    <li>Installation...</li>
+    <ol style="list-style-type: lower-roman;">
+      <li>Chose defaults</li>
+      <li>Time to install: 4 minutes</li>
+    </ol>
+    <li>Result:</li>
+    <ol style="list-style-type: lower-roman;">
+      <li>File/Preferences</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> General</li>
+        <ol>
+          <li> Default Machine folder: C:\Users\brett\VirtualBox VMs</li>
+          <li> VRDP Authentication Library: VBoxAuth (selected)</li>
+        </ol>
+        <li> Input</li>
+        <ol>
+          <li> Host Key: Right Ctrl</li>
+          <li> Auto Capture Keyboard (selected)</li>
+        </ol>
+        <li> Update</li>
+        <ol>
+          <li> Check for updates (selected)</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li>Once per: 1 day (selected)</li>
+            <li>Next Check: 27/05/2012</li>
+            <ol style="list-style-type: lower-roman;">
+              <li> Check for: Stable release versions (selected)</li>
+            </ol>
+          </ol>
+        </ol>
+        <li> Language</li>
+        <ol>
+          <li>Interface Language: Default (selected)</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Network</li>
+          </ol>
+          <li> Host-only Networks: VirtualBox Host-Only Ethernet Adapter (only entry in list)</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Adapter: Manualy configured</li>
+            <li> DHCP Server: Enabled</li>
+          </ol>
+        </ol>
+        <li> Extensions</li>
+        <ol>
+          <li> Extension Packages:  <blank>  (no entries in list)</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Proxy</li>
+            <ol style="list-style-type: lower-roman;">
+              <li> Enable proxy (not selected)</li>
+            </ol>
+          </ol>
+        </ol>
+      </ol>
+    </ol>
+  </ol>
+  <li>Installing Extension Pack</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li>Install File:</li>
+    <ol style="list-style-type: lower-roman;">
+      <li>Filename: Oracle_VM_VirtualBox_Extension_Pack-4.1.16-78094.vbox-extpack</li>
+      <li>Source: <a href="http://download.virtualbox.org/virtualbox/4.1.16/Oracle_VM_VirtualBox_Extension_Pack-4.1.16-78094.vbox-extpack">http://download.virtualbox.org/virtualbox/4.1.16/Oracle_VM_VirtualBox_Extension_Pack-4.1.16-78094.vbox-extpack</a></li>
+      <li>Size: 9 MB</li>
+    </ol>
+    <li>Installation...</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> double-clicked on above file to install (VirtualBox Manager was running)</li>
+      <li> Warning about system-modification - clicked install to continue</li>
+      <li> Scrolled and clicked I Agree to the license agreement</li>
+      <li> took all of about 15 seconds to install</li>
+    </ol>
+  </ol>
+  <li>Result:</li>
+  <ol style="list-style-type: lower-roman;">
+    <li> File/Preferences</li>
+    <ol style="list-style-type: lower-alpha;">
+      <li> Extensions</li>
+      <ol>
+        <li> Extension Packages: Oracle VM...  (One entrie with a green check in the leftmost column)</li>
+      </ol>
+    </ol>
+  </ol>
+  <li>Create New VM</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Installation...</li>
+    <ol style="list-style-type: lower-roman;">
+      <li>Click New</li>
+      <li> VM Name and OS Type</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Name: crunch10amd64</li>
+        <li> OS Type:</li>
+        <ol>
+          <li> Operating System: Linux</li>
+          <li> Version: Debian (64 bit)</li>
+        </ol>
+      </ol>
+      <li> Memory</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Total available: 4096 MB</li>
+        <li> Recommended: 384 MB</li>
+        <li> Base Memory Size: 1024 MB (I chose this)</li>
+      </ol>
+      <li> Virtual Hard Disk</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Start-up Disk  (selected)</li>
+        <li> Create new hard disk (selected)</li>
+      </ol>
+      <li> Create New Virtual Disk</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> VDI (Virtual Disk Image)  (Chosen - was default)</li>
+        <ol>
+          <li> Virtual disk storage details</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Fixed size (Chosen - was not default)</li>
+          </ol>
+        </ol>
+        <li> Virtual disk file location and size</li>
+        <ol>
+          <li> Location: crunch10amd64 (default folder)</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Size: 30.00 GB (Chosen)</li>
+          </ol>
+        </ol>
+      </ol>
+      <li> Summary:</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li>File type:  VDI (VirtualBox Disk Image)</li>
+        <li>Details:  Fixed size storage</li>
+        <li>Location:  C:\Users\brett\VirtualBox VMs\crunch10amd64\crunch10amd64.vdi</li>
+        <li>Size:  30.00 GB (32212254720 B)</li>
+      </ol>
+      <li> Took time to create due to 30GB fixed drive spec: < 10min</li>
+    </ol>
+  </ol>
+  <li> Install Crunchbang! 10</li>
+  <ol style="list-style-type: upper-alpha;">
+    <li> Installation...</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Settings / storage</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> Ide Controller, select Empty</li>
+        <li> Attributes</li>
+        <ol>
+          <li> CD/DVD Drive: IDE Secondary Master (selected)</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> click on disk icon to the right</li>
+            <li> Browse to crunchbang iso</li>
+          </ol>
+        </ol>
+      </ol>
+      <li> Start VM</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li>Crunchbang setup</li>
+        <ol>
+          <li> chose graphical installer</li>
+          <li> Location: Canada</li>
+          <li> Language: American English</li>
+          <li> Hostname: crunchbang (default)</li>
+          <li> User: brett</li>
+          <li> Password: ma...5...</li>
+          <li> Configure the clock</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Time zone: Atlantic</li>
+          </ol>
+          <li> Partition disks:</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Partition Method: Guided - user entire disk (default)</li>
+            <li> Select disk to partition:</li>
+            <ol style="list-style-type: lower-roman;">
+              <li>scsi1 (0,0,0)(sda) - 32.2 GB ATA VBOX HARDDISK (only choice)</li>
+            </ol>
+            <li> Partitioning Scheme: All files in one partition (default)</li>
+            <li> Summary:</li>
+            <ol style="list-style-type: lower-roman;">
+              <li>#1 primary 30.9GB B f ext4 /</li>
+              <li>#5 logical  1.4GB   f swap swap</li>
+            </ol>
+            <li> Finish partitioning and write changes to disk (selected - default)</li>
+            <li> write changes to disks?</li>
+            <ol style="list-style-type: lower-roman;">
+              <li> Yes (selected)</li>
+            </ol>
+            <li> Partition progress bar sat at partway for 10 seconds then went to installing the system</li>
+          </ol>
+          <li> Install the GRUB boot loader to the master boot record?</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Yes (selected - default)</li>
+          </ol>
+          <li> Prompt to remove install disk - clicked continue</li>
+        </ol>
+        <li> After restart, powered down VM</li>
+        <li> Settings / Storage
+        <ol>
+          <li> Ide Controller, select Empty</li>
+          <li> Attributes</li>
+          <li> CD/DVD Drive: IDE Secondary Master (selected)</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> click on disk icon to the right</li>
+            <ol style="list-style-type: lower-roman;">
+              <li> Select Host Drive D:</li>
+            </ol>
+            <li>Pass Through: Checked</li>
+          </ol>
+        </ol>
+        </li>
+      </ol>
+    </ol>
+    <li> Restart VM</li>
+    <ol style="list-style-type: lower-roman;">
+      <li> Crunchbang loads</li>
+      <li> cb-welcome script auto-runs</li>
+      <ol style="list-style-type: lower-alpha;">
+        <li> chose to continue with updates</li>
+        <li> internet connection passed</li>
+        <li> Update cb? yes</li>
+        <li> updated  (was pretty quick)</li>
+        <li> Update packages? yes</li>
+        <li> updated (was longer)</li>
+        <li> Install printer support: Yes  (installs CUPS-Common Unix Printing System)</li>
+        <li> Install Java Support? Skip (I will install only when I need it)</li>
+        <li> Install LibreOffice? Skip</li>
+        <li> Install Development Packages? See options</li>
+        <ol>
+          <li> Version Control Tools? Yes</li>
+          <li>git mercurial subversion subversion-tools bzr bzrtools cvs</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> seemed like mostly python stuff with some perl as well as base tools</li>
+          </ol>
+        </ol>
+        <li> Install SSH Server? Yes</li>
+        <li> Install LAMP Stack? Yes
+        <ol>
+          <li>apache2 mysql-server php5 php-pear php5-gd php5-mysql php5-imagick php5-curl curl phpmyadmin rsync cronolog</li>
+          <li> MySQL password: s..5...</li>
+          <li> Web server configured to run php automatically: apache2 (default)</li>
+          <li> Configure database for phpmyadmin with dbconfig-common? Yes (default)</li>
+          <li> Password for phpadmin: s..5...</li>
+          <li> Password for sqladmin: s..5...</li>
+          <li> Create symlink from Apache's document root to home directory? Yes
+          <li> file path: /hom/brett/htdocs</li>
+        </ol>
+        <li> Install Developer Environment for Debian Packaging? Yes
+        <ol>
+          <li> build-essential debhelper cdbs dh-make diff patch gnupg fakeroot lintian devscripts pbuilder dpatch dput quilt</li>
+          <li> not sure if I will ever need it though</li>
+          <li> Create Pbuilder environment now?  Y</li>
+          <ol style="list-style-type: upper-alpha;">
+            <li> Valid Release signature (key id 9FED2B2BDSC29CDF762678CBAED4B06F473041FA)</li>
+        </ol>
+        <li> Finished!</li>
+      </ol>
+    </ol>
+  </ol>
+</ol>
 <br \> 
 </p>
 <p> 
@@ -69,7 +335,7 @@ Install Plan guide found at: <br \>
   <li> Install system ruby (should be 1.8.7 on #!10)</li> 
   sudo aptitude install ruby<br \>
   <li> Install rvm (may encounter issues due to backports)</li>
-  $ bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )<br />
+  <blockquote style="text-align: left">$ bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )</blockquote>
  *note: curl git and svn already installed from cb-welcome scripts<br />
   <li> Install more requirements</li>
   sudo aptitude install build-essential libreadline6-dev git-core zlib1g-dev l<br \> 
@@ -104,7 +370,7 @@ Install Plan guide found at: <br \>
   </ol>
   <li> Add command to bashrc</li>
   <ol style="list-style-type: upper-alpha;">
-    <li> Found this on website: http://www.andrewsturges.com/2011/05/installing-rvm-ruby-version-manager-on.html</li>
+    <li> Found this on website: <a href="http://www.andrewsturges.com/2011/05/installing-rvm-ruby-version-manager-on.html">http://www.andrewsturges.com/2011/05/installing-rvm-ruby-version-manager-on.html</a></li>
     <li> echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bashrc</li>
     <li> test RVM "type rvm | head -1" - success (returns rvm is a function)</li>
   </ol>
