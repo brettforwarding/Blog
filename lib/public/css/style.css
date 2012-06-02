@@ -56,6 +56,29 @@ a.tip2:hover span:after {
   bottom: -16px;
   left:1em;
 }
+
+table {
+border-style: solid;
+border-collapse: collapse;
+border-width: 2px;
+border-color: #FF8C00;
+background-color: #4D432C;
+font-size: 14px;
+}
+table tr{
+border-style: solid;
+border-width: 1px;
+border-color: #FF8C00;
+}
+table td{
+border-style: solid;
+border-width: 0px;
+border-color: #FF8C00;
+padding-top: 5px;
+padding-right: 10px;
+vertical-align: bottom;
+}
+
 #wrap {
 margin: 0 auto;
 width: 800px;
@@ -142,12 +165,37 @@ color: #eee;
 }
 .right ol {
 font-size: 12px;
-margin-left: 0; 
-padding-left: 40px;
+margin-left: 20px; 
+padding-left: 20px;
 }
-.right ol li {
-font-size: 12px;
+.right li {
 color: #eee;
+list-style-type: decimal;
+}
+.right ol ol{
+margin-left: 10px;
+padding-left: 10px;
+}
+.right ol ol li {
+list-style-type: upper-alpha;
+}
+.right ol ol ol li {
+list-style-type: upper-roman;
+}
+.right ol ol ol ol li {
+list-style-type: lower-alpha;
+}
+.right ol ol ol ol ol li {
+list-style-type: lower-roman;
+}
+.right ol ol ol ol ol ol li {
+list-style-type: decimal;
+}
+.right ol ol ol ol ol ol ol li {
+list-style-type: upper-roman;
+}
+.right ol ol ol ol ol ol ol ol li {
+list-style-type: lower-alpha;
 }
 
 .left {

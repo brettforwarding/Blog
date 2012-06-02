@@ -1,0 +1,97 @@
+<h3>first_app - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/ruby-on-rails-tutorial-book">Rails Tutorial</a></li>
+  <li>Delete demo_app from github (from last time doing tutorial) and create new demo_app repo</li>
+  <li>$ cd ~/mystuff/projects/rails_projects</li>
+  <li>$ rails new demo_app</li>
+  <li>$ cd demo_app</li>
+  <li>$ geany Gemfile</li>
+  <ol>
+    source 'https://rubygems.org'<br /><br />
+    
+    gem 'rails', '3.2.3'<br /><br />
+
+    group :development do<br />&nbsp;&nbsp;
+      gem 'sqlite3', '1.3.5'<br />
+    end<br /><br />
+
+
+    # Gems used only for assets and not required<br />
+    # in production environments by default.<br />
+    group :assets do<br />&nbsp;&nbsp;
+      gem 'sass-rails',   '3.2.4'<br />&nbsp;&nbsp;
+      gem 'coffee-rails', '3.2.2'<br /><br />&nbsp;&nbsp;
+
+      gem 'uglifier', '1.2.3'<br />
+    end<br /><br />
+
+    gem 'jquery-rails', '2.0.0'<br /><br />
+
+    group :production do<br />&nbsp;&nbsp;
+      gem 'pg', '0.12.2'<br />
+    end<br />
+  </ol>
+  <li>$ bundle install --without production</li>
+  <ol>
+    <li>Bundle without production because postgre (required by Heroku) db not set-up yet.</li>
+  </ol>
+  <li>$ geany .gitignore</li>
+  <ol>
+    <li>added:</li>
+    # Ignore other unneeded files.<br />
+    doc/<br />
+    *.swp<br />
+    *~<br />
+    .project<br />
+    .DS_Store<br />
+  </ol>
+  <li>$ git init</li>
+  <li>$ git add . && git commit -m "Initial commit"</li>
+  <li>$ git remote add origin git@github.com:brettforwarding/demo_app.git</li>
+  <li>$ git push -u origin master</li>
+  <li>$ rails generate scaffold User name:string email:string</li>
+  <ol>
+    <li>Creates the User model</li>
+  </ol>
+  <li>$ bundle exec rake db:migrate</li>
+  <ol>
+    <li>Creates the User table in dev db (sqlite3) but not in prod db since bundled without prod</li>
+  </ol>
+  <li>$ rails s</li>
+  <li>Add 2 users, test edit and delete</li>
+  <li>$ rails s</li>
+  <ol>
+    <li>Ran this first thing in the morning and got an error</li>
+    <li>Returns: WARN  TCPServer Error: Address already in use - bind(2) Exiting</li>
+    <li>Got the solution off this site: <a href="http://intridea.com/posts/how-to-kill-off-a-rogue-server">http://intridea.com/posts/how-to-kill-off-a-rogue-server</a></li>
+    <ol>
+      <li>$ lsof -i TCP:3000</li>
+      <ol>
+        <li>Returned:</li>
+        COMMAND  PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME<br />
+        ruby    4457 brett    7u  IPv4  28525      0t0  TCP *:3000 (LISTEN)
+      </ol>
+      <li>$ kill 4457</li>
+      <ol>
+        <li>Did not work.  I suspect due to VM nature, had to restart.</li>
+      </ol>
+    </ol>
+  </ol>
+  <li>$ rails s</li>
+  <li>http://localhost:3000/users</li>
+  <li>clicked to destroy user Foo Bar</li>
+  <ol>
+    <li>Return:  Got the edit page: http://localhost:3000/users/3</li>
+    <li>Enabled JS by clicking "Allow localhost" in NoScript addon</li>
+    <li>clicked "Back" to get to list of users</li>
+  </ol>
+  <li>clicked to destroy user Foo Bar</li>
+  <ol>
+    <li>Return:  Are you sure?  pop-up dialog box - clicked Yes</li>
+    <li>Return:  http://localhost:3000/users with only user Brett showing</li>
+    <li>Re-added user Foo Bar - several steps</li>
+    <li>Return: new user Foo Bar with id 4  - have deleted twice so far (users 2, 3)</li>
+  </ol>
+  
+</ol>

@@ -1,0 +1,122 @@
+<h3>first_app - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/ruby-on-rails-tutorial-book">Rails Tutorial</a></li>
+  <li>$ rvm reinstall 1.9.3 --with-openssl-dir=$rvm_path/usr</li>
+  <ol>
+    <li>why? - this takes care of that openssl error I got <a href="/environment/crunchbang">installing the Thin</a> web server as well as when I tried to run $ rails server</li>
+  </ol>
+  <li>$ ruby blog.rb</li>
+  <ol>
+    <li>WEBrick loaded -> verified on localhost:4567</li>
+  </ol>
+  <li>$ rvm use 1.9.3@rails3tutorial2ndEd --create --default</li>
+  <ol>
+    <li>result: using /home/brett/.rvm/gems/ruby-1.9.3-p194 with gemset rails3tutorial2ndEd</li>
+  </ol>
+  <li>$ gem update --system 1.8.24</li>
+  <ol>
+    <li>freezes rubygems to the version used in the tutorial</li>
+  </ol>
+  <li>$ vim ~/.gemrc</li>
+  <ol>
+    <li>put 2 lines in this file to suppress ri & rdoc docs when installing and updating gems:</li>
+    <li>install: --no-rdoc --no-ri</li>
+    <li>update: --no-rdoc --no-ri</li>
+  </ol>
+  <li>$ gem install rails -v 3.2.3</li>
+  <ol>
+    <li>result: 29 gems installed</li>
+  </ol>
+  <li>Created snapshot 9 of the VM</li>
+  <li>$ sudo apt-get install libxslt-dev libxml2-dev libsqlite3-dev</li>
+  <ol>
+    <li>Linux only packages installed</li>
+    <li>libxslt-dev 1.1.26-6</li>
+    <li>libxml2-dev 2.7.8.dfsg-2+squeeze4</li>
+    <li>libsqlite3-dev 3.7.11-2~bp060+1</li>
+  </ol>
+  <li>$ mkdir rails_projects</li>
+  <li>$ cd rails_projects</li>
+  <li>$ rails new first_app</li>
+  <ol>
+    <li>Result: Creates successfully then auto-runs bundle install</li>
+    <li>Then fetches gem meta data from https://rubygems.org/</li>
+    <li>Then...blows up.  Error: Could not load openssl  - Argh!</li>
+  </ol>
+  <li>Fixed openssl error with procedure found at <a href="https://rvm.io/packages/openssl/">https://rvm.io/packages/openssl/</a></li>
+  <ol>
+    <li>$ rvm pkg install openssl</li>
+    <li>$ rvm reinstall 1.9.3 --with-openssl-dir=$rvm_path/usr</li>
+    <li>Then redo following steps:</li>
+    <ol>
+      <li>$ rvm use 1.9.3@rails3tutorial2ndEd</li>
+      <li>$ gem install rails -v 3.2.3</li>
+      <li>$ rm -rf first_app <delete the first_app directory></li>
+      <li>$ rails new first_app</li>
+    </ol>
+  </ol>
+  <li>Modified first_app/Gemfile to make versions absolute</li>
+  <li>$ bundle install</li>
+  <li>$ Rails server</li>
+  <ol>
+    <li>Result: Error -> could not find ExecJS</li>
+  </ol>
+  <li>Solution to ExecJS error found at <a href="">http://oodavid.tumbler.com/post/15090798307/how-to-install-node-js-on-linux</a>.  Chose to install nodejs</li>
+  <ol>
+    <li>$ cd ~/</li>
+    <li>$ git clone git://github.com/ry/nod.git</li>
+    <li>$ cd node</li>
+    <li>$ ./configure --without-ssl</li>
+    <li>$ make</li>
+    <li>$ sudo make install</li>
+    <li>$ cd ~/mystuff/projects/rails_projects/first_app</li>
+    <li>$ rails server</li>
+    <ol>
+      <li>Result: success!</li>
+    </ol>
+  </ol>
+  <li>$ git config --global core.editor "geany -imnst)</li>
+  <ol>
+    <li>Set Geany text editor as default for git commit messages</li>
+  </ol>
+  <li>$ git init</li>
+  <li>$ git add . && git commit -m "Initial commit"</li>
+  <li>$ git remote add origin git@github.com:brettforwarding/first_app.git</li>
+  <li>$ git push -u origin master</li>
+  <ol>
+    <li>Result: first_app already exists -> Error </li>
+    <li>Logged into github.com, deleted first_app repo, added new first_app repo (this happened because I had already done this tutorial, will have to do it for other apps too.</li>
+    <li>pushed again successfully</li>
+  </ol>
+  <li>$ git checkout -b modify-README</li>
+  <li>$ git branch</li>
+  <ol>
+    <li>Result: list of branches: modify-README</li>
+  </ol>
+  <li>$ git mv README.rdoc README.md</li>
+  <li>$ geany README.md</li>
+  <ol>
+    <li>Edit to make it look better - github will format</li>
+  </ol>
+  <li>$ git add . && git commit -m "Improve the README file"</li>
+  <li>$ git checkout master</li>
+  <li>$ git merge modify-README</li>
+  <li>$ git branch -d modify-README</li>
+  <ol>
+    <li>Note: -D flag will delete branch even when non-committed changes exist </li>
+  </ol>
+  <li>$ git push</li>
+  <ol>
+    <li>same as $  git push origin master</li>
+    <li>origin master is default</li>
+  </ol>
+  <li>$ heroku create --stack cedar</li>
+  <ol>
+    <li>Result: evening-robot-1553.herokuapp.com</li>
+  </ol>
+  <li>$ heroku open</li>
+  <ol>
+    <li>Result: opens the app at heroku in the default browser</li>
+  </ol>
+</ol>

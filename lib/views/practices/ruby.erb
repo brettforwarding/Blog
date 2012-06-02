@@ -1,7 +1,435 @@
+
 <h3>Ruby Dev</h3>  
 <p>
-<ol style="list-style-type:lower-alpha">
-  <li>Web Framework: Sinatra or</li>
-  <li>Ben Franklin approach using other's code or </li>
-  <li>Setup new virtual appliance</li>
+<ol>
+  <li>Setups</li>
+  <ol>
+    <li>Development</li>
+    <ol>
+      <li>Ubuntu 10.10 on VMWare Workstation</li>
+      <li>CrunchBang! 11 on VirtualBox</li>
+    </ol>
+    <li>Production</li>
+    <ol>
+      <li>Ruby Newbie blog</li>
+      <ol>
+        <li>Website hosted on Heroku, repository in Github</li>
+        <li>Website address: http://floating-beach-3762@heroku.com</li>
+      </ol>
+    </ol>
+  </ol>
+  <li>Blog</li>
+  <ol>
+    <li>About:</li>
+    <ol>
+      <li>Started as a public Ruby discovery blog and may end that way</li>
+      <li>Currently: A personal development diary style blog</li>
+      <li>Publicly viewable but not currently found on Google</li>
+    </ol>
+    <li>Visual layout</li>
+    <ol>
+      <li>Free online css template.  I liked the simple 3 zone style with infinite content area.</li>
+    </ol>
+    <li>Framework</li>
+    <ol>
+      <li>Sinatra (on Rack)</li>
+    </ol>
+    <li>HTML templates</li>
+    <ol>
+      <li>ERB (Embedded Ruby Code)</li>
+    </ol>
+    
+  </ol>
+  <li>Tutorials</li>
+  <ol>
+    <li>Ruby on Rails Tutorial: Learning Rails by Example (by Michael Hartl)</li>
+    <center>*abbreviated notes only (use <a href="http://ruby.railstutorial.org/chapters/a-demo-app#fig:mvc_detailed">link</a> for full tutorial)</center>
+    <ol>
+      <li><a href="/practices/ruby_rortut_1_first_app">1.0 First App</a></li>
+      <ol>
+        <li>Book Convention (1.13)</li>
+        <ol>
+          <li>When using rvm, no need for sudo</li>
+          <li>Rails root refers to app root directory NOT root directory for Rails itself</li>
+        </ol>
+        <li>Software Versions (1.22)</li>
+        <ol>
+          <li>Use exactly the same versions used in the tutorial - proven to work together</li>
+          <ol>
+            <li>Only exception: Ruby 1.9.2 and 1.9.3 are interchangeable</li>
+          </ol>
+          <li>Install</li>
+          <ol>
+            <li>For OpenSSL error use: $ rvm install 1.9.3 --with-openssl-dir=$rvm_path/usr</li>
+          </ol>
+          <li>Gemset</li>
+          <ol>
+            <li>rails3tutorial2ndEd</li>
+          </ol>
+          <li>Freeze rubygems version</li>
+          <ol>
+            <li>$ gem update --system 1.8.24</li>
+          </ol>  
+          <li>Get Linux libraries (libs)</li>   
+          <ol>
+            <li>$ sudo apt-get install libxslt-dev libxml2-dev libsqlite-dev</li>
+          </ol>  
+        </ol>
+        <li>First Rails App (1.3)</li>
+        <table>
+          <tr class="table-head">
+            <td class="table-head" colspan=2 align="center"><b>Rails App Dir Default Structure</b></td>
+          </tr>
+          <tr>
+            <td><b>app/</b></td>
+            <td>Core application code, including models, views, controllers and helpers</td>
+          </tr>
+          <tr>
+            <td><b>app/assets</b></td>
+            <td>App's assets (such as css, javascript and images)</td>
+          </tr>
+          <tr>
+            <td><b>config/</b></td>
+            <td>App configuration</td>
+          </tr>
+          <tr>
+            <td><b>db/</b></td>
+            <td>Database files</td>
+          </tr>
+          <tr>
+            <td><b>doc/</b></td>
+            <td>Documentation for the app</td>
+          </tr>
+          <tr>
+            <td><b>lib/</b></td>
+            <td>Library modules</td>
+          </tr>
+          <tr>
+            <td><b>lib/assets</b></td>
+            <td>Library assets (such as css, javascript and images)</td>
+          </tr>
+          <tr>
+            <td><b>log/</b></td>
+            <td>App log files</td>
+          </tr>
+          <tr>
+            <td><b>public/</b></td>
+            <td>Data accessible to the public (eg: web browsers) (such as error pages)</td>
+          </tr>
+          <tr>
+            <td><b>script/rails</b></td>
+            <td>A script for generating code, opening console sessions or starting a local server</td>
+          </tr>
+          <tr>
+            <td><b>test/</b></td>
+            <td>App tests -> made OBSOLETE by <b>spec/</b> directory</td>
+          </tr>
+          <tr>
+            <td><b>tmp/</b></td>
+            <td>Temporary files</td>
+          </tr>
+          <tr>
+            <td><b>vendor/</b></td>
+            <td>3rd party code (such as plugins and gems)</td>
+          </tr>
+          <tr>
+            <td><b>vendor/assets</b></td>
+            <td>3rd party assets (such as css, javascript and images)</td>
+          </tr>
+          <tr>
+            <td><b>README.rdoc</b></td>
+            <td>A brief description of the app</td>
+          </tr>
+          <tr>
+            <td><b>Rakefile</b></td>
+            <td>Utility tasks available via the rake command</td>
+          </tr>
+          <tr>
+            <td><b>Gemfile</b></td>
+            <td>Gem requirements for this app</td>
+          </tr>
+          <tr>
+            <td><b>Gemfile.lock</b></td>
+            <td>A list of gems used to ensure all copies of the app use the same gem versions</td>
+          </tr>
+          <tr>
+            <td><b>config.ru</b></td>
+            <td>A configuration file for Rack middleware</td>
+          </tr>
+          <tr>
+            <td><b>.gitignore</b></td>
+            <td>Patterns for files that should be ignored by Git</td>
+          </tr>
+        </table>
+        <br />
+        <li>Bundler (1.2.4)</li>
+        <ol>
+          <li>Modify Gemfile to be version specific</li>
+          <ol>
+            <li>...otherwise, when building, new versions will be fetched & could break the build</li>
+          </ol>
+        </ol>
+        <li>Rails Server (1.2.5)</li>
+        <ol>
+          <li>Installed nodejs to get around the "ExecJS not found" problem</li>
+        </ol>
+        <li>Setup first_app (1.3.1)</li>
+        <ol>
+          <li>git init, then set .gitignore</li>
+          <li>git add . && git commit</li>
+          <li>to see the status: git status</li>
+          <li>to see commit log: git log</li>
+          <li>branch, then replace README.rdoc with README.md</li>
+        </ol>
+        <li>Deploy (1.4)</li>
+        <ol>
+          <li>Options:</li>
+          <ol>
+            <li>shared host or VPS running Phusion Passenger (module for apache & Nginx)</li>
+            <li>Full-serve: Engine Yard, Rails Machine</li>
+            <li>Cloud: Engine Yard Cloud, Heroku</li>
+          </ol>
+        </ol>
+      </ol>
+      <li><a href="/practices/ruby_rortut_2_demo_app">2.0 Demo App</a></li>
+      <ol>
+        <li>Modeling demo users (2.1.1)</li>
+        <ol>
+          <table>
+            <tr class="table-head">
+              <td class="table-head" colspan=2 align="center"><b>Users</b></td>
+            </tr>
+            <tr>
+              <td>id</td>
+              <td>integer</td>
+            </tr>
+            <tr>
+              <td>name</td>
+              <td>string</td>
+            </tr>
+            <tr>
+              <td>email</td>
+              <td>string</td>
+            </tr>
+          </table>
+        </ol>
+        <li>Modeling demo microposts (2.1.2)</li>
+        <ol>
+          <table>
+            <tr class="table-head">
+              <td class="table-head" colspan=2 align="center"><b>microposts</b></td>
+            </tr>
+            <tr>
+              <td>id</td>
+              <td>integer</td>
+            </tr>
+            <tr>
+              <td>content</td>
+              <td>string</td>
+            </tr>
+            <tr>
+              <td>user_id</td>
+              <td>integer</td>
+            </tr>
+          </table>
+        </ol>
+        <li>The Users resource</li>
+        <ol>
+          <li>generate scaffold</li>
+          <li>rake</li>
+          <ol>
+            <li>ruby version of the Unix "make" to compile</li>
+            <li>to view db options, run $ bundle exec rake -T db</li>
+            <li>to view all options, run $ bundle exec rake -T</li>
+          </ol>
+          <li>localhost:3000/users to see what scaffold does for users model</li>
+          <li>add new users</li>
+        </ol>
+        <li>URI - Action relation</li>
+        <table>
+            <tr>
+              <td><center><b>URI</b></center></td>
+              <td><center><b>Action</b></center></td>
+              <td><center><b>Purpose</b></center></td>
+            </tr>
+            <tr>
+              <td>/users</td>
+              <td>index</td>
+              <td>page to list all users</td>
+            </tr>
+            <tr>
+              <td>/users/1</td>
+              <td>show</td>
+              <td>page to show user with id 1</td>
+            </tr>
+            <tr>
+              <td>/users/new</td>
+              <td>new</td>
+              <td>page to make a new user</td>
+            </tr>
+            <tr>
+              <td>/users/1/edit</td>
+              <td>edit</td>
+              <td>page to edit user with id 1</td>
+            </tr>
+        </table>
+        <li>MVC (Model View Controller) diagram for Users</li>
+        <img src="../images/ruby/railstut_ch2_mvc_detailed_users.png" alt="Rails MVC 404 image" style="border: 0px solid #ccc;" />
+        <center>RoR Tutorial Chapter 2 - MVC diagram for the Users model (<a href="http://ruby.railstutorial.org/chapters/a-demo-app#fig:mvc_detailed">link</a>)</center>
+        <br />
+        <ol>
+          <ol>
+            <li>The <span style="color:orange;"><b>browser</b></span> issues a request for the <span style="color:limegreen;">/users URI</span>.</li>
+            <li>Rails <span style="color:orange;"><b>routes</b></span> /users to the index action in the Users <span style="color:orange;"><b>controller</b></span>.</li>
+            <li>The index action asks the User <span style="color:orange;"><b>model</b></span> to </li>
+            <li>Retrieve all users (<span style="color:limegreen;">User.all</span>).</li>
+            <li>The User model returns the list of users to the <span style="color:orange;"><b>controller</b></span>.</li>
+            <li>The controller captures the users in the <span style="color:limegreen;">@users</span> variable, which is passed to the index <span style="color:orange;"><b>view</b></span>.</li>
+            <li>The view uses embedded Ruby to <span style="color:orange;"><b>render</b></span> the page as HTML.</li>
+            <li>The <span style="color:orange;"><b>controller</b></span> passes the HTML back to the <span style="color:orange;"><b>browser</b></span>.</li>
+          </ol>
+        </ol>
+        <li>Rails <span style="color:orange;"><b>routes</b></span>, with a rule for the Users resource (2.2)</li>
+        <ol>
+          <li><span style="color:limegreen;">config/routes.rb</span></li>
+          DemoApp::Application.routes.draw do<br />&nbsp;&nbsp;
+            resources :users<br />
+          end
+        </ol>
+        <li><span style="color:orange;"><b>Users controller</b></span> in schematic form (2.3)</li>
+        <ol>
+          <li><span style="color:limegreen;">app/controllers/users_controller.rb</span></li>
+          class UsersController < ApplicationController<br />&nbsp;&nbsp;
+
+          def index<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            ... <br />&nbsp;&nbsp;
+          end<br /><br />&nbsp;&nbsp;
+
+          def show<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            ...<br />&nbsp;&nbsp;
+          end<br /><br />&nbsp;&nbsp;
+
+          def new<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            ... <br />&nbsp;&nbsp;
+          end<br /><br />&nbsp;&nbsp;
+
+          def edit<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            ... <br />&nbsp;&nbsp;
+          end<br /><br />&nbsp;&nbsp;
+
+          def create<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            ... <br />&nbsp;&nbsp;
+          end<br /><br />&nbsp;&nbsp;
+
+          def update<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            ... <br />&nbsp;&nbsp;
+          end<br /><br />&nbsp;&nbsp;
+
+          def destroy<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            ... <br />&nbsp;&nbsp;
+          end<br />
+          end<br />
+          <li>Note the <b><span style="color:orange;">class</span> UsersController < ApplicationController</b></li>
+          <ol>
+            <li>Shows that UsersController class <i>inherits</i> from class ApplicationController</li>
+          </ol>
+          <li>REST architecture - relation between <b>User controller</b> and <b>HTTP Requests</b></li>
+          <table>
+            <tr>
+              <td><b>HTTP Request</b></td>
+              <td><b>URI</b></td>
+              <td><b>Action</b></td>
+              <td><b>Purpose</b></td>
+            </tr>
+            <tr>
+              <td>GET</td>
+              <td>/users</td>
+              <td><span style="color:limegreen;"><b>index</b></span></td>
+              <td>page to list all users</td>
+            </tr>
+            <tr>
+              <td>GET</td>
+              <td>/users/1</td>
+              <td><span style="color:limegreen;"><b>show</b></span></td>
+              <td>page to show user with id 1</td>
+            </tr>
+            <tr>
+              <td>GET</td>
+              <td>/users/new</td>
+              <td><span style="color:limegreen;"><b>new</b></span></td>
+              <td>page to make a new user</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td>/users</td>
+              <td><span style="color:limegreen;"><b>create</b></span></td>
+              <td>create a new user</td>
+            </tr>
+            <tr>
+              <td>GET</td>
+              <td>/users/1/edit</td>
+              <td><span style="color:limegreen;"><b>edit</b></span></td>
+              <td>page to edit user with id 1</td>
+            </tr>
+            <tr>
+              <td>PUT</td>
+              <td>/users/1</td>
+              <td><span style="color:limegreen;"><b>update</b></span></td>
+              <td>update user with id 1</td>
+            </tr>
+            <tr>
+              <td>DELETE</td>
+              <td>/users/1</td>
+              <td><span style="color:limegreen;"><b>destroy</b></span></td>
+              <td>delete user with id 1</td>
+            </tr>
+          </table><br />
+          <li>REST: REpresentational State Transfer</li>
+          <ol>
+            <li>As it applies to RAILS</li>
+            <ol>
+              <li>means that most application components (such as users and microposts) are <u>modeled as resources</u> that can be created, read, updated, and deleted.  Applies to:</li>
+              <ol>
+                <li>CRUD db operations (Create, Read, Update and Delete)</li>
+                <li>HTTP Request methods (POST, GET, PUT, and DELETE)</li>
+              </ol>
+            </ol>
+          </ol>
+          <li>A Simplified User <b>index</b> action (2.4)</li>
+          <ol>
+            <li><span style="color:limegreen;">app/controllers/users_controller.rb</span></li>
+            class UsersController < ApplicationController<br />&nbsp;&nbsp;
+
+            def index<br />&nbsp;&nbsp;&nbsp;&nbsp;
+              <span style="background-color:darkblue;">@users = User.all</span><br />&nbsp;&nbsp;
+              ... <br />&nbsp;&nbsp;
+            end<br />&nbsp;&nbsp;
+              ... <br />
+            end<br />
+            <li><b>@users = User.all</b></li>
+            <ol>
+              <li>asks the User model to retrieve a list of all the users from the database</li>
+              <ol>
+                <li><b>User</b> class is defined in app/models/user.rb and inherits from ActiveRecord::Base</li>
+              </ol>
+              <li>then places them in the variable <b>@users</b></li>
+            </ol>
+          <li>User model for demo_app (2.5)</li>
+          <ol>
+            <li><span style="color:limegreen;">app/models/user.rb</span></li>
+            class User < ActiveRecord::Base<br />&nbsp;&nbsp;
+              attr_accessible :email, :name<br />
+            end<br />
+            <li></li>
+          </ol>
+          </ol>
+        </ol>
+      </ol>
+    </ol>
+  </ol>
+  <li>Development</li>
+  <ol>
+    <li></li>
+  </ol>
 </ol>
+
