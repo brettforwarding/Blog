@@ -395,33 +395,190 @@
               </ol>
             </ol>
           </ol>
-          <li>A Simplified User <b>index</b> action (2.4)</li>
-          <ol>
-            <li><span style="color:limegreen;">app/controllers/users_controller.rb</span></li>
-            class UsersController < ApplicationController<br />&nbsp;&nbsp;
+        </ol>
+        <li>A Simplified User <b>index</b> action (2.4)</li>
+        <ol>
+          <li><span style="color:limegreen;">app/controllers/users_controller.rb</span></li>
+          class UsersController < ApplicationController<br />&nbsp;&nbsp;
 
-            def index<br />&nbsp;&nbsp;&nbsp;&nbsp;
-              <span style="background-color:darkblue;">@users = User.all</span><br />&nbsp;&nbsp;
-              ... <br />&nbsp;&nbsp;
-            end<br />&nbsp;&nbsp;
-              ... <br />
-            end<br />
-            <li><b>@users = User.all</b></li>
+          def index<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            <span style="background-color:darkblue;">@users = User.all</span><br />&nbsp;&nbsp;
+            ... <br />&nbsp;&nbsp;
+          end<br />&nbsp;&nbsp;
+            ... <br />
+          end<br />
+          <li><b>@users = User.all</b></li>
+          <ol>
+            <li>asks the User model to retrieve a list of all the users from the database</li>
             <ol>
-              <li>asks the User model to retrieve a list of all the users from the database</li>
-              <ol>
-                <li><b>User</b> class is defined in app/models/user.rb and inherits from ActiveRecord::Base</li>
-              </ol>
-              <li>then places them in the variable <b>@users</b></li>
+              <li><b>User</b> class is defined in app/models/user.rb and inherits from ActiveRecord::Base</li>
             </ol>
-          <li>User model for demo_app (2.5)</li>
+            <li>then places them in the variable <b>@users</b></li>
+          </ol>
+        </ol>
+        <li>User model for demo_app (2.5)</li>
+        <ol>
+          <li><span style="color:limegreen;">app/models/user.rb</span></li>
+          class User < ActiveRecord::Base<br />&nbsp;&nbsp;
+            attr_accessible :email, :name<br />
+          end<br />
+          <li>Using attr_accessible here is new to Rails 3.2.3</li>
+          <li>By default, all model attributes are accessible</li>
+          <li>using attr_accessible :email, :name makes it so ONLY email and name are accessible</li>
+          <li>this closes up a potential security risk, such as issuing a put request and setting a variable that a user should not be able to set</li>
+        </ol>
+        <li>View for the user index (2.6)</li>
+        <ol>
+          <li>since @users is an instance variable, it is available to the view</li>
+          <li>index.html.erb has the code to iterate over @users</li>
+          <li><span style="color:limegreen;">app/views/users/index.html.erb</span></li>
+          &lt;h1>Listing users&lt;/h1><br /><br />
+
+          &lt;table><br />&nbsp;&nbsp;
+            &lt;tr><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;th>Name&lt;/th><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;th>Email&lt;/th><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;th>&lt;/th><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;th>&lt;/th><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;th>&lt;/th><br />&nbsp;&nbsp;
+            &lt;/tr><br /><br />
+
+          <span style="background-color:darkblue;">&lt;% @users.each do |user| %></span><br />&nbsp;&nbsp;
+            &lt;tr><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;td>&lt;%= user.name %>&lt;/td><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;td>&lt;%= user.email %>&lt;/td><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;td>&lt;%= link_to 'Show', user %>&lt;/td><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;td>&lt;%= link_to 'Edit', edit_user_path(user) %>&lt;/td><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;td>&lt;%= link_to 'Destroy', user, confirm: 'Are you sure?', method: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :delete %>&lt;/td><br />&nbsp;&nbsp;
+            &lt;/tr><br />
+          &lt;% end %><br />
+          &lt;/table><br />
+
+          &lt;br /><br />
+
+          &lt;%= link_to 'New User', new_user_path %><br />
+        </ol>
+        <li>Weaknesses of this User resource (2.2.3)</li>
+        <ol>
+          <li>No data validations</li>
+          <li>No authentication</li>
+          <li>No tests</li>
+          <li>No layout</li>
+          <li>No real understanding</li>
+        </ol>
+        <li>The Microsposts resource (2.3)</li>
+        <ol>
+          <li>generate scaffold</li>
+          <li>rake</li>
+        </ol>
+        <li>Microposts now have same setup as Users but with fields id, content and user_id</li>
+        <li>Enforcing the <i>micro</i> (2.3.2)</li>
+        <ol>
+          <li>Add a length validation</li>
+          <ol>
+            <li><span style="color:limegreen;">app/models/micropost.rb</span></li>
+            class Micropost < ActiveRecord::Base<br />&nbsp;&nbsp;
+              attr_accessible :content, :user_id<br />&nbsp;&nbsp;
+              <span style="background-color:darkblue;">validates :content, :length => {:maximum => 140}</span><br />
+            end<br />
+          </ol>
+        </ol>
+        <li>One-to-Many: A user has_many microposts (2.3.3)</li>
+        <ol>
+          <li>Creating this relationship is a 2-step process:</li>
           <ol>
             <li><span style="color:limegreen;">app/models/user.rb</span></li>
             class User < ActiveRecord::Base<br />&nbsp;&nbsp;
-              attr_accessible :email, :name<br />
+              attr_accessible :email, :name<br />&nbsp;&nbsp;
+              <span style="background-color:darkblue;">has_many :microposts</span><br />
             end<br />
-            <li></li>
+            <li><span style="color:limegreen;">app/models/micropost.rb</span></li>
+            class Micropost < ActiveRecord::Base<br />&nbsp;&nbsp;
+              attr_accessible :content, :user_id<br />&nbsp;&nbsp;
+              
+              <span style="background-color:darkblue;">belongs_to :user</span><br />&nbsp;&nbsp;
+              
+              validates :content, :length => {:maximum => 140}<br />
+            end<br/>
           </ol>
+          <li>Now, Rails (using Active Record) can infer the microposts associated with each user</li>
+          <li><b>Rails console</b> to verify</li>
+          <ol>
+            <li>command $ rails console</li>
+            <li>Loading development environment (Rails 3.2.3)<br />1.9.3p194 :001 ></li>
+            <li>create variable and set to first user:  $ first_user = User.first</li>
+            <li>get first user's microposts: $ first_user.microposts</li>
+            <li>Note: to see output, go to <a href="/practices/ruby_rortut_2_demo_app">console documentation</a> for demo_app</li>
+          </ol>
+        </ol>
+        <li>Inheritance Hierarchies (2.3.4)</li>
+        <ol>
+          <li>Demo model inheritance diagram:</li>
+          <img src="../images/ruby/railstut_ch2_demo_model_inheritance.png" alt="Rails MVC 404 image" style="border: 0px solid #ccc;" />
+          <br /><br /><br />
+          <li>Demo controller inheritence diagram:</li>
+          <img src="../images/ruby/railstut_ch2_demo_controller_inheritance.png" alt="Rails MVC 404 image" style="border: 0px solid #ccc;" />
+          <ol>
+            <li>UsersController inheritance</li>
+            <ol>
+              <li><span style="color:limegreen;">app/controllers/users_controller.rb</span></li>
+              class UsersController < ApplicationController<br />&nbsp;&nbsp;
+                ...<br />
+              end<br />
+            </ol>
+            <li>MicropostsController inheritance</li>
+            <ol>
+              <li><span style="color:limegreen;">app/controllers/microposts_controller.rb</span></li>
+              class MicropostsController < ApplicationController<br />&nbsp;&nbsp;
+                ...<br />
+              end<br />
+            </ol>
+            <li>ApplicationController inheritance</li>
+            <ol>
+              <li><span style="color:limegreen;">app/controllers/application_controller.rb</span></li>
+              class ApplicationController < ActionController::Base<br />&nbsp;&nbsp;
+                ...<br />
+              end<br />
+              <li>By inheriting ultimately from ActionController::Base both the Users and Microposts controllers gain a large amount of functionality, such as :</li>
+              <ol>
+                <li>the ability to manipulate model objects, </li>
+                <li>filter inbound HTTP requests, and </li>
+                <li>render views as HTML</li>
+              </ol>
+            </ol>
+          </ol>
+        </ol>
+        <li>Deploying Demo App (2.3.5)</li>
+        <ol>
+          <li>$ git add . && git commit -m "Finish demo app"</li>
+          <li>$ git push</li>
+          <li>$ heroku create --stack cedar</li>
+          <li>$ git push heroku master</li>
+          <li>$ heroku run rake db:migrate</li>
+        </ol>
+        <li>Demo App Conclusion (2.4)</li>
+        <ol>
+          <li>Strengths</li>
+          <ol>
+            <li>High-level overview of Rails</li>
+            <li>Introduction to MVC</li>
+            <li>First taste of the REST architecture</li>
+            <li>Beginning data modeling</li>
+            <li>A live, database-backed web application in production</li>
+          </ol>
+          <li>Weaknesses</li>
+          <ol></ol>
+            <li>No custom layout or styling</li>
+            <li>No static pages (like “Home” or “About”)</li>
+            <li>No user passwords</li>
+            <li>No user images</li>
+            <li>No signing in</li>
+            <li>No security</li>
+            <li>No automatic user/micropost association</li>
+            <li>No notion of “following” or “followed”</li>
+            <li>No micropost feed</li>
+            <li>No test-driven development</li>
+            <li>No real understanding</li>
           </ol>
         </ol>
       </ol>

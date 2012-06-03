@@ -1,4 +1,4 @@
-<h3>first_app - step-by-step</h3>
+<h3>demo_app - step-by-step</h3>
 <br />
 <ol>
   <li>Start <a href="http://ruby.railstutorial.org/ruby-on-rails-tutorial-book">Rails Tutorial</a></li>
@@ -93,5 +93,141 @@
     <li>Re-added user Foo Bar - several steps</li>
     <li>Return: new user Foo Bar with id 4  - have deleted twice so far (users 2, 3)</li>
   </ol>
-  
+  <li>$ rails generate scaffold Micropost content:string user_id:integer</li>
+  <li>$ bundle exec rake db:migrate</li>
+  <li>created 3 microposts: 2 for user_id=1, 1 for user_id=4</li>
+  <li>$ geany app/models/micropost.rb</li>
+  <ol>
+    <li>Added line ( validates :content, :length => { :maximum => 140 } )</li>
+    <li>Added line ( belongs_to :user ) above validates line</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Added line (has_many :microposts )</li>
+  </ol>
+  <li>$ rails console</li>
+  <ol>
+    <li>Returns: Loading development environment (Rails 3.2.3)<br />1.9.3p194 :001 ></li>
+    <li>Usefull Rails tool to interact with Rails applications</li>
+    <li>$ first_user = User.first</li>
+    <ol>
+      <li>Returns:   User Load (0.3ms)  SELECT "users".* FROM "users" LIMIT 1<br />
+                      => #&lt;User id: 1, name: "Brett", email: "brett@example.com", created_at: 
+                      "2012-05-31 16:53:38", updated_at: "2012-05-31 16:54:41"> <br />
+                      1.9.3p194 :002 ></li>
+    </ol>
+    <li>$ first_user.microposts</li>
+    <ol>
+      <li>Returns:   Micropost Load (0.4ms)  SELECT "microposts".* FROM "microposts" WHERE "microposts"."user_id" = 1<br />
+                      => [#&lt;Micropost id: 1, content: "I would like to skip ahead", user_id: 1, created_at: 
+                      "2012-06-02 06:38:00", updated_at: "2012-06-02 06:38:00">, #&ltMicropost id: 3, content: 
+                      "2nd tut tweet", user_id: 1, created_at: "2012-06-02 06:39:15", updated_at: "2012-06-02 06:39:15">] <br />
+                      1.9.3p194 :003 ></li>
+    </ol>
+    <li>$ exit</li>
+  </ol>
+  <li>$ git add . && git commit -m "Finish demo app"</li>
+  <li>$ git push</li>
+  <li>$ heroku create --stack cedar</li>
+  <ol>
+    <li>Return: Creating vivid-galaxy-8516... done, stack is cedar<br />
+                http://vivid-galaxy-8516.herokuapp.com/ | git@heroku.com:vivid-galaxy-8516.git<br />
+                Git remote heroku added</li>
+  </ol>
+  <li>$ git push heroku master</li>
+  <ol>
+    <li>Return: Enter passphrase for key '/home/brett/.ssh/id_rsa': <br />
+Counting objects: 113, done.<br />
+Compressing objects: 100% (98/98), done.<br />
+Writing objects: 100% (113/113), 33.13 KiB, done.<br />
+Total 113 (delta 13), reused 0 (delta 0)<br />
+<br />
+-----> Heroku receiving push<br />
+-----> Ruby/Rails app detected<br />
+-----> Installing dependencies using Bundler version 1.2.0.pre<br />
+       Running: bundle install --without development:test --path vendor/bundle --binstubs bin/ --deployment<br />
+       Fetching gem metadata from https://rubygems.org/.......<br />
+       Installing rake (0.9.2.2)<br />
+       Installing i18n (0.6.0)<br />
+       Installing multi_json (1.3.6)<br />
+       Installing activesupport (3.2.3)<br />
+       Installing builder (3.0.0)<br />
+       Installing activemodel (3.2.3)<br />
+       Installing erubis (2.7.0)<br />
+       Installing journey (1.0.3)<br />
+       Installing rack (1.4.1)<br />
+       Installing rack-cache (1.2)<br />
+       Installing rack-test (0.6.1)<br />
+       Installing hike (1.2.1)<br />
+       Installing tilt (1.3.3)<br />
+       Installing sprockets (2.1.3)<br />
+       Installing actionpack (3.2.3)<br />
+       Installing mime-types (1.18)<br />
+       Installing polyglot (0.3.3)<br />
+       Installing treetop (1.4.10)<br />
+       Installing mail (2.4.4)<br />
+       Installing actionmailer (3.2.3)<br />
+       Installing arel (3.0.2)<br />
+       Installing tzinfo (0.3.33)<br />
+       Installing activerecord (3.2.3)<br />
+       Installing activeresource (3.2.3)<br />
+       Installing coffee-script-source (1.3.3)<br />
+       Installing execjs (1.4.0)<br />
+       Installing coffee-script (2.2.0)<br />
+       Installing rack-ssl (1.3.2)<br />
+       Installing json (1.7.3) with native extensions<br />
+       Installing rdoc (3.12)<br />
+       Installing thor (0.14.6)<br />
+       Installing railties (3.2.3)<br />
+       Installing coffee-rails (3.2.2)<br />
+       Installing jquery-rails (2.0.0)<br />
+       Installing pg (0.12.2) with native extensions<br />
+       Using bundler (1.2.0.pre)<br />
+       Installing rails (3.2.3)<br />
+       Installing sass (3.1.19)<br />
+       Installing sass-rails (3.2.4)<br />
+       Installing uglifier (1.2.3)<br />
+       Your bundle is complete! It was installed into ./vendor/bundle<br />
+       Post-install message from rdoc:<br />
+       Depending on your version of ruby, you may need to install ruby rdoc/ri data:<br />
+       <= 1.8.6 : unsupported<br />
+       = 1.8.7 : gem install rdoc-data; rdoc-data --install<br />
+       = 1.9.1 : gem install rdoc-data; rdoc-data --install<br />
+       >= 1.9.2 : nothing to do! Yay!<br />
+       Cleaning up the bundler cache.<br />
+-----> Writing config/database.yml to read from DATABASE_URL<br />
+-----> Preparing app for Rails asset pipeline<br />
+       Running: rake assets:precompile<br />
+-----> Rails plugin injection<br />
+       Injecting rails_log_stdout<br />
+       Injecting rails3_serve_static_assets<br />
+-----> Discovering process types<br />
+       Procfile declares types      -> (none)<br />
+       Default types for Ruby/Rails -> console, rake, web, worker<br />
+-----> Compiled slug size is 15.7MB<br />
+-----> Launching... done, v4<br />
+       http://vivid-galaxy-8516.herokuapp.com deployed to Heroku<br />
+<br />
+To git@heroku.com:vivid-galaxy-8516.git<br />
+ * [new branch]      master -> master<br /></li>
+  </ol>
+  <li>$ heroku run rake db:migrate</li>
+  <ol>
+    <li>Return: Running `rake db:migrate` attached to terminal... up, run.1<br />
+DEPRECATION WARNING: ...vender/pluggins...no support...rake 4.0...blah...<br />
+DEPRECATION WARNING: ...vender/pluggins...no support...rake 4.0...blah...<br />
+Migrating to CreateUsers (20120531163040)<br />
+==  CreateUsers: migrating ====================================================<br />
+-- create_table(:users)<br />
+   -> 0.0111s<br />
+==  CreateUsers: migrated (0.0112s) ===========================================<br />
+<br />
+Migrating to CreateMicroposts (20120602062750)<br />
+==  CreateMicroposts: migrating ===============================================<br />
+-- create_table(:microposts)<br />
+   -> 0.0349s<br />
+==  CreateMicroposts: migrated (0.0350s) ======================================<br /></li>
+  </ol>
+  <li>Added users on http://vivid-galaxy-8516.herokuapp.com/users</li>
+  <li>Added microposts on http://vivid-galaxy-8516.herokuapp.com/microposts</li>
 </ol>
