@@ -567,7 +567,7 @@
             <li>A live, database-backed web application in production</li>
           </ol>
           <li>Weaknesses</li>
-          <ol></ol>
+          <ol>
             <li>No custom layout or styling</li>
             <li>No static pages (like “Home” or “About”)</li>
             <li>No user passwords</li>
@@ -581,6 +581,59 @@
             <li>No real understanding</li>
           </ol>
         </ol>
+      </ol>
+      <li><a href="/practices/ruby_rortut_3_sample_app">3.0 Sample App</a></li>
+      <ol>
+        <li>Follows similar processes to setup as before, more gems added in gemfile</li>
+        <li>Generate - Rails script to generate controllers</li>
+        <ol>
+          <li>$ rails generate controller StaticPages home help --no-test-framework</li>
+          <ol>
+            <li>controller name: StaticPages</li>
+            <li>--no-test-framework: to suppress automatic RSpec tests, will create them manually</li>
+            <li>home and help pages and routes created</li>
+            <li>helpers created for controller StaticPages</li>
+          </ol>
+        </ol>
+        <li>How to Undo things</li>
+        <ol>
+          <li>Examples:</li>
+          <ol>
+            <li>To undo $ rails generate controller FooBars baz quux : $ Rails destroy controller FooBars baz quux</li>
+            <li>To undo $ rails generate model Foo bar:string baz:integer : $ rails destroy model Foo</li>
+            <li>To undo a single-step db migrate: $ rake db:rollback</li>
+            <li>To undo all db steps and remake: $ rake db:migrate VERSION=0</li>
+          </ol>
+        </ol>
+        <li>Rails config/routes.rb</li>
+        <ol>
+          <li>Similar to the main rb file for Sinatra (like blog.rb)</li>
+        </ol>
+        <li>StaticPages controller does NOT use REST</li>
+        <ol>
+          <li>This is normal for a collection of static pages</li>
+          <li>REST is not the best solution in all cases.</li>
+          <li>This controller was created by the rails generate command:</li>
+          <li><span style="color:limegreen;">app/controllers/static_pages_controller.rb</span></li>
+          <span style="color:orange;">class</span> StaticPagesController <span style="color:yellow;"><</span> ApplicationController<br />&nbsp;&nbsp;
+            <span style="color:orange;">def</span> home<br />&nbsp;&nbsp;
+            <span style="color:orange;">end</span><br /><br />&nbsp;&nbsp;
+
+            <span style="color:orange;">def</span> help<br />&nbsp;&nbsp;
+            <span style="color:orange;">end</span><br />
+          <span style="color:orange;">end</span><br />
+          <li>In ruby, the two functions home and help would do nothing.</li>
+          <li>With Rails, the inheritance from ApplicationController gives a lot of functionality</li>
+          <ol>
+            <li>Steps executed when URI static_pages/home is used (same idea for help as well):</li>
+            <ol>
+              <li>Open StaticPages controller</li>
+              <li>Execute home action (the def home in the controller page)</li>
+              <li>Render the corresponding home view</li>
+            </ol>
+          </ol>
+        </ol>
+        <li></li>
       </ol>
     </ol>
   </ol>

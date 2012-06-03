@@ -1,0 +1,135 @@
+<h3>sample_app - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/chapters/static-pages#top">Rails Tutorial - Chapter 3</a></li>
+  <li>Delete sample_app from github (from last time doing tutorial) and create new demo_app repo</li>
+  <li>$ cd ~/mystuff/projects/rails_projects</li>
+  <li>$ rails new sample_app --skip-test-unit</li>
+  <ol>
+    <li>Skip creating test directory because tutorial uses RSpec test unit which deosn't use this test framework</li>
+  </ol>
+  <li>$ cd sample_app</li>
+  <li>$ geany Gemfile</li>
+  <ol>
+    source 'https://rubygems.org'<br />
+    <br />
+    gem 'rails', '3.2.3'<br />
+    gem 'bootstrap-sass', '2.0.0'<br />
+    gem 'bcrypt-ruby', '3.0.1'<br />
+    gem 'faker', '1.0.1'<br />
+    gem 'will_paginate', '3.0.3'<br />
+    gem 'bootstrap-will_paginate', '0.0.6'<br />
+    <br />
+    group :development do<br />
+      gem 'sqlite3', '1.3.5'<br />
+      gem 'annotate', '~> 2.4.1.beta'<br />
+    end<br />
+    <br />
+    # Gems used only for assets and not required<br />
+    # in production environments by default.<br />
+    group :assets do<br />
+      gem 'sass-rails',   '3.2.4'<br />
+      gem 'coffee-rails', '3.2.2'<br />
+      gem 'uglifier', '1.2.3'<br />
+    end<br />
+    <br />
+    gem 'jquery-rails', '2.0.0'<br />
+    <br />
+    group :test, :development do<br />
+      gem 'rspec-rails', '2.10.0'<br />
+      gem 'guard-rspec', '0.5.5'<br />
+      gem 'guard-spork', '0.3.2'<br />
+      gem 'spork', '0.9.0'<br />
+    end<br />
+    <br />
+    group :test do<br />
+      gem 'capybara', '1.1.2'<br />
+      gem 'factory_girl_rails', '1.4.0'<br />
+      gem 'cucumber-rails', '1.2.1', require: false<br />
+      gem 'database_cleaner', '0.7.0'<br />
+    end<br />
+    <br />
+    group :production do<br />
+      gem 'pg', '0.12.2'<br />
+    end<br />
+  </ol>
+  <li>$ bundle install --without production</li>
+  <ol>
+    <li>--without production is a remembered option, so, in future, just need "bundle install"</li>
+  </ol>
+  <li>$ geany .gitignore</li>
+  <ol>
+    <li>added:</li>
+    # Ignore other unneeded files.<br />
+    doc/<br />
+    *.swp<br />
+    *~<br />
+    .project<br />
+    .DS_Store<br />
+  </ol>
+  <li>$ rails generate rspec:install</li>
+  <ol>
+    <li>Result:<br />
+      create  .rspec<br />
+      create  spec<br />
+      create  spec/spec_helper.rb</li>
+  </ol>
+  <li>$ git init</li>
+  <li>$ git add . && git commit -m "Initial commit"</li>
+  <li>$ geany README.rdoc</li>
+  <ol>
+    <li>Reformatted with small blurb from tutorial and formatted for Markdown</li>
+  </ol>
+  <li>$ git mv README.rdoc README.md</li>
+  <li>$ git commit -a -m "Improve the README"</li>
+  <li>$ git remote add origin git@github.com:brettforwarding/sample_app.git</li>
+  <li>$ git push -u origin master</li>
+  <li>$ heroku create --stack cedar</li>
+  <ol>
+    <li>http://blooming-lightning-2515.herokuapp.com/</li>
+  </ol>
+  <li>$ git push heroku master</li>
+  <li>$ git checkout -b static-pages</li>
+  <li>$ rails generate rspec:install</li>
+  <ol>
+    <li>Return:   identical  .rspec<br />
+       exist  spec<br />
+   identical  spec/spec_helper.rb</li>
+    <li>already done from Gemfile since I used the full app gemfile from ch 9</li>
+  </ol>
+  <li>$ rails generate controller StaticPages home help --no-test-framework</li>
+  <ol>
+    <li>This is cool.  Choose the name and options, away it goes.  StaticPages is the name chosen in this tut here.</li>
+    <li>Return: create  app/controllers/static_pages_controller.rb<br />
+       route  get "static_pages/help"<br />
+       route  get "static_pages/home"<br />
+      invoke  erb<br />
+      create    app/views/static_pages<br />
+      create    app/views/static_pages/home.html.erb<br />
+      create    app/views/static_pages/help.html.erb<br />
+      invoke  helper<br />
+      create    app/helpers/static_pages_helper.rb<br />
+      invoke  assets<br />
+      invoke    coffee<br />
+      create      app/assets/javascripts/static_pages.js.coffee<br />
+      invoke    scss<br />
+      create      app/assets/stylesheets/static_pages.css.scss</li>
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>opened to see the two GET lines put in here by the generator for home and help</li>
+    <li>line 1: SampleApp::Application.routes.draw do</li>
+    <li>line 2: get "static_pages/home"</li>
+    <li>line 3: get "static_pages/help"</li>
+  </ol>
+  <li>$ rails s</li>
+  <ol>
+    <li>Browse to localhost:3000/static_pages/home</li>
+    <li>Page content:</li>
+    StaticPages#home<br /><br />
+
+    Find me in app/views/static_pages/home.html.erb<br />
+  </ol>
+  <li>$ geany app/controllers/static_pages_controller.rb</li>
+  
+</ol>
