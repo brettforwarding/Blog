@@ -131,5 +131,126 @@
     Find me in app/views/static_pages/home.html.erb<br />
   </ol>
   <li>$ geany app/controllers/static_pages_controller.rb</li>
-  
+  <li>$ rails generate integration_test static_pages</li>
+  <ol>
+    <li>Return: invoke  rspec<br />
+      create    spec/requests/static_pages_spec.rb</li>
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    require 'spec_helper'<br />
+
+    describe "StaticPages" do<br />&nbsp;&nbsp;
+
+      describe "Home page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+      
+        it "should have the content 'Sample App'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit '/static_pages/home'<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_content('Sample App')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: F<br />
+
+        Failures:<br />&nbsp;&nbsp;
+
+          1) StaticPages Home page should have the content 'Sample App'<br />&nbsp;&nbsp;&nbsp;&nbsp;
+             Failure/Error: page.should have_content('Sample App')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+               expected there to be content "Sample App" in <br />&nbsp;&nbsp;&nbsp;&nbsp;
+               "SampleApp\n\nStaticPages#home\nFind me in app/views/static_pages/home.html.erb\n\n\n"<br />&nbsp;&nbsp;&nbsp;&nbsp;
+             # ./spec/requests/static_pages_spec.rb:9:in `block (3 levels) in <top (required)>'<br />
+
+        Finished in 0.92062 seconds<br />
+        1 example, 1 failure<br />
+
+        Failed examples:<br />
+
+        rspec ./spec/requests/static_pages_spec.rb:7 # StaticPages Home page should have the content 'Sample App'</li>
+  </ol>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Change content from default rails generated content</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: .<br />
+
+        Finished in 0.79428 seconds<br />
+        1 example, 0 failures</li>
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>added describe block for help page</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: .F<br />
+        ...</li>
+    <li>omitted most of the results, notice that since there was 1 success, 1 fail, there is one "." followed by one "F" at the top</li>
+  </ol>
+  <li>$ geany app/views/static_pages/help.html.erb</li>
+  <ol>
+    <li>Change content from default rails generated content</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: ..<br />
+
+        Finished in 0.78036 seconds<br />
+        2 examples, 0 failures</li>
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Added describe block for a yet-to-be-created About page</li>
+    <li>same as Help describe block only content should have 'About' in it</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result:   ..F<br />
+        ...<br />
+        No route matches [GET] "/static_pages/about"<br />
+        ...<br />
+        Finished in 0.77285 seconds<br />
+        3 examples, 1 failure<br />
+        ...</li>
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>Add line "get "static_pages/about"</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result:   ..F<br />
+        ...<br />
+        The action 'about' could not be found for StaticPagesController<br />
+        ...<br />
+        Finished in 0.79897 seconds<br />
+        3 examples, 1 failure<br />
+        ...</li>
+  </ol>
+  <li>$ geany app/controllers/static_pages_controller.rb</li>
+  <ol>
+    <li>Add def about end</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result:   ..F<br />
+        ...<br />
+        ActionView::MissingTemplate:<br />
+        ...<br />
+        Finished in 0.84912 seconds<br />
+        3 examples, 1 failure<br />
+        ...</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result:   ...<br />
+
+        Finished in 0.78226 seconds<br />
+        3 examples, 0 failures</li>
+    <li>success!</li>
+  </ol>
 </ol>

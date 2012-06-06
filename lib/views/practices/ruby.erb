@@ -633,7 +633,100 @@
             </ol>
           </ol>
         </ol>
-        <li></li>
+        <li>First tests</li>
+        <ol>
+          <li>BDD (Behaviour-Driven Development)</li>
+          <ol>
+            <li>Emphasizes behaviour of an application rather than its precise implementation</li>
+            <li>BDD is a variant of TDD (Test-Driven Development)</li>
+            <li>Methodology used by tutorial</li>
+            <li>Integration tests and Unit tests are the main tools used for this in tutorial</li>
+            <ol>
+              <li>Integration tests</li>
+              <ol>
+                <li>known as Request Specs in RSpec</li>
+                <li>allows the simulation of a user interacting with sample_app through a web browser</li>
+                <li>used with Capybara or Cucumber to provide natural-language syntax provides a powerful method to test the application without having to manually check each page with a web browser.</li>
+              
+              </ol>
+              <li>Unit tests</li>
+            </ol>
+            <li>Write tests first!</li>
+            <ol>
+              <li>Write a failing test before any code</li>
+            
+            </ol>
+            <li>the fail-implement-pass development cycle induces a flow state, leading to enjoyable coding and high productivity</li>
+            <li>Skipping TDD: when coding just to get an idea of what may work -> refered to as a Spike in EXtreme Programming</li>
+          </ol>
+          <li>Generate integration tests</li>
+          <ol>
+            <li>$ rails generate integration_test static_pages</li>
+            <li>Edit generated <span style="color:limegreen;">spec/requests/static_pages_spec.rb</span> to:</li>
+                require 'spec_helper'<br />
+
+                describe "StaticPages" do<br />&nbsp;&nbsp;
+
+                  describe "Home page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  
+                    it "should have the content 'Sample App'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      visit '/static_pages/home'<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      page.should have_content('Sample App')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                    end<br />&nbsp;&nbsp;
+                  end<br />
+                end<br />
+            <li>Home page describe block:</li>
+            <ol>
+              <li>It <string> do : The string is ignored by RSpec but makes the test easier to follow for user</li>
+              <li>visit '/static_pages/home': This is the action to be tested </li>
+              <li>page.should have_content('Sample App'): States that the result of the action should contain the words "Sample App"</li>
+            </ol>
+            <li>Test Home page</li>
+            <ol>
+              <li>Expectation: fail (since the default home page text has not been altered)</li>
+              <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+              <li>Result: <span style="color:red;">F</span> ... 1 example, 1 failure</li>
+              <li>Edit <span style="color:limegreen;">app/views/static_pages/help.html.erb</span></li>
+              <li>Re-run: $ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+              <li>Result: <span style="color:limegreen;">.</span> ... 1 example, 0 failures</li>
+              <li>Notice that the <span style="color:red;">red</span> "F" turned into a <span style="color:limegreen;">green</span> "."</li>
+            </ol>
+            <li>Edit spec and add describe block for "Help page" - should have content 'Help'</li>
+            <li>Run tests</li>
+            <ol>
+              <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+              <li>Result: <span style="color:limegreen;">.</span><span style="color:red;">F</span> ... 2 examples, 1 failure</li>
+            </ol>
+            <li>Edit help page and rerun tests - success</li>
+          </ol>
+          <li>Add new static page: About</li>
+          <ol>
+            <li>Add to test spec first: <span style="color:limegreen;">spec/requests/static_pages_spec.rb</span></li>
+                describe "About page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                
+                  it "should have the content 'About'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    visit '/static_pages/about'<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    page.should have_content('About')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  end<br />&nbsp;&nbsp;
+                end<br />
+            <li>Run tests: $ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+            <li>Result: <span style="color:limegreen;">..</span><span style="color:red;">F</span> ... No route matches [GET] "/static_pages/about" ... 3 examples, 1 failure ...</li>
+            <li>Edit <span style="color:limegreen;">config/routes.rb</span> to add GET "static_pages/about"</li>
+            <li>Re-test</li>
+            <li>Result: <span style="color:limegreen;">..</span><span style="color:red;">F</span> ... The action 'about' could not be found for StaticPagesController ... 3 examples, 1 failure ...</li>
+            <li>Edit <span style="color:limegreen;">app/controllers/static_pages_controller.rb</span> to add <span style="color:orange;">def</span> about <span style="color:orange;">end</span></li>
+            <li>Re-test</li>
+            <li>Result: <span style="color:limegreen;">..</span><span style="color:red;">F</span> ... ActionView::MissingTemplate ... 3 examples, 1 failure ...</li>
+            <li>Add view file: <span style="color:limegreen;">app/views/static_pages/about.html.erb</span></li>
+            <li>Re-test</li>
+            <li>Result: <span style="color:limegreen;">...</span> ...</li>
+            <li>Successfully added about page!</li>
+          </ol>
+        </ol>
+          <li>Slightly dynamic pages (3.3)</li>
+          <ol>
+            <li></li>
+          </ol>
       </ol>
     </ol>
   </ol>
