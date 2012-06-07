@@ -723,10 +723,137 @@
             <li>Successfully added about page!</li>
           </ol>
         </ol>
-          <li>Slightly dynamic pages (3.3)</li>
+        <li>Slightly dynamic pages (3.3)</li>
+        <ol>
+          <li>Create a new layout file</li>
           <ol>
-            <li></li>
+            <li>Replace tests in <span style="color:limegreen;">spec/requests/static_pages_spec.rb</span></li>
+            ...<br />
+              describe "Home page" do<br />&nbsp;&nbsp;
+
+                it "should have the h1 'Sample App'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  visit '/static_pages/home'<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  page.should have_selector('h1', :text => 'Sample App')<br />&nbsp;&nbsp;
+                end<br />&nbsp;&nbsp;
+
+                it "should have the title 'Home'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  visit '/static_pages/home'<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  page.should have_selector('title',<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    :text => "Ruby on Rails Tutorial Sample App | Home")<br />&nbsp;&nbsp;
+                end<br />
+              end<br />
+              ... (repeat for help and about)...<br />
+            <li>Update text in home, about and help erb pages found in <span style="color:limegreen;">app/views/static_pages/</span></li>
+            <li>Embedded Ruby (3.3.3)</li>
+            <ol>
+              <li>Now to redo what has just been done (and follow the DRY [Don't Repeat Yourself] principle)</li>
+              <li>Rails function: provide</li>
+              <ol>
+                <li>Change <span style="color:limegreen;">app/views/static_pages/home.html.erb</span></li>
+                    <span style="background-color:darkblue;">&lt;% provide(:title, 'Home') %></span><br />
+                    &lt;!DOCTYPE html><br />
+                    &lt;html><br />&nbsp;&nbsp;
+                      &lt;head><br />&nbsp;&nbsp;&nbsp;&nbsp;
+                        &lt;title>Ruby on Rails Tutorial Sample App | <span style="background-color:darkblue;">&lt;%= yield(:title) %></span>&lt;/title><br />&nbsp;&nbsp;
+                      &lt;/head><br />&nbsp;&nbsp;
+                      &lt;body><br />&nbsp;&nbsp;&nbsp;&nbsp;
+                        &lt;h1>Sample App&lt;/h1><br />&nbsp;&nbsp;&nbsp;&nbsp;
+                        &lt;p><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          This is the home page for the<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          &lt;a href="http://railstutorial.org/">Ruby on Rails Tutorial&lt;/a><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          sample application.<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                        &lt;/p><br />&nbsp;&nbsp;
+                      &lt;/body><br />
+                    &lt;/html><br />
+                <li>Using the provide at the top allows for an incremental, testable way of introducing code</li>
+                <li>This page is still not taking input from outside but the code INSIDE the html is in-place to do so</li>\
+                <li></li>
+              </ol>
+            </ol>
+            <li>The layout file changed from rails generated default</li>
+            <ol>
+              <li><span style="color:limegreen;">app/views/layouts/application.html.erb</span> was:</li>
+                  &lt;!DOCTYPE html><br />
+                  &lt;html><br />
+                  &lt;head><br />&nbsp;&nbsp;
+                    &lt;title>SampleApp&lt;/title><br />&nbsp;&nbsp;
+                    &lt;%= stylesheet_link_tag    "application", :media => "all" %><br />&nbsp;&nbsp;
+                    &lt;%= javascript_include_tag "application" %><br />&nbsp;&nbsp;
+                    &lt;%= csrf_meta_tags %><br />
+                  &lt;/head><br />
+                  &lt;body><br />
+
+                  &lt;%= yield %><br />
+
+                  &lt;/body><br />
+                  &lt;/html><br />
+              <li>change to:</li>
+                  &lt;!DOCTYPE html><br />
+                  &lt;html><br />
+                  &lt;head><br />&nbsp;&nbsp;
+                    <span style="background-color:darkblue;">&lttitle>Ruby on Rails Tutorial Sample App | &lt;%= yield(:title) %>&lt;/title></span><br />&nbsp;&nbsp;
+                    &lt;%= stylesheet_link_tag    "application", :media => "all" %><br />&nbsp;&nbsp;
+                    &lt;%= javascript_include_tag "application" %><br />&nbsp;&nbsp;
+                    &lt;%= csrf_meta_tags %><br />
+                  &lt;/head><br />
+                  &lt;body><br />
+
+                  &lt;%= yield %><br />
+
+                  &lt;/body><br />
+                  &lt;/html><br />
+            </ol>
+            <li>Now, since the layout file is active again (was removed earlier), only the body and the provide code needs to be present on each page</li>
+            <li>Let's take the About page as an example (<span style="color:limegreen;">app/views/static_pages/home.html.erb</span>):</li>
+              &lt;% provide(:title, 'About Us') %><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+                  &lt;h1>About Us&lt;/h1><br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  &lt;p><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    The &lt;a href="http://railstutorial.org/">Ruby on Rails Tutorial&lt;/a><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    is a project to make a book and screencasts to teach web development<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    with &lt;a href="http://rubyonrails.org/">Ruby on Rails&lt;/a>. This<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    is the sample application for the tutorial.<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  &lt;/p><br />
+
           </ol>
+        </ol>
+        <li>Excercises (3.5)</li>
+        <ol>
+          <li>Add Contact page</li>
+          <ol>
+            <li>Copy describe block for other pages in <span style="color:limegreen;">spec/requests/static_pages_spec.rb</span> for other pages and alter for contact page.</li>
+            <li>Run tests</li>
+            <li>Add route to <span style="color:limegreen;">config/routes.rb</span></li>
+            <li>copy another page to modify for contact: <br />
+            $ cp app/views/static_pages/help.html.erb app/views/static_pages/contact.html.erb</li>
+            <li>modify page</li>
+            <li>run tests</li>
+            <li>push changes when tests succeed</li>
+          </ol>
+          <li>Use RSpec function <span style="color:orange;">let</span> and string interpolation to alter test code</li>
+          <ol>
+            <li>Since every title test has the same base info: "Ruby on Rails Tutorial Sample App", replace in <span style="color:limegreen;">spec/requests/static_pages_spec.rb</span></li>
+            <li>For example, the Help page title test changes from:</li>
+                it "should have the title 'Home'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  visit '/static_pages/home'<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  page.should have_selector('title',<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    :text => "Ruby on Rails Tutorial Sample App | Home")<br />&nbsp;&nbsp;
+                end<br />
+            <li>To:</li>
+                it "should have the title 'Home'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  visit '/static_pages/home'<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  page.should have_selector('title',<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    :text => "#{base_title} | Home")<br />&nbsp;&nbsp;
+                end<br />
+            <li>Then add the RSpec let line of code just inside the main StaticPages describe block:</li>
+            let(:base_title) { "Ruby on Rails Tutorial Sample App" }<br />
+          </ol>
+          <li>Skipped setting up Postgre as local db, not required for tutorial</li>
+        </ol>
+        <li>Eliminated need for calling bundle exec by using binstubs</li>
+        <li>Setup Guard</li>
+        <li>Setup Spork</li>
+        <li>Ran tests</li>
       </ol>
     </ol>
   </ol>

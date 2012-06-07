@@ -253,4 +253,286 @@
         3 examples, 0 failures</li>
     <li>success!</li>
   </ol>
+  <li>$ mv app/views/layouts/application.html.erb foobar</li>
+  <ol>
+    <li>temporarily remove layout file - so as to require full html page</li>
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Replace have_content tests for the 3 pages with 2 tests each</li>
+    <li>add have_selector 'h1' test where :text => "Sample App"</li>
+    <li>add have_selector 'title' test where like :text => "Ruby on Rails Tutorial Sample App | Home"</li>
+    <li>Example:</li>
+      describe "About page" do<br />&nbsp;&nbsp;
+
+        it "should have the h1 'About Us'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          visit '/static_pages/about'<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('h1', :text => 'About Us')<br />&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+
+        it "should have the title 'About Us'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          visit '/static_pages/about'<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('title',<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        :text => "Ruby on Rails Tutorial Sample App | About Us")<br />&nbsp;&nbsp;
+        end<br />
+      end<br />
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: FFFFFF ...</li>
+  </ol>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Add html doctype line, html, head, title and body tags </li>
+    <li>Title: Ruby on Rails Tutorial Sample App | Home</li>
+  </ol>
+  <li>$ geany app/views/static_pages/help.html.erb</li>
+  <ol>
+    <li>Add html doctype line, html, head, title and body tags </li>
+    <li>Title: Ruby on Rails Tutorial Sample App | Help</li>
+  </ol>
+  <li>$ geany app/views/static_pages/about.html.erb</li>
+  <ol>
+    <li>Add html doctype line, html, head, title and body tags </li>
+    <li>Title: Ruby on Rails Tutorial Sample App | About Us</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: ...... ... 6 examples, 0 failures ...</li>
+  </ol>
+  <li>$ git add . && git commit -m "added title updates to help,home,about"</li>
+  <li>$ git co master</li>
+  <li>$ git merge static-pages</li>
+  <li>$ git push</li>
+  <li>$ git push heroku</li>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Add &lt;% provide(:title, 'Home') %> to the top of file</li>
+    <li>replace word Home in title with &lt;%= yield(:title) %></li>
+  </ol>
+  <li>$ geany app/views/static_pages/help.html.erb</li>
+  <ol>
+    <li>Add &lt;% provide(:title, 'Help') %> to the top of file</li>
+    <li>replace word Help in title with &lt;%= yield(:title) %></li>
+  </ol>
+  <li>$ geany app/views/static_pages/about.html.erb</li>
+  <ol>
+    <li>Add &lt;% provide(:title, 'About us') %> to the top of file</li>
+    <li>replace words About Us in title with &lt;%= yield(:title) %></li>>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: ...... ... 6 examples, 0 failures ...</li>
+  </ol>
+  <li>$ mv foobar app/views/layouts/application.html.erb</li>
+  <ol>
+    <li>restore layout file that was moved eariler</li>
+  </ol>
+  <li>$ geany app/views/layouts/application.html.erb</li>
+  <ol>
+    <li>replace title in default generated layout file with:<br />
+        &lt;title>Ruby on Rails Tutorial Sample App | &lt;%= yield(:title) %>&lt;/title></li>
+  </ol>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Delete all lines between the top provide code line and the &lt;h1> tag</li>
+    <li>Delete the bottom 2 lines (closing body and html tags)</li>
+    <li>the remaining html will be output in the content yield tag of the layout</li>
+  </ol>
+  <li>$ geany app/views/static_pages/help.html.erb</li>
+  <ol>
+    <li>Delete all lines between the top provide code line and the &lt;h1> tag</li>
+    <li>Delete the bottom 2 lines (closing body and html tags)</li>
+    <li>the remaining html will be output in the content yield tag of the layout</li>
+  </ol>
+  <li>$ geany app/views/static_pages/about.html.erb</li>
+   <ol>
+    <li>Delete all lines between the top provide code line and the &lt;h1> tag</li>
+    <li>Delete the bottom 2 lines (closing body and html tags)</li>
+    <li>the remaining html will be output in the content yield tag of the layout</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: ...... ... 6 examples, 0 failures ...</li>
+  </ol>
+  <li>$ git add . && git commit -m "Finish static pages"</li>
+  <li>$ git co master</li>
+  <li>$ git merge static-pages</li>
+  <li>$ git push</li>
+  <li>$ git push heroku</li>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>added new describe block for a Contact page (same tests as other pages)</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: ......FF ... 8 examples, 2 failures ...</li>
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>added: get "static_pages/contact"</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: ......FF ... 8 examples, 2 failures ...</li>
+  </ol>
+  <li>$ cp app/views/static_pages/about.html.erb app/views/static_pages/contact.html.erb</li>
+  <li>$ geany app/views/static_pages/contact.html.erb</li>
+  <ol>
+    <li>modified by replacing Help with Contact and changing the content text slightly</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: ........ ... 8 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Modified to replace repeated title fragments "Ruby on Rails Tutorial Sample App" with #{base_title}</li>
+    <li>Added RSpec let code below opening StaticPages describe statement: let(:base_title) { "Ruby on Rails Tutorial Sample App" }</li>
+  </ol>
+  <li>$ bundle exec rspec spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Result: ........ ... 8 examples, 0 failures ...</li>
+  </ol>
+  <li>Install "bundle exec" bypass for RVM</li>
+  <ol>
+    <li>$ rvm get head && rvm reload</li>
+    <li>$ chmod +x $rvm_path/hooks/after_cd_bundler</li>
+    <li>$ bundle install --without production --binstubs=./bundler_stubs</li>
+    <li>$ geany .gitignore</li>
+    <ol>
+      <li>Added to end of file: bundler_stubs/</li>
+    </ol>
+    <li>$ rspec spec/requests/static_pages_spec.rb</li>
+    <ol>
+      <li>Result: ........ ... 8 examples, 0 failures ...</li>
+      <li>Worked!</li>
+    </ol>
+  </ol>
+  <li>$geany Gemfile</li>
+  <ol>
+    <li>Added to the group :test do block:</li>
+      gem 'rb-inotify', '0.8.8'<br />
+      gem 'libnotify', '0.5.9'<br />
+  </ol>
+  <li>$ bundle install</li>
+  <li>$ guard init rspec</li>
+  <ol>
+    <li>Note: would need $bundle exec guard init rspec if the bypass hadn't been done.  Will omit this note from further actions.</li>
+  </ol>
+  <li>$ geany Guardfile</li>
+  <ol>
+    <li>Changed main block statement from guard 'rspec', :version => 2 do <br />to<br /> guard 'rspec', :version => 2, :all_after_pass => false, :cli => '--drb' do</li>
+    <li>Added at the bottom of the main block:</li>
+      #Rails tutorial request specs<br />
+      watch(%r{^app/controllers/(.+)_(controller)\.rb$})  do |m|<br />&nbsp;&nbsp;
+        ["spec/routing/#{m[1]}_routing_spec.rb",<br />&nbsp;&nbsp;
+         "spec/#{m[2]}s/#{m[1]}_#{m[2]}_spec.rb",<br />&nbsp;&nbsp;
+         "spec/acceptance/#{m[1]}_spec.rb",<br />&nbsp;&nbsp;
+         (m[1][/_pages/] ? "spec/requests/#{m[1]}_spec.rb" : <br />&nbsp;&nbsp;
+                           "spec/requests/#{m[1].singularize}_pages_spec.rb")]<br />
+      end<br />
+      watch(%r{^app/views/(.+)/}) do |m|<br />&nbsp;&nbsp;
+        "spec/requests/#{m[1].singularize}_pages_spec.rb"<br />
+      end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol><li>Result:</li>
+      DEPRECATION: Starting with Guard v1.1 the use of the 'run_on_change' method in the 'Guard::RSpec' guard is deprecated.<br />
+      Please consider replacing that method-call with 'run_on_changes' if the type of change<br />
+      is not important for your usecase or using either 'run_on_modifications' or 'run_on_additions'<br />
+      based on the type of the changes you want to handle.<br />
+      For more information on how to update existing guards, please head over to:<br />
+      https://github.com/guard/guard/wiki/Upgrade-guide-for-existing-guards-to-Guard-v1.1<br />
+      Guard uses Libnotify to send notifications.<br />
+      Guard is now watching at '/home/brett/mystuff/projects/rails_projects/sample_app'<br />
+      Guard::RSpec is running, with RSpec 2!<br />
+      Running all specs<br />
+      ........<br /><br />
+
+      Finished in 0.78444 seconds<br />
+      8 examples, 0 failures<br />
+  </ol>
+  <li>$ spork --bootstrap</li>
+  <li>$ geany spec/spec_helper.rb</li>
+  <ol>
+    <li>Modified detail to look like this (removed comments):</li>
+        require 'rubygems'<br />
+        require 'spork'<br /><br />
+
+
+        Spork.prefork do<br />&nbsp;&nbsp;
+          ENV["RAILS_ENV"] ||= 'test'<br />&nbsp;&nbsp;
+          require File.expand_path("../../config/environment", __FILE__)<br />&nbsp;&nbsp;
+          require 'rspec/rails'<br />&nbsp;&nbsp;
+          require 'rspec/autorun'<br /><br />&nbsp;&nbsp;
+
+          Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}<br /><br />&nbsp;&nbsp;
+
+          RSpec.configure do |config|<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            config.mock_with :rspec<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            config.fixture_path = "#{::Rails.root}/spec/fixtures"<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            config.use_transactional_fixtures = true<br />&nbsp;&nbsp;&nbsp;&nbsp;
+            config.infer_base_class_for_anonymous_controllers = false<br />&nbsp;&nbsp;
+          end<br />
+        end<br /><br />
+
+        ENV["RAILS_ENV"] ||= 'test'<br />
+        require File.expand_path("../../config/environment", __FILE__)<br />
+        require 'rspec/rails'<br />
+        require 'rspec/autorun'<br />
+        Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}<br /><br />
+
+        RSpec.configure do |config|<br />&nbsp;&nbsp;
+          config.infer_base_class_for_anonymous_controllers = false<br />
+        end<br />
+  </ol>
+  <li>Check out test time with/without Spork</li>
+  <ol>
+    <li>$ time rspec spec/requests/static_pages_spec.rb</li>
+    <ol>
+      <li>Result:  ........<br />
+
+          Finished in 0.74642 seconds<br />
+          8 examples, 0 failures<br /><br />
+
+          real	0m10.325s<br />
+          user	0m9.597s<br />
+          sys	0m0.488s</li>
+    </ol>
+    <li>$ spork</li>
+    <ol>
+      <li>run on separate terminal, starts spork server</li>
+      <li>$ </li>
+      <ol>
+        <li>Result: ........<br />
+
+          Finished in 0.90127 seconds<br />
+          8 examples, 0 failures<br /><br />
+
+          real	0m2.050s<br />
+          user	0m0.904s<br />
+          sys	0m0.064s</li>
+        <li>Much faster!</li>
+      </ol>
+    </ol>
+  </ol>
+  <li>Combine Guard with Spork for testing sweetness</li>
+  <ol>
+    <li>$ guard init spork</li>
+    <li>$ guard</li>
+    <ol>
+      <li>Result: blah, blah, Guard...blah, blah, Spork...  ........<br /><br />
+
+        Finished in 0.86889 seconds<br />
+        8 examples, 0 failures<br />
+        Done.</li>
+      <li>Awesome!</li>
+    </ol>
+  </ol>
+  <li>$ git add . && git commit -m "Finish rails tutorial ch3"</li>
+  <li>$ git co master</li>
+  <li>$ git merge static-pages</li>
+  <li>$ git push</li>
+  <li>$ git push heroku</li>
 </ol>
