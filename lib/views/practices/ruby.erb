@@ -855,6 +855,109 @@
         <li>Setup Spork</li>
         <li>Ran tests</li>
       </ol>
+      <li>4.0 Rails-Flavored-Ruby</li>
+      <ol>
+        <li>Strings</li>
+        <ol>
+          <li>Difference between single-quote strings and double-quote strings:</li>
+          <ol>
+            <li>Single-quote strings are truly literal</li>
+              '\n' = "\\n" : in double-quote string, backslash had to be escaped<br />
+            <li>Ruby won’t interpolate into single-quoted strings</li>
+          </ol>
+        </ol>
+        <li>Objects</li>
+        <ol>
+          <li>What do objects do?  Respond to messages.</li>
+          <ol>
+            <li>"foobar".length -> 6 : String object responds to message "length"</li>
+            <li>"foobar".empty? -> false : "?" at the end is ruby convention for the return value is a boolean.</li>
+          </ol>
+        </ol>
+        <li>Arrays and Hashes</li>
+        <ol>
+          <li>Hash notation shortcut ruby 1.9 +</li>
+          hash1 = { :first_name => "Bob", :last_name => "Builder" }
+          hash2 = { first_name: "Bob", last_name: "Builder }
+          <li>hash1 == hash2 -> :<symbol> => is replaced by <symbol>:</li>
+          <li>Side note: the => is called a hash rocket</li>
+        </ol>
+        <li>Inspect</li>
+        <ol>
+          <li>Return a string of the literal representation of the object</li>
+          puts :name.inspect -> :name  <br />
+          puts "It worked!".inspect -> "It worked!"<br />
+          <li>whereas</li>
+          puts :name -> name<br />
+          puts "It worked!" -> It worked!<br />
+          <li>Good for getting variable names</li>
+          <li>Shortcut for puts &lt;object>.inspect : p &lt;object></li>
+          eg:  p :name -> :name<br />
+        </ol>
+        <li>Putting in the invisible brackets -> Aha!  I get it!</li>
+        <ol>
+          <li>example from layout:</li>
+          &lt;%= stylesheet_link_tag "application", :media => "all" %>
+          <li>Function call parentheses are optional in ruby, so the above is like:</li>
+          &lt;%= stylesheet_link_tag("application", :media => "all") %>
+          <li>If a hash is the last parameter of a function call, then curly braces are optional.  So the above is like:</li>
+          &lt;%= stylesheet_link_tag("application", { :media => "all" }) %>
+          <li>Suddenly, it is clear!  As previously mentioned, for ruby 1.9 + it could also be written as:</li>
+          &lt;%= stylesheet_link_tag "application", media: "all" %>
+        </ol>
+        <li>Classes</li>
+        <ol>
+          <li>superclass to find out inheritance structure</li>
+          s = String.new("foobar") -> "foobar"<br />
+          s.class -> String<br />
+          s.class.superclass -> Object<br />
+          s.class.superclass.superclass -> BasicObject<br />
+          s.class.superclass.superclass.superclass -> nil<br />
+        </ol>
+      </ol>
+      <li><a href="/practices/ruby_rortut_5_filling_in_the_layout">5.0 Filling in the Layout</a></li>
+      <li><a href="/practices/ruby_rortut_6_modeling_users">6.0 Modeling Users</a></li>
+      <ol>
+        <li>Database Migrations (6.1.1)</li>
+        <ol>
+          <li>Models are singular by convention.  Unlike when generating the Users controller, the command to generate the model uses User:</li>
+          <li>$ rails generate model User name:string email:string</li>
+          Result:<br />&nbsp;&nbsp;
+          <b>invoke</b>  active_record<br />&nbsp;&nbsp;
+          <span style="color:limegreen;">create</span>&nbsp;&nbsp;&nbsp;&nbsp;db/migrate/20120611023745_create_users.rb<br />&nbsp;&nbsp;
+          <span style="color:limegreen;">create</span>&nbsp;&nbsp;&nbsp;&nbsp;app/models/user.rb<br />&nbsp;&nbsp;
+          <b>invoke</b>&nbsp;&nbsp;&nbsp;&nbsp;rspec<br />&nbsp;&nbsp;
+          <span style="color:limegreen;">create</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;spec/models/user_spec.rb<br />
+          <ol>
+            <li>Active Record is the Rails model&lt;->db code</li>
+            <li>Migration: how database is altered.  This timestamp prefaced code has the code to envoke a create_table db script.</li>
+            <ol>
+              <li>Here's what <span style="color:limegreen;">db/migrate/20120611023745_create_users.rb</span> looks like:</li>
+              <span style="color:orange;">class</span> CreateUsers <span style="color:yellow;"><</span> ActiveRecord<span style="color:yellow;">::</span>Migration<br />&nbsp;&nbsp;
+                <span style="color:orange;">def</span> change<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  create_table <span style="color:blue;">:users</span> <span style="color:orange;">do</span> <span style="color:yellow;">|</span> t <span style="color:yellow;">|</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    t.string <span style="color:blue;">:name</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    t.string <span style="color:blue;">:email</span><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    t.timestamps<br />&nbsp;&nbsp;&nbsp;&nbsp;
+                  <span style="color:orange;">end</span><br />&nbsp;&nbsp;
+                <span style="color:orange;">end</span><br />
+              <span style="color:orange;">end</span><br />
+              <li>A timestamp is used in the filename since db changes are chained together and order is important.  Not to be confused with the <i>t.timestamps</i> in the create_table which will generate <i>created_at</i> and <i>updated_at</i> fields in the table.</li>
+              <li>The magic behind active record allows us to undo changes at anytime:</li>
+              <ol>
+                <li>Undo: $ rake db:rollback</li>
+                <li>Redo: $ rake db:migrate</li>
+                <li>The change method knows that the reverse of create_table is drop_table</li>
+              </ol>
+            </ol>
+          </ol>
+          <li>Generated users table for the User model:</li>
+          <img src="../images/ruby/railstut_ch6_user_model_initial.png" alt="Rails User Model 404 image" style="border: 0px solid #ccc;" />
+          <br /><br /><br />
+          <li>To view the db itself, open <span style="color:limegreen;">db/development.sqlite3</span> with the <a href="http://sourceforge.net/projects/sqlitebrowser/">SQLite Database Browser</a></li>
+        </ol>
+        <li>The model file (6.1.2)</li>
+      </ol>
     </ol>
   </ol>
   <li>Development</li>

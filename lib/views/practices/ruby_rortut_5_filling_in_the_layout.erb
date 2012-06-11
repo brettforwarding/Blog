@@ -1,0 +1,593 @@
+<h3>Rails Tutorial Chapter 5: Filling in the layout - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/chapters/static-pages#top">Rails Tutorial - Chapter 5</a></li>
+  <li>$ git branch</li>
+  <ol>
+    <li>Result:  </li>
+    * master<br />
+    static-pages<br />
+    <li>branch static-pages was created for chapter 3</li>
+    <li>when I checked-out master and merged static-pages, master became the active branch (has the * beside it)</li>
+    <li>so I mind-as-well delete the static-pages branch</li>
+  </ol>
+  <li>$ git branch -d static-pages</li>
+  <li>$ git co -b filling-in-layout</li>
+  <ol>
+    <li>Result:  </li>
+    D	foobar<br />
+    Switched to a new branch 'filling-in-layout'<br />
+    <li>Not sure what "D   foobar" means.  The foobar branch was removed during the git branching lesson.</li>
+  </ol>
+  <li>$ geany app/views/layouts/application.html.erb</li>
+  <ol>
+    <li>copy and paste the new layout file:</li>
+        &lt;!DOCTYPE html><br />
+        &lt;html><br />&nbsp;&nbsp;
+          &lt;head><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;title>&lt;%= full_title(yield(:title)) %>&lt;/title><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= stylesheet_link_tag    "application", media: "all" %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= javascript_include_tag "application" %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= csrf_meta_tags %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;!--[if lt IE 9]><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;script src="http://html5shim.googlecode.com/svn/trunk/html5.js">&lt;/script><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;![endif]--><br />&nbsp;&nbsp;
+          &lt;/head><br />&nbsp;&nbsp;
+          &lt;body><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;header class="navbar navbar-fixed-top"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;div class="navbar-inner"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;div class="container"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &lt;%= link_to "sample app", '#', id: "logo" %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &lt;nav><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &lt;ul class="nav pull-right"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      &lt;li>&lt;%= link_to "Home",    '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      &lt;li>&lt;%= link_to "Help",    '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      &lt;li>&lt;%= link_to "Sign in", '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &lt;/ul><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &lt;/nav><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;/div><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;/div><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;/header><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;div class="container"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;%= yield %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;/div><br />&nbsp;&nbsp;
+          &lt;/body><br />
+        &lt;/html><br />
+    <li>New and of note:</li>
+    <ol>
+      <li>backwards compatibility conditional above the closing &lt;/head> tag:</li>
+      &lt;!--[if lt IE 9]><br />
+      &lt;script src="http://html5shim.googlecode.com/svn/trunk/html5.js">&lt;/script><br />
+      &lt;![endif]--><br />
+      <li>New html 5 tags:</li>
+      &lt;header>&lt;/header><br />
+      &lt;nav>&lt;/nav><br />
+      <li>tags taking 2 css classes, eg:</li>
+      &lt;header class="navbar navbar-fixed-top">
+      <ol>
+        <li>css class: navbar</li>
+        <li>css class: navbar-fixed-top</li>
+      </ol>
+      <li>css design gem, <i>bootstrap</i>, classes:</li>
+      <ol>
+        <li>nav</li>
+        <li>navbar-fixed-top</li>
+        <li>navbar-inner</li>
+        <li>container</li>
+        <li>pull-right</li>
+      </ol>
+      <li>Rails helper function: link_to</li>
+      <ol>
+        <li>Example:</li>
+        &lt;%= link_to "Home",    '#' %><br />
+        <li>takes 2 arguments + 1 optional argument</li>
+        <ol>
+          <li>link text ("Home" in above example)</li>
+          <li>URI ('#' in above example is a stub link to be changed later)</li>
+          <li>optional hash (not used in above example)</li>
+        </ol>
+      </ol>
+    </ol>
+  </ol>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Surround content of what is there now with:</li>
+        &lt;div class="center hero-unit"><br />
+           ... old home page content from ch. 4 ...<br />
+          &lt;%= link_to "Sign up now!", '#', class: "btn btn-large btn-primary" %><br />
+        &lt;/div><br />
+        &lt;%= link_to image_tag("rails.png", alt: "Rails"), 'http://rubyonrails.org/' %><br />
+    <li>Contains more bootstrap formatting classes and a link to the rails image that comes with every rails installation.</li>
+  </ol>
+  <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+  <ol>
+    <li>put in one line to make all the bootstrap magic happen:</li>
+    @import "bootstrap";<br />
+    <li>Add in the basic css so the file at the moment is:</li>
+        @import "bootstrap";<br />
+        /* universal */<br />
+        html {<br />&nbsp;&nbsp;
+          overflow-y: scroll;<br />
+        }<br />
+        body {<br />&nbsp;&nbsp;
+          padding-top: 60px;<br />
+        }<br />
+        section {<br />&nbsp;&nbsp;
+          overflow: auto;<br />
+        }<br />
+        textarea {<br />&nbsp;&nbsp;
+          resize: vertical;<br />
+        }<br />
+        .center {<br />&nbsp;&nbsp;
+          text-align: center;<br />
+        }<br />
+        .center h1 {<br />&nbsp;&nbsp;
+          margin-bottom: 10px;<br />
+        }<br />
+    <li>Add to the css for typography</li>
+        /* typography */<br />
+        h1, h2, h3, h4, h5, h6 {<br />&nbsp;&nbsp;
+          line-height: 1;<br />
+        }<br />
+        h1 {<br />&nbsp;&nbsp;
+          font-size: 3em;<br />&nbsp;&nbsp;
+          letter-spacing: -2px;<br />&nbsp;&nbsp;
+          margin-bottom: 30px;<br />&nbsp;&nbsp;
+          text-align: center;<br />
+        }<br />
+        h2 {<br />&nbsp;&nbsp;
+          font-size: 1.7em;<br />&nbsp;&nbsp;
+          letter-spacing: -1px;<br />&nbsp;&nbsp;
+          margin-bottom: 30px;<br />&nbsp;&nbsp;
+          text-align: center;<br />&nbsp;&nbsp;
+          font-weight: normal;<br />&nbsp;&nbsp;
+          color: #999;<br />
+        }<br />
+        p {<br />&nbsp;&nbsp;
+          font-size: 1.1em;<br />&nbsp;&nbsp;
+          line-height: 1.7em;<br />
+        }<br />
+    <li>Add Sample App logo css:</li>
+        /* header */<br />
+        #logo {<br />&nbsp;&nbsp;
+          float: left;<br />&nbsp;&nbsp;
+          margin-right: 10px;<br />&nbsp;&nbsp;
+          font-size: 1.7em;<br />&nbsp;&nbsp;
+          color: #fff;<br />&nbsp;&nbsp;
+          text-transform: uppercase;<br />&nbsp;&nbsp;
+          letter-spacing: -1px;<br />&nbsp;&nbsp;
+          padding-top: 9px;<br />&nbsp;&nbsp;
+          font-weight: bold;<br />&nbsp;&nbsp;
+          line-height: 1;<br />
+        }<br />
+        #logo:hover {<br />&nbsp;&nbsp;
+          color: #fff;<br />&nbsp;&nbsp;
+          text-decoration: none;<br />
+        }<br />
+  </ol>
+  <li>Remove some layout content to partials:</li>
+  <ol>
+    <li>$ geany app/views/layouts/application.html.erb</li>
+    <ol>
+      <li>Replace:</li>
+      &lt;!--[if lt IE 9]><br />
+      &lt;script src="http://html5shim.googlecode.com/svn/trunk/html5.js">&lt;/script><br />
+      &lt;![endif]--><br />
+      <li>With:</li>
+      &lt;%= render 'layouts/shim' %>
+      <li>Replace:</li>
+      &lt;header class="navbar navbar-fixed-top"><br />&nbsp;&nbsp;
+        &lt;div class="navbar-inner"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;div class="container"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= link_to "sample app", '#', id: "logo" %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;nav><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;ul class="nav pull-right"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;%= link_to "Home",    '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;%= link_to "Help",    '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;%= link_to "Sign in", '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;/ul><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;/nav><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;/div><br />&nbsp;&nbsp;
+        &lt;/div><br />
+      &lt;/header><br />
+      <li>With:</li>
+      &lt;%= render 'layouts/header' %>
+    </ol>
+    <li>$ geany app/views/layouts/_shim.html.erb</li>
+    <ol>
+      <li>Paste in replaced shim code:</li>
+      &lt;!--[if lt IE 9]><br />
+      &lt;script src="http://html5shim.googlecode.com/svn/trunk/html5.js">&lt;/script><br />
+      &lt;![endif]--><br />
+    </ol>
+    <li>$ geany app/views/layouts/_header.html.erb</li>
+    <ol>
+      <li>Paste in replaced header:</li>
+      &lt;header class="navbar navbar-fixed-top"><br />&nbsp;&nbsp;
+        &lt;div class="navbar-inner"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;div class="container"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= link_to "sample app", '#', id: "logo" %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;nav><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;ul class="nav pull-right"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;%= link_to "Home",    '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;%= link_to "Help",    '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;%= link_to "Sign in", '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;/ul><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;/nav><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;/div><br />&nbsp;&nbsp;
+        &lt;/div><br />
+      &lt;/header><br />
+    </ol>
+  </ol>
+  <li>Create a footer - use a partial here too</li>
+  <ol>
+    <li>$ geany app/views/layouts/_footer.html.erb</li>
+    <ol>
+      <li>Paste in new footer code:</li>
+          &lt;footer class="footer"><br />&nbsp;&nbsp;
+            &lt;small><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;a href="http://railstutorial.org/">Rails Tutorial&lt;/a><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              by Michael Hartl<br />&nbsp;&nbsp;
+            &lt;/small><br />&nbsp;&nbsp;
+            &lt;nav><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;ul><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;%= link_to "About",   '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;%= link_to "Contact", '#' %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;li>&lt;a href="http://news.railstutorial.org/">News&lt;/a>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;/ul><br />&nbsp;&nbsp;
+            &lt;/nav><br />
+          &lt;/footer><br />
+    </ol>
+    <li>$ geany app/views/layouts/application.html.erb</li>
+    <ol>
+      <li>Replace:</li>
+          &lt;div class="container"><br />&nbsp;&nbsp;
+          &lt;%= yield %><br />
+          &lt;/div><br />
+      <li>With:</li>
+          &lt;div class="container"><br />&nbsp;&nbsp;
+            &lt;%= yield %><br />&nbsp;&nbsp;
+            &lt;%= render 'layouts/footer' %><br />
+          &lt;/div><br />
+    </ol>
+  </ol>
+  <li>Add footer styling to CSS</li>
+  <ol>
+    <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+    <ol>
+      <li>add to the file:</li>
+          /* footer */<br />
+          footer {<br />&nbsp;&nbsp;
+            margin-top: 45px;<br />&nbsp;&nbsp;
+            padding-top: 5px;<br />&nbsp;&nbsp;
+            border-top: 1px solid #eaeaea;<br />&nbsp;&nbsp;
+            color: #999;<br />
+          }<br />
+          footer a {<br />&nbsp;&nbsp;
+            color: #555;<br />
+          }  <br />
+          footer a:hover { <br />&nbsp;&nbsp;
+            color: #222;<br />
+          }<br />
+          footer small {<br />&nbsp;&nbsp;
+            float: left;<br />
+          }<br />
+          footer ul {<br />&nbsp;&nbsp;
+            float: right;<br />&nbsp;&nbsp;
+            list-style: none;<br />
+          }<br />
+          footer ul li {<br />&nbsp;&nbsp;
+            float: left;<br />&nbsp;&nbsp;
+            margin-left: 10px;<br />
+          }<br />
+    </ol>
+  </ol>
+  <li>SASSing the CSS file - nesting and variables</li>
+  <ol>
+    <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+    <li>Replace:</li>
+    /* universal */<br />
+    <li>With:</li>
+    /* mixins, variables, etc. */<br />
+    $grayMediumLight: #eaeaea;<br />
+    /* universal */<br />
+    <li>Replace:</li>
+    .center {<br />&nbsp;&nbsp;
+      text-align: center;<br />
+    }<br />
+    .center h1 {<br />&nbsp;&nbsp;
+      margin-bottom: 10px;<br />
+    }<br />
+    <li>With:</li>
+    .center {<br />&nbsp;&nbsp;
+      text-align: center;<br />&nbsp;&nbsp;
+      h1 {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        margin-bottom: 10px;<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+    <li>Replace:</li>
+    #logo {<br />&nbsp;&nbsp;
+      float: left;<br />&nbsp;&nbsp;
+      margin-right: 10px;<br />&nbsp;&nbsp;
+      font-size: 1.7em;<br />&nbsp;&nbsp;
+      color: #fff;<br />&nbsp;&nbsp;
+      text-transform: uppercase;<br />&nbsp;&nbsp;
+      letter-spacing: -1px;<br />&nbsp;&nbsp;
+      padding-top: 9px;<br />&nbsp;&nbsp;
+      font-weight: bold;<br />&nbsp;&nbsp;
+      line-height: 1;<br />
+    }<br />
+    #logo:hover {<br />&nbsp;&nbsp;
+      color: #fff;<br />&nbsp;&nbsp;
+      text-decoration: none;<br />
+    }<br />
+    <li>With:</li>
+    #logo {<br />&nbsp;&nbsp;
+      float: left;<br />&nbsp;&nbsp;
+      margin-right: 10px;<br />&nbsp;&nbsp;
+      font-size: 1.7em;<br />&nbsp;&nbsp;
+      color: white;<br />&nbsp;&nbsp;
+      text-transform: uppercase;<br />&nbsp;&nbsp;
+      letter-spacing: -1px;<br />&nbsp;&nbsp;
+      padding-top: 9px;<br />&nbsp;&nbsp;
+      font-weight: bold;<br />&nbsp;&nbsp;
+      line-height: 1;<br />&nbsp;&nbsp;
+      &:hover {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        color: white;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        text-decoration: none;<br />&nbsp;&nbsp;
+      }<br />
+    }
+    <li>Replace the whole footer section with:</li>
+    /* footer */<br />
+    footer {<br />&nbsp;&nbsp;
+      margin-top: 45px;<br />&nbsp;&nbsp;
+      padding-top: 5px;<br />&nbsp;&nbsp;
+      border-top: 1px solid $grayMediumLight;<br />&nbsp;&nbsp;
+      color: $grayLight;<br />&nbsp;&nbsp;
+      a {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        color: $gray;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &:hover { <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          color: $grayDarker;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        }<br />&nbsp;&nbsp;
+      }  <br />&nbsp;&nbsp;
+      small { <br />&nbsp;&nbsp;&nbsp;&nbsp;
+        float: left; <br />&nbsp;&nbsp;
+      }<br />&nbsp;&nbsp;
+      ul {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        float: right;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        list-style: none;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        li {<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          float: left;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          margin-left: 10px;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        }<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: 9 examples, 0 failures</li>
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>Replace:</li>
+    get "static_pages/home"<br />
+    get "static_pages/help"<br />
+    get "static_pages/about"<br />
+    get "static_pages/contact"<br />
+    <li>With:</li>
+    root to: 'static_pages#home'<br />    
+    match '/help',     to: 'static_pages#help'<br />
+    match '/about',    to: 'static_pages#about'<br />
+    match '/contact',  to: 'static_pages#contact'<br />
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Replace the visit "..." for each page with visit &lt;pagename>_path</li>
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: 9 examples, 3 failures</li>
+  </ol>
+  <li>$ git rm public/index.html</li>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: 9 examples, 0 failures</li>
+  </ol>
+  <li>$ geany app/views/layouts/_header.html.erb</li>
+  <ol>
+    <li>Replace '#' with correct path variable for each link</li>
+  </ol>
+  <li>$ geany app/views/layouts/_footer.html.erb</li>
+  <ol>
+    <li>Replace '#' with correct path variable for each link</li>
+  </ol>
+  <li>Pretty up RSpec page</li>
+  <ol>
+    <li>Before:</li>
+    require 'spec_helper'<br />
+    describe "Static pages" do<br />&nbsp;&nbsp;
+      describe "Home page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should have the h1 'Sample App'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit root_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('h1', text: 'Sample App')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should have the base title" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit root_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('title',<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            text: "Ruby on Rails Tutorial Sample App")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should not have a custom page title" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit root_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should_not have_selector('title', text: '| Home')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+      describe "Help page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should have the h1 'Help'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit help_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('h1', text: 'Help')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should have the title 'Help'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit help_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('title',<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            text: "Ruby on Rails Tutorial Sample App | Help")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+      describe "About page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should have the h1 'About'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit about_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('h1', text: 'About Us')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should have the title 'About Us'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit about_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('title',<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        text: "Ruby on Rails Tutorial Sample App | About Us")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+      describe "Contact page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should have the h1 'Contact'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit contact_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('h1', text: 'Contact')<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should have the title 'Contact'" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit contact_path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('title',<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        text: "Ruby on Rails Tutorial Sample App | Contact")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>After:</li>
+    require 'spec_helper'<br />
+    describe "Static pages" do<br />&nbsp;&nbsp;
+      subject { page }<br />&nbsp;&nbsp;
+      describe "Home page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit root_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('h1',    text: 'Sample App') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('title', text: full_title('')) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should_not have_selector 'title', text: '| Home' }<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+      describe "Help page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit help_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('h1',    text: 'Help') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('title', text: full_title('Help')) }<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+      describe "About page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit about_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('h1',    text: 'About') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('title', text: full_title('About Us')) }<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+      describe "Contact page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit contact_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('h1',    text: 'Contact') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('title', text: full_title('Contact')) }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: 9 examples, 0 failures</li>
+  </ol>
+  <li>$ rails generate controller Users new --no-test-framework</li>
+  <ol>
+    <li>Result:</li>
+      create  app/controllers/users_controller.rb<br />
+       route  get "users/new"<br />
+      invoke  erb<br />
+      create    app/views/users<br />
+      create    app/views/users/new.html.erb<br />
+      invoke  helper<br />
+      create    app/helpers/users_helper.rb<br />
+      invoke  assets<br />
+      invoke    coffee<br />
+      create      app/assets/javascripts/users.js.coffee<br />
+      invoke    scss<br />
+      create      app/assets/stylesheets/users.css.scss<br />
+  </ol>
+  <li>$ rails generate integration_test user_pages</li>
+  <ol>
+    <li>Result:</li>
+      invoke  rspec<br />
+      create    spec/requests/user_pages_spec.rb<br />
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Replace default code with:</li>
+    require 'spec_helper'<br />
+    describe "User pages" do<br />&nbsp;&nbsp;
+      subject { page }<br />&nbsp;&nbsp;
+      describe "signup page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit signup_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('h1',    text: 'Sign up') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('title', text: full_title('Sign up')) }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: 11 examples, 2 failures</li>
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>Add route for signup path but leave auto-generated get for users/new for now.  So routes are now:</li>
+    get "users/new"<br />
+    root to: 'static_pages#home'<br />
+    match '/signup',  to: 'users#new'<br />
+    match '/help',    to: 'static_pages#help'<br />
+    match '/about',   to: 'static_pages#about'<br />
+    match '/contact', to: 'static_pages#contact'<br />
+  </ol>
+  <li>$ geany app/views/users/new.html.erb</li>
+  <ol>
+    <li>Replace default code with:</li>
+    &lt;% provide(:title, 'Sign up') %><br />
+    &lt;h1>Sign up&lt;/h1><br />
+    &lt;p>Find me in app/views/users/new.html.erb&lt;/p><br />
+  </ol>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Replace sign up link '#' with signup_path</li>
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: 11 examples, 0 failures</li>
+  </ol>
+  <li>$ git add .</li>
+  <li>$ git commit -m "Finish layout and routes"</li>
+  <li>$ git checkout master</li>
+  <li>$ git merge filling-in-layout</li>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>pull out h1 and title tests common to all pages and put below subject { page } the following:</li>
+    shared_examples_for "all static pages" do<br />&nbsp;&nbsp;
+      it { should have_selector('h1',    text: heading) }<br />&nbsp;&nbsp;
+      it { should have_selector('title', text: full_title(page_title)) }<br />
+    end<br />
+    <li>Then replace the corresponding tests in each page describe block with:</li>
+    let(:heading)    { '&lt;page's heading>' }<br />
+    let(:page_title) { '&lt;page's title>' }<br />
+    it_should_behave_like "all static pages"<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: 9 examples, 0 failures</li>
+    <li>Note: When changing spec pages, tests are re-run only on the changed page.  This is why the user tests weren't re-run.  If I stopped and restarted guard, all 11 tests would be run.</li>
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Add click_link tests for links on layout (header/footer + home).  These go at the bottom of the static pages describe block:</li>
+    it "should have the right links on the layout" do<br />&nbsp;&nbsp;
+      visit root_path<br />&nbsp;&nbsp;
+      click_link "About"<br />&nbsp;&nbsp;
+      page.should have_selector 'title', text: full_title('About Us')<br />&nbsp;&nbsp;
+      click_link "Help"<br />&nbsp;&nbsp;
+      page.should have_selector 'title', text: full_title('Help')<br />&nbsp;&nbsp;
+      click_link "Contact"<br />&nbsp;&nbsp;
+      page.should have_selector 'title', text: full_title('Contact')<br />&nbsp;&nbsp;
+      click_link "Home"<br />&nbsp;&nbsp;
+      page.should have_selector 'title', text: full_title('')<br />&nbsp;&nbsp;
+      click_link "Sign up now!"<br />&nbsp;&nbsp;
+      page.should have_selector 'title', text: full_title('Sign up')<br />&nbsp;&nbsp;
+      click_link "Sample App"<br />&nbsp;&nbsp;
+      page.should have_selector 'title', text: full_title('')<br />
+    end<br />
+  </ol>
+</ol>
