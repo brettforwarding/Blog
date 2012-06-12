@@ -220,4 +220,319 @@
   <ol>
     <li>Result:  ... .............. ... 14 examples, 0 failures ...</li>
   </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Replace:</li>
+    class User &lt; ActiveRecord::Base<br />&nbsp;&nbsp;
+      attr_accessible :email, :name<br />
+    end<br />
+    <li>With:</li>
+    class User &lt; ActiveRecord::Base<br />&nbsp;&nbsp;
+      attr_accessible :email, :name<br />&nbsp;&nbsp;
+      
+      validates :name, presence: true<br />
+    end<br />
+  </ol>
+  <li>$ rails c --sandbox</li>
+  <ol>
+    <li>Testing validates in console</li>
+    <li>$ user = User.new(name: "", email: "mhartl@example.com")</li>
+    <ol>
+      <li>Result: </li>
+      => #&lt;User id: nil, name: "", email: "mhartl@example.com", created_at: nil, updated_at: nil><br />
+    </ol>
+    <li>$ user.save</li>
+    <ol>
+      <li>Result: </li>
+         (0.4ms)  SAVEPOINT active_record_1
+         (0.4ms)  ROLLBACK TO SAVEPOINT active_record_1
+       => false 
+      <li>Failed due to name validation - test successful</li>
+    </ol>
+    <li>$ user.valid?</li>
+    <ol>
+      <li>Result:  => false</li>
+    </ol>
+    <li>$ user.errors.full_messages</li>
+    <ol>
+      <li>Result: => ["Name can't be blank"]</li>
+    </ol>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Comment out validates line to ensure failing test when we add to user_spec</li>
+    # validates :name, presence: true<br />
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add the following tests to the bottom of the describe User block:</li>
+      it { should be_valid }<br />
+
+      describe "when name is not present" do<br />&nbsp;&nbsp;
+        before { @user.name = " " }<br />&nbsp;&nbsp;
+        it { should_not be_valid }<br />
+      end<br />
+    <li>The first test "it { should be_valid }" is a sanity check.  This is the result of calling @user.valid? and verifies the object is valid before saving to db.</li>
+    <li>The second test sets user name to blank and tests that it is not valid.</li>
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result:  ... ...............F ... 16 examples, 1 failure ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Now uncomment validates line and see if test passes</li>
+     validates :name, presence: true<br />
+    <li>Result:  ... .... ... 4 examples, 0 failures ...</li>
+    <li>Note: guard was still running, so changing user_spec.rb automatically ran tests but only for the user_spec</li>
+    <li>Added in the validates line for email:</li>
+     validates :email, presence: true<br />
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add in the describe block for email test:</li>
+      describe "when email is not present" do<br />&nbsp;&nbsp;
+        before { @user.email = " " }<br />&nbsp;&nbsp;
+        it { should_not be_valid }<br />
+      end<br />
+    <li>Result (since I left guard running):  ... ..... ... 5 examples, 0 failures ...</li>
+    <li>Now add a length validation</li>
+      describe "when name is too long" do<br />&nbsp;&nbsp;
+        before { @user.name = "a" * 51 }<br />&nbsp;&nbsp;
+        it { should_not be_valid }<br />
+      end<br />
+    <li>Result (validates not yet added to user.rb):  ... .....F ... 6 examples, 1 failures ...</li>
+    <li>Note: The "a" * 51 is to test the arbitrary 50 char limit for length chosen by Hartl.</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Replace:</li>
+    validates :name, presence: true<br />
+    <li>With:</li>
+    validates :name, presence: true, length: { maximum: 50 }<br />
+    <li>Result (guard still running):   ... ...... ... 6 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add in the email format tests (1 block each for invalid and valid):</li>
+    describe "when email format is invalid" do<br />&nbsp;&nbsp;
+      it "should be invalid" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        addresses = %w[user@foo,com user_at_foo.org example.user@foo.<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                       foo@bar_baz.com foo@bar+baz.com]<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        addresses.each do |invalid_address|<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          @user.email = invalid_address<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          @user.should_not be_valid<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+
+    describe "when email format is valid" do<br />&nbsp;&nbsp;
+      it "should be valid" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        addresses = %w[user@foo.COM A_US-ER@f.b.org frst.lst@foo.jp a+b@baz.cn]<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        addresses.each do |valid_address|<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          @user.email = valid_address<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          @user.should be_valid<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Result:    ... .......F ... 8 examples, 1 failures ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Replace:</li>
+      validates :email, presence: true<br />
+    <li>With:</li>
+      VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i<br />
+      validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }<br />
+    <li>Result:    ... ........ ... 8 examples, 0 failures ...</li>
+    <li>Note: Since VALID_EMAIL_REGEX starts with a capital, Ruby considers it a Constant and the value CAN'T change</li>
+    <li>Note also: only emails with matching this pattern will be considered valid</li>
+    <li>Tutorial has good info on regex and links for more info</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add Uniqueness validation (case insensitive)</li>
+    describe "when email address is already taken" do<br />&nbsp;&nbsp
+      before do<br />&nbsp;&nbsp&nbsp;&nbsp
+        user_with_same_email = @user.dup<br />&nbsp;&nbsp&nbsp;&nbsp
+        user_with_same_email.email = @user.email.upcase&nbsp;&nbsp&nbsp;&nbsp
+        user_with_same_email.save<br />&nbsp;&nbsp
+      end<br />&nbsp;&nbsp
+      it { should_not be_valid }<br />
+    end<br />
+    <li>Result:    ... ........F ... 9 examples, 1 failure ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Replace:</li>
+    validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }<br />
+    <li>With:</li>
+    validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: true<br />
+    <li>Result:    ... ......... ... 9 examples, 0 failures ...</li>
+  </ol>
+  <li>$ rails generate migration add_index_to_users_email</li>
+  <ol>
+    <li>Result:</li>
+      invoke  active_record<br />
+      create    db/migrate/20120612070244_add_index_to_users_email.rb<br />
+    <li>Adding this index will almost finish the uniqueness requirement by adding it on a db level</li>
+  </ol>
+  <li>$ geany db/migrate/20120612070244_add_index_to_users_email.rb</li>
+  <ol>
+    <li>Update to default to:</li>
+    class AddIndexToUsersEmail < ActiveRecord::Migration<br />&nbsp;&nbsp
+      def change<br />&nbsp;&nbsp&nbsp;&nbsp
+        add_index :users, :email, unique: true<br />&nbsp;&nbsp
+      end<br />
+    end<br />
+    <li>Function form: add_index &lt;table>, &lt;column>, &lt;option unique=true></li>
+  </ol>
+  <li>$ rake db:migrate</li>
+  <ol>
+    <li>Result:</li>
+    ==  AddIndexToUsersEmail: migrating ===========================================<br />
+    -- add_index(:users, :email, {:unique=>true})<br />&nbsp;&nbsp;
+       -> 0.0035s<br />
+    ==  AddIndexToUsersEmail: migrated (0.0043s) ==================================<br />
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Add a callback (a method that gets invoked at a particular point in the lifetime of an Active Record object) that stores email in db as lowercase.  The reason is that not all database adapters use case-sensitive indices.</li>
+    before_save { |user| user.email = email.downcase }<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: ... ..................... 21 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add test password_digest field that will hold bcrypt encrypted password:</li>
+    it { should respond_to(:password_digest) }<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: ... ..............F....... 22 examples, 1 failure ...</li>
+  </ol>
+  <li>$ rails generate migration add_password_digest_to_users password_digest:string</li>
+  <ol>
+    <li>Result:</li>
+      invoke  active_record<br />
+      create    db/migrate/20120612095839_add_password_digest_to_users.rb<br />
+  </ol>
+  <li>$ geany db/migrate/20120612095839_add_password_digest_to_users.rb</li>
+  <ol>
+    <li>No changes to make here, passing the field name and type as well as ending migration name with _to_users lets Rails know just what we want.</li>
+  </ol>
+  <li>$ rake db:migrate</li>
+  <ol>
+    <li>Result:</li>
+    ==  AddPasswordDigestToUsers: migrating =======================================<br />
+    -- add_column(:users, :password_digest, :string)<br />&nbsp;&nbsp;
+       -> 0.0017s<br />
+    ==  AddPasswordDigestToUsers: migrated (0.0023s) ==============================
+  </ol>
+  <li>$ rake db:test:prepare</li>
+  <li>$ guard</li>
+  <ol>
+    <li>Result: ... ...................... 22 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add tests for password and password confirmation inputs.  This is interesting, Hartl has chosen to use Active Record to validate these inputes even though they will never be added to the database.</li>
+    it { should respond_to(:password) }<br />
+    it { should respond_to(:password_confirmation) }<br />
+    <li>Result (guard still running): ... ...FF....... 12 examples, 2 failures ...</li>
+    <li>Add password and password confirmation to @user initialization:</li>
+    before { @user = User.new(name: "Example User", email: "user@example.com",<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     password: "1234", password_confirmation: "1234") }<br />
+    <li>Result: ... FFFFFFFFFFFF 12 examples, 12 failures ...</li>
+    <li>Add test for blank password:</li>
+    describe "when password is not present" do<br />&nbsp;&nbsp;
+      before { @user.password = @user.password_confirmation = " " }<br />&nbsp;&nbsp;
+      it { should_not be_valid }<br />
+    end<br />
+    <li>Add password/confirmation mismatch test:</li>
+    describe "when password doesn't match confirmation" do<br />&nbsp;&nbsp;
+      before { @user.password_confirmation = "mismatch" }<br />&nbsp;&nbsp;
+      it { should_not be_valid }<br />
+    end<br />
+    <li>Result: ... FFFFFFFFFFFFF 13 examples, 13 failures ...</li>
+    <li>Add password_confirmation is not nil test:</li>
+    describe "when password confirmation is nil" do<br />&nbsp;&nbsp;
+      before { @user.password_confirmation = nil }<br />&nbsp;&nbsp;
+      it { should_not be_valid }<br />
+    end<br />
+    <li>Result: ... FFFFFFFFFFFFFF 14 examples, 14 failures ...</li>
+    <li>Add authentication tests:</li>
+    # Authentication Tests<br />
+    it { should respond_to(:authenticate) }<br />
+    describe "return value of authenticate method" do<br />&nbsp;&nbsp;
+      before { @user.save }<br />&nbsp;&nbsp;
+      let(:found_user) { User.find_by_email(@user.email) }<br />&nbsp;&nbsp;
+      
+      describe "with valid password" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should == found_user.authenticate(@user.password) }<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+      
+      describe "with invalid password" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        let(:user_for_invalid_password) { found_user.authenticate("invalid") }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should_not == user_for_invalid_password }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        specify { user_for_invalid_password.should be_false }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Result: ... FFFFFFFFFFFFFFFFFF 18 examples, 18 failures ...</li>
+    <li>Note that specify is a synonym of it.  Used here because it sounds better.</li>
+    <li>Finally, add password length test:</li>
+    describe "with a password that's too short" do<br />&nbsp;&nbsp;
+      before { @user.password = @user.password_confirmation = "a" * 5 }<br />&nbsp;&nbsp;
+      it { should be_invalid }<br />
+    end<br />
+    <li>Result: ... FFFFFFFFFFFFFFFFFFF 19 examples, 19 failures ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Replace:</li>
+    attr_accessible :name, :email<br />
+    <li>With:</li>
+    attr_accessible :name, :email, :password, :password_confirmation<br />
+    <li>Add the presence and length validation for password and presence for password_confirmation:</li>
+    validates :password, presence: true, length: { minimum: 6 }<br />
+    validates :password_confirmation, presence: true<br />
+    <li>Result: ... FFFFFFFFFFFFFFFFFFF 19 examples, 19 failures ...</li>
+    <li>And finally, to add the magical command:</li>
+    has_secure_password
+    <li>Result: ... .....F........F.FFF 19 examples, 5 failures ...</li>
+    <li>Woops!  My test password, that I decided should be different than the tutorial's, is on 4 chars</li>
+    <li>$ geany spec/models/user_spec.rb</li>
+    <ol>
+      <li>Replace:</li>
+        before { @user = User.new(name: "Example User", email: "user@example.com",<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            password: "1234", password_confirmation: "1234") }<br />
+      <li>With:</li>
+        before { @user = User.new(name: "Example User", email: "user@example.com",<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            password: "123456", password_confirmation: "123456") }<br />
+      <li>Result: ... ................... 19 examples, 0 failures ...</li>
+    </ol>
+    <li>Note that the has_secure_password comes with the latest version of Rails and bundles bcrypt functionality, the expected password_digest field, validation methods and model accessible password and password_confirmation fields.  Source is <a href="https://github.com/rails/rails/blob/master/activemodel/lib/active_model/secure_password.rb">here</a>.</li>
+  </ol>
+  <li>Taking it for a test drive</li>
+  <ol>
+    <li>Let's add some user's to the database.  There is no web interface yet so we'll have to use the console, but we won't be sandboxing</li>
+    <li>$ rails c</li>
+    <ol>
+      <li>$ User.create(name: "Big Bird", email: "bigbird@sesamestreet.com", password: "yellow", password_confirmation: "yellow")</li>
+      <ol>
+        <li>Result:</li>
+           (0.5ms)  begin transaction<br />
+          User Exists (0.3ms)  SELECT 1 FROM "users" WHERE LOWER("users"."email") = LOWER('bigbird@sesamestreet.com') LIMIT 1<br />
+        Binary data inserted for `string` type on column `password_digest`<br />
+          SQL (5.2ms)  INSERT INTO "users" ("created_at", "email", "name", "password_digest", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Tue, 12 Jun 2012 13:24:25 UTC +00:00], ["email", "bigbird@sesamestreet.com"], ["name", "Big Bird"], ["password_digest", "$2a$10$yPC25VIPCTgxfzN0aj15oe3uJyw//NZ7pKUXCb9ObuBhVfw2X3d12"], ["updated_at", Tue, 12 Jun 2012 13:24:25 UTC +00:00]]<br />
+           (27.4ms)  commit transaction<br />
+         => true <br />
+      </ol>
+    </ol>
+  </ol>
 </ol>

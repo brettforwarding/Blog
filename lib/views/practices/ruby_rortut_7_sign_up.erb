@@ -1,0 +1,216 @@
+<h3>Rails Tutorial Chapter 7: Sign Up - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/chapters/sign-up#top">Rails Tutorial - Chapter 7</a></li>
+  <li>$ git branch</li>
+  <ol>
+    <li>Result:  </li>
+    modeling-users<br />
+    * master<br />
+  </ol>
+  <li>$ git co -b sign-up</li>
+  <li>$ geany app/views/layouts/application.html.erb</li>
+  <ol>
+    <li>Add debug code under footer render line:</li>
+    &lt;%= debug(params) if Rails.env.development? %><br />
+  </ol>
+  <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+  <ol>
+    <li>Add some style to the debug param display in the css.  Under mixins, put:</li>
+    @mixin box_sizing {<br />&nbsp;&nbsp;
+      -moz-box-sizing: border-box; <br />&nbsp;&nbsp;
+      -webkit-box-sizing: border-box; <br />&nbsp;&nbsp;
+      box-sizing: border-box;<br />
+    }<br />
+    <li>Add the rest to the bottom of the css file:</li>
+    /* miscellaneous */<br />
+
+    .debug_dump {<br />&nbsp;&nbsp;
+      clear: both;<br />&nbsp;&nbsp;
+      float: left;<br />&nbsp;&nbsp;
+      width: 100%;<br />&nbsp;&nbsp;
+      margin-top: 45px;<br />&nbsp;&nbsp;
+      @include box_sizing;<br />
+    }<br />
+  </ol>
+  <li>$ rails s</li>
+  <ol>
+    <li>Visiting home page shows debug box at the bottom of the page which has:</li>
+    --- !ruby/hash:ActiveSupport::HashWithIndifferentAccess<br />
+    controller: static_pages<br />
+    action: home<br />
+    <li>This is a YAML representation of the params hash.  We can see the controller and action here.</li>
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>Add route for users</li>
+    <li>Replace:</li>
+    get "users/new"
+    <li>With:</li>
+    resources :users
+    <li>This one line endows our sample application with all the actions needed for a RESTful Users resource, along with a large number of named routes (Section 5.3.3) for generating user URIs.</li>
+  </ol>
+  <li>$ geany app/views/users/show.html.erb</li>
+  <ol>
+   <li>This page was not previously generated so we are creating it now.</li>
+   <li>We'll create a temporary stub to help us set up information transfer.  Add the stub for showing user info:</li>
+   &lt;%= @user.name %>, &lt;%= @user.email %><br />
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add a show method above the default new method:</li>
+    def show<br />&nbsp;&nbsp;
+      @user = User.find(params[:id])<br />
+    end<br />
+  </ol>
+  <li>$rails s</li>
+  <ol>
+    <li>Visiting /users/1 shows content:</li>
+    Big Bird, bigbird@sesamestreet.com <br />
+    <li>and debug info:</li>
+    --- !ruby/hash:ActiveSupport::HashWithIndifferentAccess<br />
+    action: show<br />
+    controller: users<br />
+    id: '1'<br />
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Add a show page test:</li>
+    describe "profile page" do<br />&nbsp;&nbsp;
+      # Code to make a user variable<br />&nbsp;&nbsp;
+      before { visit user_path(user) }<br />&nbsp;&nbsp;
+
+      it { should have_selector('h1',    text: user.name) }<br />&nbsp;&nbsp;
+      it { should have_selector('title', text: user.name) }<br />
+    end<br />
+    <li>Understanding to come...this is test driven dev after all - tests first!</li>
+  </ol>
+  <li>$ geany spec/factories.rb</li>
+  <ol>
+    <li>This is where all the FactoryGirl factories go (one of the gems).  They are automatically loaded by RSpec.</li>
+    <li>Add this code to the blank file:</li>
+    FactoryGirl.define do<br />&nbsp;&nbsp;
+      factory :user do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        name     "Michael Hartl"<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        email    "michael@example.com"<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        password "foobar"<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        password_confirmation "foobar"<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>With the factory defined, we can replace the comment at the top of the describe "profile page" block with:</li>
+    let(:user) { FactoryGirl.create(:user) }<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 33 examples, 2 failures ...</li>
+    <li>profile page tests failed as expected</li>
+  </ol>
+  <li>$ geany app/views/users/show.html.erb</li>
+  <ol>
+    <li>replace the stubs put there earlier with:</li>
+    &lt;% provide(:title, @user.name) %><br />
+    &lt;h1>&lt;%= @user.name %>&lt;/h1><br />
+    <li>Result (guard still running):  ... 4 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany config/environments/test.rb</li>
+  <ol>
+    <li>Change bcrypt cost to speed up testing - lowers encryption security but who cares except for prod:</li>
+    # Speed up tests by lowering BCrypt's cost function.<br />
+    require 'bcrypt'<br />
+    silence_warnings do<br />
+      BCrypt::Engine::DEFAULT_COST = BCrypt::Engine::MIN_COST<br />
+    end<br />
+  </ol>
+  <li>$ geany app/views/users/show.html.erb</li>
+  <ol>
+    <li>Add a Gravatar code insert to the h1 tag (in front of @user.name):</li>
+    &lt;%= gravatar_for @user %><br />
+  </ol>
+  <li>$ guard</li>
+ <ol>
+    <li>Results: ... 33 examples, 2 failures ...</li>
+    <li>profile page tests failed as expected</li>
+  </ol>
+  <li>$ geany app/helpers/users_helper.rb</li>
+  <ol>
+    <li>Add definition for gravitar_for in the users_helper (currently just contains definition with no content):</li>
+    # Returns the Gravatar (http://gravatar.com/) for the given user.<br />
+    def gravatar_for(user)<br />&nbsp;&nbsp;
+      gravatar_id = Digest::MD5::hexdigest(user.email.downcase)<br />&nbsp;&nbsp;
+      gravatar_url = "https://secure.gravatar.com/avatar/#{gravatar_id}"<br />&nbsp;&nbsp;
+      image_tag(gravatar_url, alt: user.name, class: "gravatar")<br />
+    end<br />
+    <li>Results: ... 4 examples, 0 failures ...</li>
+    <li>See <a href="http://en.gravatar.com/site/implement/hash/">Gravatar home page</a> for more about gravatars.</li>
+  </ol>
+  <li>$ rails console</li>
+  <ol>
+    <li>We'll edit first user (id=1) to be the rails example because Hartl has uploaded the rails logo for this example email:</li>
+    <li>$ user = User.first</li>
+    <li>$ user.update_attributes(name: "Example User", email: "example@railstutorial.org", password: "foobar", password_confirmation: "foobar")</li>
+  </ol>
+  <li>$ rails s</li>
+  <ol>
+    <li>Visit /users/1</li>
+    <ol>
+      <li>Success!</li>
+    </ol>
+  </ol>
+  <li>$ geany app/views/users/show.html.erb</li>
+  <ol>
+    <li>Add sidebar with &lt;aside> tag (another new html5 tag).  Replace:</li>
+    &lt;% provide(:title, @user.name) %><br />
+    &lt;h1>  <br />&nbsp;&nbsp;
+      &lt;%= gravatar_for @user %><br />&nbsp;&nbsp;
+      &lt;%= @user.name %><br />
+    &lt;/h1><br />
+    <li>With:</li>
+    &lt;% provide(:title, @user.name) %><br />
+    &lt;div class="row"><br />&nbsp;&nbsp;
+      &lt;aside class="span4"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;section><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;h1><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= gravatar_for @user %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= @user.name %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;/h1><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/section><br />&nbsp;&nbsp;
+      &lt;/aside><br />
+    &lt;/div><br />
+  </ol>
+  <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+  <ol>
+    <li>Now to add some style to the sidebar and gravatar (note the nested sass):</li>
+    /* sidebar */<br />
+
+    aside {<br />&nbsp;&nbsp;
+      section {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        padding: 10px 0;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        border-top: 1px solid $grayLighter;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &:first-child {<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          border: 0;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          padding-top: 0;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        span {<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          display: block;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          margin-bottom: 3px;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          line-height: 1;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        h1 {<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          font-size: 1.6em;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          text-align: left;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          letter-spacing: -1px;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          margin-bottom: 3px;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        }<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+
+    .gravatar {<br />&nbsp;&nbsp;
+      float: left;<br />&nbsp;&nbsp;
+      margin-right: 10px;<br />
+    }<br />
+  </ol>
+  
+</ol>
