@@ -21,7 +21,203 @@
   </ol>
   <li>$ geany db/migrate/20120611023745_create_users.rb</li>
   <ol>
-    <li></li>
+    <li>Just looking</li>
+    <li>also ran the rollback and migrate to test that as well</li>
+    <ol>
+      <li>$ rake db:rollback</li>
+      <li>$ rake db:migrate</li>
+    </ol>
   </ol>
-  
+  <li>$ geany app/models/user.rb</li>
+  <li>$ annoted --position before</li>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li> annoted gem added schema to user.rb</li>
+    # == Schema Information<br />
+    #<br />
+    # Table name: users<br />
+    #<br />
+    #  id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not null, primary key<br />
+    #  name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:string(255)<br />
+    #  email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:string(255)<br />
+    #  created_at :datetime<br />
+    #  updated_at :datetime<br />
+    #<br />
+    <li>run annotated command each time model changes to keep up-to-date</li>
+  </ol>
+  <li>$ rails console --sandbox</li>
+  <ol>
+    <li>This is a great way to test models, changes are automatically rolled back on console exit</li>
+    <li>prompt is actually like <b>1.9.3p194 :001 ></b> but I'll continue to use $ in these notes for continuity.</li>
+    <li>$ User.new</li>
+    <ol>
+      <li>Return:  => #&lt;User id: nil, name: nil, email: nil, created_at: nil, updated_at: nil> </li>
+    </ol>
+    <li>$ user = User.new(name: "Big Bird", email: "bigbird@sesamestreet.com")</li>
+    <ol>
+      <li>Return:  => #&lt;User id: nil, name: "Big Bird", email: "bigbird@sesamestreet.com", created_at: nil, updated_at: nil> </li>
+    </ol>
+    <li>$ user.save</li>
+    <ol>
+      <li>Return:  </li>
+        (0.4ms)  SAVEPOINT active_record_1<br />
+        SQL (233.6ms)  <b>INSERT INTO "users" ("created_at", "email", "name", "updated_at") VALUES (?, ?, ?, ?)</b>  [["created_at", Mon, 11 Jun 2012 15:51:50 UTC +00:00], ["email", "bigbird@sesamestreet.com"], ["name", "Big Bird"], ["updated_at", Mon, 11 Jun 2012 15:51:50 UTC +00:00]]<br />
+         (0.1ms)  RELEASE SAVEPOINT active_record_1<br />
+       => true <br />
+      <li>Until save is called,the new user info is in a Ruby object in memory.  Saving commits it to the db.</li>
+    </ol>
+    <li>Run from another terminal:  $ geany log/development.log</li>
+    <ol>
+      <li>According to the tutorial, this should have been updated for the save:  It wasn't.  I imagine that the sandbox mode isn't updating the log in this case.</li>
+    </ol>
+    <li>$ user</li>
+    <ol>
+      <li>Return:  => #<User id: 1, name: "Big Bird", email: "bigbird@sesamestreet.com", created_at: "2012-06-11 15:51:50", updated_at: "2012-06-11 15:51:50"> </li>
+      <li>Note how the automatic fields are updated AFTER save is called (User id, created_at and updated_at)</li>
+    </ol>
+    <li>$ user.name</li>
+    <ol>
+      <li>Return:  => "Big Bird" </li>
+      <li>Note that all User model attributes are accessible using the dot notation.</li>
+    </ol>
+    <li>$ User.create(name: "Cookie Monster", email: "nomnomnom@sesamestreet.com")</li>
+    <ol>
+      <li>Return:  </li>
+         (1.1ms)  SAVEPOINT active_record_1<br />
+        SQL (25.8ms)  INSERT INTO "users" ("created_at", "email", "name", "updated_at") VALUES (?, ?, ?, ?)  [["created_at", Mon, 11 Jun 2012 16:18:49 UTC +00:00], ["email", "nomnomnom@sesamestreet.com"], ["name", "Cookie Monster"], ["updated_at", Mon, 11 Jun 2012 16:18:49 UTC +00:00]]<br />
+         (0.3ms)  RELEASE SAVEPOINT active_record_1<br />
+       => #<User id: 2, name: "Cookie Monster", email: "nomnomnom@sesamestreet.com", created_at: "2012-06-11 16:18:49", updated_at: "2012-06-11 16:18:49"> <br />
+      <li>"create" method is a combination of "new" and "save"</li>
+    </ol>
+    <li>$ ernie = User.create(name: "Ernie", email: "ernie@sesamestreet.com")</li>
+    <ol>
+      <li>Return:  </li>
+         (2.3ms)  SAVEPOINT active_record_1<br />
+        SQL (1.2ms)  INSERT INTO "users" ("created_at", "email", "name", "updated_at") VALUES (?, ?, ?, ?)  [["created_at", Mon, 11 Jun 2012 16:24:22 UTC +00:00], ["email", "ernie@sesamestreet.com"], ["name", "Ernie"], ["updated_at", Mon, 11 Jun 2012 16:24:22 UTC +00:00]]<br />
+         (0.2ms)  RELEASE SAVEPOINT active_record_1<br />
+       => #<User id: 3, name: "Ernie", email: "ernie@sesamestreet.com", created_at: "2012-06-11 16:24:22", updated_at: "2012-06-11 16:24:22"><br />
+      <li>can also assign it to a variable as part of the same statement</li>
+    </ol>
+    <li>$ ernie.destroy</li>
+    <ol>
+      <li>Return:  </li>
+         (0.3ms)  SAVEPOINT active_record_1<br />
+        SQL (0.9ms)  DELETE FROM "users" WHERE "users"."id" = ?  [["id", 3]]<br />
+         (0.2ms)  RELEASE SAVEPOINT active_record_1<br />
+       => #<User id: 3, name: "Ernie", email: "ernie@sesamestreet.com", created_at: "2012-06-11 16:24:22", updated_at: "2012-06-11 16:24:22"> <br />
+      <li>Odd behaviour: User.find(3) will show you that the table entry for ernie is no longer there but, $ ernie , will return the object.</li>
+    </ol>
+    <li>$ User.find(2)</li>
+    <ol>
+      <li>Return:  </li>
+        User Load (0.2ms)  SELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT 1  [["id", 2]]<br />
+       => #<User id: 2, name: "Cookie Monster", email: "nomnomnom@sesamestreet.com", created_at: "2012-06-11 16:18:49", updated_at: "2012-06-11 16:18:49"> <br />
+      <li>I bet, I could just type in the SQL here...going to experiment</li>
+    </ol>
+    <li>cookiem = ActiveRecord::Base.connection.execute("SELECT email FROM users WHERE id = 2")</li>
+    <ol>
+      <li>Return:  </li>
+         (0.6ms)  SELECT email FROM users WHERE id = 2<br />
+       => [{"email"=>"nomnomnom@sesamestreet.com", 0=>"nomnomnom@sesamestreet.com"}]<br />
+      <li>guessing didn't work, had search online for this</li>
+    </ol>
+    <li>$ User.find_by_email("bigbird@sesamestreet.com")</li>
+    <ol>
+      <li>Return:  </li>
+        User Load (0.6ms)  SELECT "users".* FROM "users" WHERE "users"."email" = 'bigbird@sesamestreet.com' LIMIT 1<br />
+       => #<User id: 1, name: "Big Bird", email: "bigbird@sesamestreet.com", created_at: "2012-06-11 15:51:50", updated_at: "2012-06-11 15:51:50"> <br />
+      <li>Another useful method: find_by_&lt;attribute><li>
+      <li>Other methods: .first, .all</li>
+    </ol>
+    <li>Updates:</li>
+    <ol>
+      <li>$ cookiem = User.find(2)</li>
+      <li>$ cookiem.email</li>
+      <ol>
+        <li>Return:  => "nomnomnom@sesamestreet.com" </li>
+      </ol>
+      <li>$ cookiem.email = "cookiemonster@sesamestreet.com"</li>
+      <li>$ cookiem.save</li>
+      <ol>
+        <li>Return: </li>
+           (0.3ms)  SAVEPOINT active_record_1<br />
+           (0.7ms)  UPDATE "users" SET "email" = 'cookiemonster@sesamestreet.com', "updated_at" = '2012-06-11 17:20:10.387656' WHERE "users"."id" = 2<br />
+           (0.3ms)  RELEASE SAVEPOINT active_record_1<br />
+         => true <br />
+      </ol>
+      <li>Before the saving, we can undo object change by reloading db value:</li>
+      <ol>
+        <li>$ cookiem.email</li>
+        <ol>
+          <li>Return:  => "cookiemonster@sesamestreet.com" </li>
+        </ol>
+        <li>$ cookiem.email = "nomnomnom@sesamestreet.com"</li>
+        <li>$ cookiem.email</li>
+        <ol>
+          <li>Return:  => "nomnomnom@sesamestreet.com" </li>
+        </ol>
+        <li>$ cookiem.reload.email = </li>
+        <ol>
+          <li>Return:</li>
+            User Load (0.3ms)  SELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT 1  [["id", 2]]<br />
+           => "cookiemonster@sesamestreet.com" <br />
+        </ol>
+      </ol>
+      <li>Updating accessible attributes (declared in user.rb as attr_accessible) in one line:</li>
+      <ol>
+        <li>$ cookiem.update_attributes(name: "ILuvCookies", email: "nomnomnom@sesamestreet.com")</li>
+        <ol>
+          <li>Return:</li>
+             (0.2ms)  SAVEPOINT active_record_1<br />
+             (0.6ms)  UPDATE "users" SET "name" = 'ILuvCookies', "email" = 'nomnomnom@sesamestreet.com', "updated_at" = '2012-06-11 17:37:51.085628' WHERE "users"."id" = 2<br />
+             (0.3ms)  RELEASE SAVEPOINT active_record_1<br />
+           => true <br />
+        </ol>
+      </ol>
+    </ol>
+    <li>Exit Sandbox</li>
+    <ol>
+      <li>$ ctrl+d</li>
+      <ol>
+        <li>Return:     (0.6ms)  rollback transaction</li>
+      </ol>
+    </ol>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Since, at the beginning of this chapter, the flag --no-test-framework was NOT passed when generating the user model, there exists an initial spec for testing.</li>
+    <li>This file has only the pending test which indicates we should put some tests in it.</li>
+    <li>$ guard</li>
+    <ol>
+      <li>Result:</li>
+      ...guard messages...spork messages...<br />
+      ............*<br />
+
+      Pending:<br />&nbsp;&nbsp;
+        User add some examples to (or delete) /home/brett/mystuff/projects/rails_projects/sample_app/spec/models/user_spec.rb<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          # No reason given<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          # ./spec/models/user_spec.rb:15<br />
+
+      Finished in 1.27 seconds<br />
+      13 examples, 0 failures, 1 pending<br />
+      <li>Notice the 3rd test result symbol "*" - yellow in colour</li>
+    </ol>
+    <li>Replace this line in user_spec.rb:</li>
+    pending "add some examples to (or delete) #{__FILE__}"<br />
+    <li>With:</li>
+    before { @user = User.new(name: "Example User", email: "user@example.com") }<br />
+    subject { @user }<br />
+    
+    it { should respond_to(:name) }<br />
+    it { should respond_to(:email) }<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Result:  ... ............FF ... 14 examples, 2 failures ...</li>
+  </ol>
+  <li>$ rake db:test:prepare</li>
+  <li>$ guard</li>
+  <ol>
+    <li>Result:  ... .............. ... 14 examples, 0 failures ...</li>
+  </ol>
 </ol>
