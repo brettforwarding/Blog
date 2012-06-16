@@ -1,0 +1,405 @@
+<h3>Rails Tutorial Chapter 8: Sign In/Sign Out - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/chapters/sign-in-sign-out#top">Rails Tutorial - Chapter 8</a></li>
+  <li>$ git branch</li>
+  <ol>
+    <li>Result:  </li>
+    * master<br />
+    modeling-users<br />
+    sign-up<br />
+  </ol>
+  <li>$ git co -b sign-in-out</li>
+  <li>$ rails generate controller Sessions --no-test-framework</li>
+  <ol>
+    <li>Result:</li>
+      create  app/controllers/sessions_controller.rb<br />
+      invoke  erb<br />
+      create  &nbsp;&nbsp;app/views/sessions<br />
+      invoke  helper<br />
+      create  &nbsp;&nbsp;app/helpers/sessions_helper.rb<br />
+      invoke  assets<br />
+      invoke  &nbsp;&nbsp;coffee<br />
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/sessions.js.coffee<br />
+      invoke  &nbsp;&nbsp;scss<br />
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/sessions.css.scss<br />
+  </ol>
+  <li>$ rails generate integration_test authentication_pages</li>
+  <ol>
+    <li>Result:</li>
+      invoke  rspec<br />
+      create  &nbsp;&nbsp;spec/requests/authentication_pages_spec.rb<br />
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Replace default generated test code with:</li>
+    require 'spec_helper'<br />
+
+    describe "Authentication" do<br />&nbsp;&nbsp;
+      subject { page }<br />&nbsp;&nbsp;
+
+      describe "signin page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit signin_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it { should have_selector('h1',    text: 'Sign in') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('title', text: 'Sign in') }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 37 examples, 2 failures ...</li>
+    <li>verified 2 failures are for authentication tests as expected</li>
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>Add the following lines for sign in/out:</li>
+    resources :sessions, only: [:new, :create, :destroy]<br /><br />
+
+    match '/signin',   to: 'sessions#new'<br />
+    match '/signout',  to: 'sessions#destroy', via: :delete<br />
+    <li>Note: the only qualifier for the resources is to identify the REST operations needed (edit and show are not needed)</li>
+    <li>Note the via: :delete part of the match '/signout'.  This specifies that it should be invoked by HTTP Delete</li>
+  </ol>
+  <li>$ geany app/controllers/sessions_controller.rb</li>
+  <ol>
+    <li>Add to the sessions controller stub:</li>
+    def new<br />
+    end<br />
+
+    def create<br />
+    end<br />
+
+    def destroy<br />
+    end<br />
+  </ol>
+  <li>$ geany app/views/sessions/new.html.erb</li>
+  <ol>
+    <li>Add to this new file:</li>
+    &lt;% provide(:title, "Sign in") %><br />
+    &lt;h1>Sign in&lt;/h1><br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 37 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add signin tests:</li>
+    describe "signin" do<br />&nbsp;&nbsp;
+      before { visit signin_path }<br />&nbsp;&nbsp;
+
+      describe "with invalid information" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { click_button "Sign in" }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it { should have_selector('title', text: 'Sign in') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('div.alert.alert-error', text: 'Invalid') }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (since guard still runs): ... 4 examples, 2 failures ...</li>
+    <li>Add after invalid test block:</li>
+    describe "with valid information" do<br />&nbsp;&nbsp;
+      let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      before do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        fill_in "Email",    with: user.email<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        fill_in "Password", with: user.password<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        click_button "Sign in"<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      it { should have_selector('title', text: user.name) }<br />&nbsp;&nbsp;
+      it { should have_link('Profile', href: user_path(user)) }<br />&nbsp;&nbsp;
+      it { should have_link('Sign out', href: signout_path) }<br />&nbsp;&nbsp;
+      it { should_not have_link('Sign in', href: signin_path) }<br />
+    end<br />
+    <li>Results (since guard still runs): ... 8 examples, 6 failures ...</li>
+  </ol>
+  <li>$ geany </li>
+  <ol>
+    <li>Add form code:</li>
+    &lt;div class="row"><br />&nbsp;&nbsp;
+      &lt;div class="span6 offset3"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;%= form_for(:session, url: sessions_path) do |f| %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :email %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.text_field :email %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :password %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.password_field :password %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.submit "Sign in", class: "btn btn-large btn-primary" %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;% end %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        &lt;p>New user? &lt;%= link_to "Sign up now!", signup_path %>&lt;/p><br />&nbsp;&nbsp;
+      &lt;/div><br />
+    &lt;/div><br />
+    <li>Results (since guard still runs): ... 8 examples, 6 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/sessions_controller.rb</li>
+  <ol>
+    <li>Add to the create definition block</li>
+    user = User.find_by_email(params[:session][:email])<br />
+    if user && user.authenticate(params[:session][:password])<br />&nbsp;&nbsp;
+      # Sign the user in and redirect to the user's show page.<br />
+    else<br />&nbsp;&nbsp;
+      flash[:error] = 'Invalid email/password combination' # Not quite right!<br />&nbsp;&nbsp;
+      render 'new'<br />
+    end<br />
+    <li>Results (since guard still runs): ... 8 examples, 4 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add flash message persistence test at the end of the with invalid information block:</li>
+      describe "after visiting another page" do<br />&nbsp;&nbsp;
+        before { click_link "Home" }<br />&nbsp;&nbsp;
+        it { should_not have_selector('div.alert.alert-error') }<br />
+      end<br />
+    <li>Results (since guard still runs): ... 8 examples, 4 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/sessions_controller.rb</li>
+  <ol>
+    <li>Replace flash with flash.now for message that disappear as soon as another request is made.  So replace:</li>
+    flash[:error] = 'Invalid email/password combination' # Not quite right!<br />
+    <li>With:</li>
+    flash.now[:error] = 'Invalid email/password combination'<br />
+  </ol>
+  <li>$ $ rspec spec/requests/authentication_pages_spec.rb \ <br />
+      >  -e "with invalid information"</li>
+  <ol>
+    <li>Results: ... 3 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/sessions_controller.rb</li>
+  <ol>
+    <li>Replace:</li>
+    # Sign the user in and redirect to the user's show page.<br />
+    <li>With:</li>
+      sign_in user<br />
+      redirect_to user<br />
+    <li>Note that this sign_in is a bit of a cheat since it doesn't really exist yet.</li>
+  </ol>
+  <li>$ geany app/controllers/application_controller.rb</li>
+  <ol>
+    <li>Add in this line:</li>
+      include SessionsHelper
+    <li>This authentication persistance crosses MVC boundaries, instead of duplicating code, just use what Rails already provides.</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Since the Sample App will use session id that persists even after browser close, user model will be updated with a remember_token field.</li>
+    <li>Add a test for the remember token field:</li>
+    it { should respond_to(:remember_token) }<br />
+    <li>Also, to match the tutorial version of user_spec.rb, move up the authenticate test into field tests.  IE, move:</li>
+    it { should respond_to(:authenticate) }<br />
+  </ol>
+  <li>$ rails generate migration add_remember_token_to_users</li>
+  <ol>
+    <li>Result:</li>
+      invoke  active_record<br />
+      create  &nbsp;&nbsp;db/migrate/20120613234436_add_remember_token_to_users.rb<br />
+  </ol>
+  <li>$ geany db/migrate/20120613234436_add_remember_token_to_users.rb</li>
+  <ol>
+    <li>Add column and index statements to def change block stub:</li>
+    add_column :users, :remember_token, :string<br />
+    add_index  :users, :remember_token<br />
+  </ol>
+  <li>$ rake db:migrate</li>
+  <ol>
+    <li>Result:</li>
+    ==  AddRememberTokenToUsers: migrating ========================================<br />
+    -- add_column(:users, :remember_token, :string)<br />&nbsp;&nbsp;
+       -> 0.0047s<br />
+    -- add_index(:users, :remember_token)<br />&nbsp;&nbsp;
+       -> 0.0943s<br />
+    ==  AddRememberTokenToUsers: migrated (0.1000s) ===============================<br />
+  </ol>
+  <li>$ rake db:test:prepare</li>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 44 examples, 4 failures ...</li>
+    <li>4 failures were authentication page, so user model tests passed</li>
+    <li>Another way would be to run only user spec tests with:</li>
+    rspec spec/models/user_spec.rb<br />
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add test for non-blank remember token - place after main authentication tests:</li>
+    describe "remember token" do<br />&nbsp;&nbsp;
+      before { @user.save }<br />&nbsp;&nbsp;
+      its(:remember_token) { should_not be_blank }<br />
+    end<br />
+    <li>Results (guard still running): ... 21 examples, 1 failure ...</li>
+    <ol>
+      <li>As expected new test failed.</li>
+    </ol>
+    <li>Note: the its(:remember_token) test is equivalent to:  it { @user.remember_token.should_not be_blank }</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Add the slightly more advanced code for the user remember token.</li>
+    <li>First add the before save call to create remember token, place after other before_save call:</li>
+      before_save :create_remember_token<br />
+    <li>Second, add the private create remember token method at the end of main block:</li>
+    private<br /><br />
+
+      def create_remember_token<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        self.remember_token = SecureRandom.urlsafe_base64<br />&nbsp;&nbsp;
+      end<br />
+  </ol>
+  <li>$ rspec spec/models/user_spec.rb</li>
+  <ol>
+    <li>Results: ... 21 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany app/helpers/sessions_helper.rb</li>
+  <ol>
+    <li>Now to add the method used in the controller.</li>
+    def sign_in(user)<br />&nbsp;&nbsp;
+      cookies.permanent[:remember_token] = user.remember_token<br />&nbsp;&nbsp;
+      self.current_user = user<br />
+    end<br />
+  </ol>
+  <li>$ geany app/helpers/sessions_helpers</li>
+  <ol>
+    <li>Add the unusual looking code:</li>
+    def current_user=(user)<br />&nbsp;&nbsp;
+      @current_user = user<br />
+    end<br />
+
+    def current_user<br />&nbsp;&nbsp;
+      @current_user ||= User.find_by_remember_token(cookies[:remember_token])<br />
+    end<br />
+    <li>the "def current_user=(user)" is a method definition for the assignment current_user= . 
+     Although putting the equals sign in a method definition seems weird, it's what enables
+     all the more natural looking code using current_user, in the session helper as
+     self.current_user = user, in the views as &lt;%= current_user.name %> and redirect_to current_user</li>
+    <li>The line in the current_user method def says current_user is either @current_user OR the user found from
+     the cookie so that when current_user is called the first time, it loads the cookie value, then uses the
+     instance variable after that.  Slick!</li>
+    <li>Note: x ||= y is equivalent to x = x || y (assign x the value of x or y).  This is similar
+     to using x += y instead of x = x + y</li>
+    <li>Now add the signed_in? def we'll use when deciding layout subject to signed in status:</li>
+    def signed_in?<br />&nbsp;&nbsp;
+      !current_user.nil?<br />
+    end<br />
+  </ol>
+  <li>$ geany app/views/layouts/_header.html.erb</li>
+  <ol>
+    <li>Replace existing header with new sign_in status specific header</li>
+    &lt;header class="navbar navbar-fixed-top"><br />
+    &nbsp;&nbsp;&lt;div class="navbar-inner"><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="container"><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;%= link_to "sample app", root_path, id: "logo" %><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;nav><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul class="nav pull-right"><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li>&lt;%= link_to "Home", root_path %>&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li>&lt;%= link_to "Help", help_path %>&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;% if signed_in? %><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li>&lt;%= link_to "Users", '#' %>&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li id="fat-menu" class="dropdown"><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="#" class="dropdown-toggle" data-toggle="dropdown"><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account &lt;b class="caret">&lt;/b><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/a><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul class="dropdown-menu"><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li>&lt;%= link_to "Profile", current_user %>&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li>&lt;%= link_to "Settings", '#' %>&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li class="divider">&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;%= link_to "Sign out", signout_path, method: "delete" %><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;% else %><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li>&lt;%= link_to "Sign in", signin_path %>&lt;/li><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;% end %><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/nav><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;/div><br />
+    &nbsp;&nbsp;&lt;/div><br />
+    &lt;/header><br />
+  </ol>
+  <li>$ geany app/assets/javascripts/application.js</li>
+  <ol>
+    <li>Add the bootstrap library to asset pipeline(above the require_tree .)</li>
+    //= require bootstrap<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 46 examples, 5 failures ...</li>
+    <li>This was supposed to pass</li>
+    <li>Found 4 errors caused because the switch hadn't been done for sessions controller -sign_in user and redirect</li>
+    <li>Last error was due to new header code using "sample app" when test was looking for "Sample App".  Changed the case in header to match test.</li>
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 46 examples, 0 failures ...</li>
+  </ol>
+  <li>$ rails c</li>
+  <ol>
+    <li>Need to update existing users with remember_tokens since the users in there now were created before field was added.</li>
+    <li>$ User.first.remember_token</li>
+    <ol>
+      <li>Results (just to verifiy it's nil): nil</li>
+    </ol>
+    <li>$ User.all.each { |user| user.save(validate: false) }</li>
+    <ol>
+      <li>Results:</li>
+      User Load (2.1ms)  SELECT "users".* FROM "users" <br />
+       (0.5ms)  begin transaction<br />
+       (0.7ms)  UPDATE "users" SET "remember_token" = 'LNgPMbn8j5lIBxcMwcfGyA', "updated_at" = '2012-06-16 06:41:56.900305' WHERE "users"."id" = 1<br />
+       (87.4ms)  commit transaction<br />
+     => [#<User id: 1, name: "Cookie Monster", email: "iluvcookies@sesamestreet.com", created_at: "2012-06-13 02:01:35", updated_at: "2012-06-16 06:41:56", password_digest: "$2a$10$zLHJhohnislkFXzgpir18uft5eLAH0S8XVqqUpi80qL4...", remember_token: "LNgPMbn8j5lIBxcMwcfGyA">] <br />
+    </ol>
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Add test for auto-sign-in after sign-up at bottom of With valid information block</li>
+    describe "after saving the user" do<br />&nbsp;&nbsp;
+      it { should have_link('Sign out') }<br />
+    end<br />
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add sign_in @user right after If @user.save</li>
+    sign_in @user
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add sign-out test to the bottom of "with valid information" block</li>
+    describe "followed by signout" do<br />&nbsp;&nbsp; 
+      before { click_link "Sign out" }<br />&nbsp;&nbsp;
+      it { should have_link('Sign in') }<br />
+    end<br />
+  </ol>
+  <li>$ geany app/controllers/sessions_controller.rb</li>
+  <ol>
+    <li>Add sign_out function to destroy def</li>
+    sign_out<br />
+    redirect_to root_path<br />
+  </ol>
+  <li>$ geany app/helpers/sessions_helper.rb</li>
+  <ol>
+    <li>Add sign_out functin def to helper:</li>
+    def sign_out<br />&nbsp;&nbsp;
+      self.current_user = nil<br />&nbsp;&nbsp;
+      cookies.delete(:remember_token)<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 48 examples, 1 failure ...</li>
+    <li>not suppossed to fail, but I kind of expected it, something not quite right about "after saving the user test" - wheres the "after" callback or button click?</li>
+    <li>Looks like some excercises aren't voluntary.  Last chapters excercise (list 7.32) had more code for "after saving...".  Just place this code inside after saving block above the recently added line:</li>
+    before { click_button submit }<br />
+    let(:user) { User.find_by_email('user@example.com') }<br />
+
+    it { should have_selector('title', text: user.name) }<br />
+    it { should have_selector('div.alert.alert-success', text: 'Welcome') }<br />
+    <li>Results: ... 9 examples, 0 failures ...</li>
+  </ol>
+  <li>$ git add . && git commit -m "Finish rails tutorial ch8 (mandatory part) - Sign in/Sign out"</li>
+  <li>$ git co master</li>
+  <li>$ git merge sign-in-out</li>
+  <li>$ git push</li>
+  <li>$ git push heroku</li>
+  <li>$ heroku rake db:migrate</li>
+  
+</ol>

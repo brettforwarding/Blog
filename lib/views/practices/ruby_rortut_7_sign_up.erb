@@ -212,5 +212,249 @@
       margin-right: 10px;<br />
     }<br />
   </ol>
-  
+  <li>$ rake db:reset</li>
+  <ol>
+    <li>Gets rid of user created previously. </li>
+  </ol>
+  <li>$ rake db:test:prepare</li>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Now to add the signup process tests.  Add below the "signp page" block</li>
+    describe "signup" do" }<br />&nbsp;&nbsp;
+      before { visit signup_path }" }<br />&nbsp;&nbsp;
+     
+      let(:submit) { "Create my account" }<br />&nbsp;&nbsp;
+
+      describe "with invalid information" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should not create a user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect { click_button submit }.not_to change(User, :count)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      describe "with valid information" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          fill_in "Name",         with: "Example User"<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          fill_in "Email",        with: "user@example.com"<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          fill_in "Password",     with: "foobar"<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          fill_in "Confirmation", with: "foobar"<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it "should create a user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect { click_button submit }.to change(User, :count).by(1)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Note: like the visit command, fill_in is a handy Capybara command to fill in page fields</li>
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 35 examples, 4 failures ...</li>
+    <li>as expected, signup page tests failed</li>
+  </ol>
+  <li>$ geany app/views/users/new.html.erb</li>
+  <ol>
+    <li>Replace:</li>
+    <p>Find me in app/views/users/new.html.erb</p>
+    <li>With:</li>
+    &lt;div class="row"><br />&nbsp;&nbsp;
+      &lt;div class="span6 offset3"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;%= form_for(@user) do |f| %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :name %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.text_field :name %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :email %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.text_field :email %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :password %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.password_field :password %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :password_confirmation, "Confirmation" %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.password_field :password_confirmation %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.submit "Create my account", class: "btn btn-large btn-primary" %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;% end %><br />&nbsp;&nbsp;
+      &lt;/div><br />
+    &lt;/div><br />
+    <li>Result (guard still running): ... 6 examples, 4 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Need to pass @user to the new definition, so Replace:</li>
+    def new<br />
+    end<br />
+    <li>With:</li>
+    def new<br />&nbsp;&nbsp;
+      @user = User.new<br />
+    end<br />
+    <li>Results:  ... 6 examples, 4 failures ...</li>
+    <li>Signup Page tests passed but not Signup tests</li>
+    <li>To verify in a green way:  $ rspec spec/requests/user_pages_spec.rb -e "signup page"</li>
+    <ol>
+      <li>Results: .. 2 examples, 0 failures ..</li>
+    </ol>
+  </ol>
+  <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+  <ol>
+    <li>Add in style for form:</li>
+    /* forms */<br />
+
+    input, textarea, select, .uneditable-input {<br />&nbsp;&nbsp;
+      border: 1px solid #bbb;<br />&nbsp;&nbsp;
+      width: 100%;<br />&nbsp;&nbsp;
+      padding: 10px;<br />&nbsp;&nbsp;
+      height: auto;<br />&nbsp;&nbsp;
+      margin-bottom: 15px;<br />&nbsp;&nbsp;
+      @include box_sizing;<br />
+    }<br />
+  </ol>
+  <li>$ rails s</li>
+  <ol>
+    <li>Visit /signup:  looks great!</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add create def:</li>
+    def create<br />&nbsp;&nbsp;
+      @user = User.new(params[:user])<br />&nbsp;&nbsp;
+      if @user.save<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        # Handle a successful save.<br />&nbsp;&nbsp;
+      else<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        render 'new'<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany app/views/users/new.html.erb</li>
+  <ol>
+    <li>add render code to show error messages.  Place just below form_for block heading:</li>
+    &lt;%= render 'shared/error_messages' %><br />
+    <li>this follows Rails convention to use shared/ directory for partials viewed across multiple controllers</li>
+  </ol>
+  <li>$ mkdir app/views/shared/</li>
+  <li>$ geany app/views/shared/_error_messages.html.erb</li>
+  <ol>
+    <li>Pasted in error display partial:</li>
+    &lt;% if @user.errors.any? %><br />&nbsp;&nbsp;
+      &lt;div id="error_explanation"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;div class="alert alert-error"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          The form contains &lt;%= pluralize(@user.errors.count, "error") %>.<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/div><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;ul><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;% @user.errors.full_messages.each do |msg| %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;li>* &lt;%= msg %>&lt;/li><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;% end %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/ul><br />&nbsp;&nbsp;
+      &lt;/div><br />
+    &lt;% end %><br />
+  </ol>
+  <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+  <ol>
+    <li>add some style to error messages (insert after form css):</li>
+    #error_explanation {<br />&nbsp;&nbsp;
+      color: #f00;<br />&nbsp;&nbsp;
+      ul {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        list-style: none;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        margin: 0 0 18px 0;<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+
+    .field_with_errors {<br />&nbsp;&nbsp;
+      @extend .control-group;<br />&nbsp;&nbsp;
+      @extend .error;<br />
+     }<br />
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Replace:</li>
+    # Handle a successful save.
+    <li>With:</li>
+    redirect_to @user<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 35 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany app/views/layouts/application.html.erb</li>
+  <ol>
+    <li>Adding flash functionality.  This is a temporary hash that works in abstract like flash memory.</li>
+    <li>Add just above the body's yeild insert (where main content is inserted):</li>
+      &lt;% flash.each do |key, value| %><br />&nbsp;&nbsp;
+        &lt;div class="alert alert-&lt;%= key %>">&lt;%= value %>&lt;/div><br />
+      &lt;% end %><br />
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add a flash message for a new signup.  Place just before the redirect_to @user:</li>
+    flash[:success] = "Welcome to the Sample App!"<br />
+  </ol>
+  <li>$ rails s</li>
+  <ol>
+    <li>Visited home, clicked signup, entered cookie monster as user, redirected to show with flash message.  Cool!</li>
+    <li>Refreshing page, flash message gone.  Even cooler!</li>
+  </ol>
+  <li>$ git add . && git commit -m "Finished ch 7 main - user signup"</li>
+  <li>$ git co master</li>
+  <li>$ git merge sign-up</li>
+  <li>$ geany config/environments/production.rb</li>
+  <ol>
+    <li>Un-comment line to force ssl in production:</li>
+    config.force_ssl = true<br />
+  </ol>
+  <li>$ git commit -am "Add SSL in Prod"</li>
+  <li>$ git push heroku</li>
+  <li>$ heroku run rake db:migrate</li>
+  <ol>
+    <li>Results: ...</li>
+    Migrating to CreateUsers (20120611023745)<br />
+    ==  CreateUsers: migrating ====================================================<br />
+    -- create_table(:users)<br />
+       -> 0.1679s<br />
+    ==  CreateUsers: migrated (0.1684s) ===========================================<br /><br />
+    Migrating to AddIndexToUsersEmail (20120612070244)<br />
+    ==  AddIndexToUsersEmail: migrating ===========================================<br />
+    -- add_index(:users, :email, {:unique=>true})<br />
+       -> 0.0060s<br />
+    ==  AddIndexToUsersEmail: migrated (0.0061s) ==================================<br /><br />
+    Migrating to AddPasswordDigestToUsers (20120612095839)<br />
+    ==  AddPasswordDigestToUsers: migrating =======================================<br />
+    -- add_column(:users, :password_digest, :string)<br />
+       -> 0.0038s<br />
+    ==  AddPasswordDigestToUsers: migrated (0.0039s) ==============================<br />
+  </ol>  
+  <li>$ heroku open</li>
+  <ol>
+    <li>Added myself as user with example@railstutorial.org as email so that gravatar would appear.</li>
+    <li>Success!  It is using https as well!</li>
+  </ol>
+  <li>$ geany app/helpers/users_helper.rb</li>
+  <ol>
+    <li>This is part of the ch7 excercises</li>
+    <li>Replace current gravatar_for def with this one to incorporate size parameter:</li>
+    def gravatar_for(user, options = { size: 50 })<br />&nbsp;&nbsp;
+      gravatar_id = Digest::MD5::hexdigest(user.email.downcase)<br />&nbsp;&nbsp;
+      size = options[:size]<br />&nbsp;&nbsp;
+      gravatar_url = "https://secure.gravatar.com/avatar/#{gravatar_id}?s=#{size}"<br />&nbsp;&nbsp;
+      image_tag(gravatar_url, alt: user.name, class: "gravatar")<br />
+    end<br />
+    <li>$ rails s</li>
+    <ol>
+      <li>Refreshed /users/1 page, successfully reduced gravatar size</li>
+    </ol>
+  </ol>
+  <li>$ geany config/locales/en.yml</li>
+  <ol>
+    <li>Replace:</li>
+    en:<br />&nbsp;&nbsp;
+      Hello: "Hello World!"<br />
+    <li>With:</li>
+    en:<br />&nbsp;&nbsp;
+      activerecord:<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        attributes:<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          user:<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            password_digest: "Password"<br />    
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Removed presence: true from password validation as part of excercise to change password_digest error message</li>
+  </ol>
 </ol>
