@@ -401,5 +401,50 @@
   <li>$ git push</li>
   <li>$ git push heroku</li>
   <li>$ heroku rake db:migrate</li>
-  
+  <li>$ rails generate cucumber:install</li>
+  <ol>
+    <li>Result:</li>
+    create  config/cucumber.yml<br />
+    create  script/cucumber<br />
+     chmod  script/cucumber<br />
+    create  features/step_definitions<br />
+    create  features/support<br />
+    create  features/support/env.rb<br />
+     exist  lib/tasks<br />
+    create  lib/tasks/cucumber.rake<br />
+      gsub  config/database.yml<br />
+      gsub  config/database.yml<br />
+     force  config/database.yml<br />
+  </ol>
+  <li>$ geany features/signing_in.feature</li>
+  <ol>
+    <li>Add first line to new cucumber feature file:</li>
+    Feature: Signing in
+    <li>Then add some test scenarios:</li>
+  Scenario: Unsuccessful signin<br />&nbsp;&nbsp;
+    Given a user visits the signin page<br />&nbsp;&nbsp;
+    When he submits invalid signin information<br />&nbsp;&nbsp;
+    Then he should see an error message<br />
+  Scenario: Successful signin<br />&nbsp;&nbsp;
+    Given a user visits the signin page<br />&nbsp;&nbsp;&nbsp;&nbsp;
+      And the user has an account<br />&nbsp;&nbsp;&nbsp;&nbsp;
+      And the user submits valid signin information<br />&nbsp;&nbsp;
+    Then he should see his profile page<br />&nbsp;&nbsp;
+      And he should see a signout link<br />
+  </ol>
+  <li>$ cucumber features/</li>
+  <ol>
+    <li>tests fail - no surprise, there's no mapping</li>
+  </ol>
+  <li>$ geany features/step_definitions/authentication_steps.rb</li>
+  <ol>
+    <li>Add the following definitions to this new file:</li>
+  </ol>
+  <li>$ cucumber features/</li>
+  <ol>
+    <li>Results: ...</li>
+    2 scenarios (2 passed)
+    8 steps (8 passed)
+    0m2.326s
+  </ol>
 </ol>

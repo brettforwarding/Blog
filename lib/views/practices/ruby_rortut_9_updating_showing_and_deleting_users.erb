@@ -1,0 +1,440 @@
+<h3>Rails Tutorial Chapter 8: Sign In/Sign Out - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/chapters/updating-showing-and-deleting-users#top">Rails Tutorial - Chapter 9</a></li>
+  <li>$ git branch</li>
+  <ol>
+    <li>Result:  </li>
+    * master<br />
+    modeling-users<br />
+    sign-up<br />
+  </ol>
+  <li>$ git co -b updating-users/li>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Add edit tests (similar to signup tests):</li>
+    describe "edit" do<br />&nbsp;&nbsp;
+      let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      before { visit edit_user_path(user) }<br />&nbsp;&nbsp;
+
+      describe "page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('h1',    text: "Update your profile") }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('title', text: "Edit user") }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_link('change', href: 'http://gravatar.com/emails') }<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      describe "with invalid information" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { click_button "Save changes" }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it { should have_content('error') }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add edit action:</li>
+    def edit<br />&nbsp;&nbsp;
+      @user = User.find(params[:id])<br />
+    end    <br />
+  </ol>
+  <li>$ geany app/views/users/edit.html.erb</li>
+  <ol>
+    <li>Create users edit view and add the code:</li>
+    &lt;% provide(:title, "Edit user") %> <br />
+    &lt;h1>Update your profile&lt;/h1><br />
+
+    &lt;div class="row"><br />&nbsp;&nbsp;
+      &lt;div class="span6 offset3"><br />&nbsp;&nbsp;
+      &lt;%= form_for(@user) do |f| %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= render 'shared/error_messages' %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :name %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.text_field :name %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :email %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.text_field :email %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :password %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.password_field :password %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.label :password_confirmation, "Confirm Password" %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= f.password_field :password_confirmation %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+          &lt;%= f.submit "Save changes", class: "btn btn-large btn-primary" %><br />&nbsp;&nbsp;
+        &lt;% end %><br />&nbsp;&nbsp;
+
+        &lt;%= gravatar_for @user %><br />&nbsp;&nbsp;
+        &lt;a href="http://gravatar.com/emails">change&lt;/a><br />
+      &lt;/div><br />
+    &lt;/div><br />
+    <li>Note how close this is to the users new view.  Factoring this into a partial to share between views is left as an excercise at the end of this chapter.</li>
+    <li>See tutorial documentation for a very interesting discussion on how PUT and POST are handled here.</li>
+  </ol>
+  <li>$ rspec spec/requests/user_pages_spec.rb -e "edit page"</li>
+  <ol>
+    <li>Results: ... 3 examples, 0 failures</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add a test for the settings link that hasn't been used until now</li>
+    <li>...But first...Remove the Before do block inside "with valid information" describe block, then:</li>
+    <li>$ geany spec/support/utilities.rb</li>
+    <ol>
+      <li>Add in a generic sign_in test definition:</li>
+      def sign_in(user)<br />&nbsp;&nbsp;
+        visit signin_path<br />&nbsp;&nbsp;
+        fill_in "Email",    with: user.email<br />&nbsp;&nbsp;
+        fill_in "Password", with: user.password<br />&nbsp;&nbsp;
+        click_button "Sign in"<br />&nbsp;&nbsp;
+        # Sign in when not using Capybara as well.<br />&nbsp;&nbsp;
+        cookies[:remember_token] = user.remember_token<br />
+      end<br />
+    </ol>
+    <li>Return to spec/requests/authentication_pages_spec.rb</li>
+    <li>Now use the following line before the "With valid information" link tests in place of the removed block:</li>
+    before { sign_in user }<br />
+    <li>Then add in the settings link test below (with the other link tests):</li>
+    it { should have_link('Settings', href: edit_user_path(user)) }<br />
+  </ol>
+  <li>$ geany app/views/layouts/_header.html.erb</li>
+  <ol>
+    <li>Add in settings link where '#' is.  Replace:</li>
+    &lt;li>&lt;%= link_to "Settings", '#' %>&lt;/li><br />
+    <li>With:</li>
+    &lt;li>&lt;%= link_to "Settings", edit_user_path(current_user) %>&lt;/li><br />
+    <li>Note: remember that the resources: users line in config/routes.rb is what Rails uses to define named paths such as edit_current_user (see table in tutorial listing 7.3)</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add update action:</li>
+    def update<br />&nbsp;&nbsp;
+      @user = User.find(params[:id])<br />&nbsp;&nbsp;
+      if @user.update_attributes(params[:user])<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        # Handle a successful update.<br />&nbsp;&nbsp;
+      else<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        render 'edit'<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 55 examples, 0 failures</li>
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Add valid information tests to the bottom of the edit test block:</li>
+    describe "with valid information" do<br />&nbsp;&nbsp;
+      let(:new_name)  { "New Name" }<br />&nbsp;&nbsp;
+      let(:new_email) { "new@example.com" }<br />&nbsp;&nbsp;
+      before do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        fill_in "Name",             with: new_name<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        fill_in "Email",            with: new_email<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        fill_in "Password",         with: user.password<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        fill_in "Confirm Password", with: user.password<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        click_button "Save changes"<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      it { should have_selector('title', text: new_name) }<br />&nbsp;&nbsp;
+      it { should have_selector('div.alert.alert-success') }<br />&nbsp;&nbsp;
+      it { should have_link('Sign out', href: signout_path) }<br />&nbsp;&nbsp;
+      specify { user.reload.name.should  == new_name }<br />&nbsp;&nbsp;
+      specify { user.reload.email.should == new_email }<br />
+    end<br />
+    <li>Note the user.reload tests at the end that test to see if update was successful to db</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Now Replace the update placeholder comment:</li>
+    # Handle a successful update.<br />
+    <li>With:</li>
+      flash[:success] = "Profile updated"<br />
+      sign_in @user<br />
+      redirect_to @user<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 60 examples, 0 failures</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add authorization tests in the bottom of authentication block:</li>
+    describe "authorization" do<br />&nbsp;&nbsp;
+
+      describe "for non-signed-in users" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        describe "in the Users controller" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          describe "visiting the edit page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            before { visit edit_user_path(user) }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            it { should have_selector('title', text: 'Sign in') }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          describe "submitting to the update action" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            before { put user_path(user) }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            specify { response.should redirect_to(signin_path) }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Note that the submit is done with a put command.  This is because you can't test the direct response to a submit with a visit(Capybara), get or post.  A put must be used.</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add a before_filter to the top of the class to restrict edit/updates to signed in users:</li>
+    before_filter :signed_in_user, only: [:edit, :update]<br />
+    <li>Now add the definition for a signed in user ate the bottom as a Private method:</li>
+    private<br /><br />&nbsp;&nbsp;
+
+      def signed_in_user<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        redirect_to signin_path, notice: "Please sign in." unless signed_in?<br />&nbsp;&nbsp;
+      end<br />
+    <li>Note that the redirect_to line uses a shortcut of passing an uptions hash to set the flash.  This line is equivalent to:</li>
+    flash[:notice] = "Please sign in."<br />
+    redirect_to signin_path<br />
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>The before_filter on users controller has broken our previous edit tests so we need to fix them.</li>
+    <li>Inside the edit block, Replace:</li>
+    before { visit edit_user_path(user) }<br />
+    <li>With:</li>
+    before do<br />&nbsp;&nbsp;
+      sign_in user<br />&nbsp;&nbsp;
+      visit edit_user_path(user)<br />
+    end<br />
+    <li>Results (guard still running): ... 31 examples, 2 failures ...</li>
+    <li>Tests were supposed to pass...investigating found:</li>
+    <ol>
+      <li>Authorization for edit of un-signed in users failed (2 test).</li>
+      <li>before_filter wasn't in users_controller.rb .  This is what redirects un-signed in users to sign in page.</li>
+    </ol>
+    <li>Fixed by adding line in as I was supposed to have done before</li>
+    <li>Results (guard still running): ... 18 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add tests for a user trying to edit a different user's data in bottom of authorization block:</li>
+    describe "as wrong user" do<br />&nbsp;&nbsp;
+      let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      let(:wrong_user) { FactoryGirl.create(:user, email: "wrong@example.com") }<br />&nbsp;&nbsp;
+      before { sign_in user }<br />&nbsp;&nbsp;
+
+      describe "visiting Users#edit page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit edit_user_path(wrong_user) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should_not have_selector('title', text: full_title('Edit user')) }<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      describe "submitting a PUT request to the Users#update action" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { put user_path(wrong_user) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        specify { response.should redirect_to(root_path) }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add another before_filter, this one for a correct_user:</li>
+    before_filter :correct_user,   only: [:edit, :update]<br />
+    <li>Now add private definitino of correct_user at bottom:</li>
+    def correct _user<br />&nbsp;&nbsp;
+      @user = User.find(params[:id])<br />&nbsp;&nbsp;
+      redirect_to(root_path) unless current_user?(@user)<br />
+    end<br />
+    <li>Results (guard still running): ... 33 examples, 11 failures ...</li>
+  </ol>
+  <li>$ geany app/helpers/sessions_helper.rb</li>
+  <ol>
+    <li>Add definiton for current_user? used in last controller update:</li>
+    def current_user?(user)<br />&nbsp;&nbsp;
+      user == current_user<br />
+    end<br />
+    <li>Results (guard still running): ... 33 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Since the before_filter for current_user contains the @ user definition, we can eliminate the statement from the edit and update blocks.  So, from theses blocks, Remove:</li>
+    @user = User.find(params[:id])<br />
+    <li>Results (guard still running): ... 18 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add friendly forwarding page (forwards to page they went to before being redirected to sign in).  I put this immediately after "in the Users controller" block:</li>
+    describe "when attempting to visit a protected page" do<br />&nbsp;&nbsp;
+      before do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        visit edit_user_path(user)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        fill_in "Email",    with: user.email<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        fill_in "Password", with: user.password<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        click_button "Sign in"<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      describe "after signing in" do<br />&nbsp;&nbsp;
+
+        it "should render the desired protected page" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('title', text: 'Edit user')<br />&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard still running): ... 16 examples, 1 failures ...</li>
+  </ol>
+  <li>$ geany app/helpers/sessions_helper.rb</li>
+  <ol>
+    <li>Add in code to implement friendly forwarding:</li>
+    def redirect_back_or(default)<br />&nbsp;&nbsp;
+      redirect_to(session[:return_to] || default)<br />&nbsp;&nbsp;
+      session.delete(:return_to)<br />
+    end<br />
+
+    def store_location<br />&nbsp;&nbsp;
+      session[:return_to] = request.fullpath<br />
+    end<br />
+    <li>Results (guard still running): ... 16 examples, 1 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add call to store_location to defn of signed_in_user so that it's called by before filter.  Replace:</li>
+    def signed_in_user<br />&nbsp;&nbsp;
+      redirect_to signin_path, notice: "Please sign in." unless signed_in?<br />
+    end<br />
+    <li>With:</li>    
+    def signed_in_user<br />&nbsp;&nbsp;
+      unless signed_in?<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        store_location<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        redirect_to signin_path, notice: "Please sign in."<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard still running): ... 34 examples, 1 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/sessions_controller.rb</li>
+  <ol>
+    <li>To add friendly forwarding to create, Replace:</li>
+    redirect_to user<br />
+    <li>With:</li>
+    redirect_back_or user<br />
+    <li>Results (guard still running): ... 34 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add test that visiting index is protected in the bottom users controller block:</li>
+    describe "visiting the user index" do<br />&nbsp;&nbsp;
+      before { visit users_path }<br />&nbsp;&nbsp;
+      it { should have_selector('title', text: 'Sign in') }<br />
+    end<br />
+    <li>Results (guard still running): ... 17 examples, 1 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add :index to before_filter list for signed_in_user's.  Replace:</li>
+    before_filter :signed_in_user, only: [:edit, :update]<br />
+    <li>With:</li>
+    before_filter :signed_in_user, only: [:index, :edit, :update]<br />
+    <li>And add def for index</li>
+    def index<br />
+    end<br />
+    <li>Results (guard still running): ... 35 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Add index page tests for h1, title and complete list of users (pre-pagination tests):</li>
+    describe "index" do<br />&nbsp;&nbsp;
+      before do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        sign_in FactoryGirl.create(:user)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        FactoryGirl.create(:user, name: "Bob", email: "bob@example.com")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        FactoryGirl.create(:user, name: "Ben", email: "ben@example.com")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        visit users_path<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      it { should have_selector('title', text: 'All users') }<br />&nbsp;&nbsp;
+      it { should have_selector('h1',    text: 'All users') }<br />&nbsp;&nbsp;
+
+      it "should list each user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        User.all.each do |user|<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('li', text: user.name)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard still running): ... 21 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add users to index def:</li>
+    @users = User.all<br />
+    <li>Results (guard still running): ... 21 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/views/users/index.html.erb</li>
+  <ol>
+    <li>Add erb code to this new page:</li>
+    &lt;% provide(:title, 'All users') %><br />
+    &lt;h1>All users&lt;/h1><br />
+
+    &lt;ul class="users"><br />&nbsp;&nbsp;
+      &lt;% @users.each do |user| %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= gravatar_for user, size: 52 %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= link_to user.name, user %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/li><br />&nbsp;&nbsp;
+      &lt;% end %><br />
+    &lt;/ul><br />
+  </ol>
+  <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+  <ol>
+    <li>Add some style to the sheet:</li>
+    /* users index */<br />
+
+    .users {<br />&nbsp;&nbsp;
+      list-style: none;<br />&nbsp;&nbsp;
+      margin: 0;<br />&nbsp;&nbsp;
+      li {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        overflow: auto;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        padding: 10px 0;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        border-top: 1px solid $grayLighter;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &:last-child {<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          border-bottom: 1px solid $grayLighter;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        }<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add users link test for "with valid information" of signin:</li>
+    it { should have_link('Users',    href: users_path) }<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 70 examples, 1 failure ...</li>
+  </ol>
+  <li>$ geany app/views/layouts/_header.html.erb</li>
+  <ol>
+    <li>Replace:</li>
+    &lt;li>&lt;%= link_to "Users", '#' %>&lt;/li><br />
+    <li>With:</li>
+    &lt;li>&lt;%= link_to "Users", users_path %>&lt;/li><br />
+    <li>Results (guard still running): ... 18 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany lib/tasks/sample_data.rake</li>
+  <ol>
+    <li>With the help of the faker gem, we'll add sample users for test purposes.</li>
+    <li>Add this code to this new file:</li>
+    namespace :db do<br />&nbsp;&nbsp;
+      desc "Fill database with sample data"<br />&nbsp;&nbsp;
+      task populate: :environment do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        User.create!(name: "Example User",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     email: "example@railstutorial.org",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     password: "foobar",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     password_confirmation: "foobar")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        99.times do |n|<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          name  = Faker::Name.name<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          email = "example-#{n+1}@railstutorial.org"<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          password  = "password"<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          User.create!(name: name,<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                       email: email,<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                       password: password,<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                       password_confirmation: password)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ rake db:reset</li>
+  <li>$ rake db:populate</li>
+  <li>$ rake db:test:prepare</li>
+
+</ol>
