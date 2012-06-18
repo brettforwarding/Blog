@@ -1,0 +1,697 @@
+<h3>Rails Tutorial Chapter 10: User Microposts - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/chapters/user-microposts#top">Rails Tutorial - Chapter 10</a></li>
+  <li>$ git branch</li>
+  <ol>
+    <li>Result:  </li>
+    * master<br />
+    modeling-users<br />
+    sign-up<br />
+  </ol>
+  <li>$ git co -b user-microposts/li>
+  <li>$ rails generate model Micropost content:string user_id:integer</li>
+  <ol>
+    <li>Result:</li>
+    invoke  active_record<br />
+    create  &nbsp;&nbsp;db/migrate/20120617054702_create_microposts.rb<br />
+    create  &nbsp;&nbsp;app/models/micropost.rb<br />
+    invoke  &nbsp;&nbsp;rspec<br />
+    create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/micropost_spec.rb<br />
+  </ol>
+  <li>$ geany db/migrate/20120617054702_create_microposts.rb</li>
+  <ol>
+    <li>Add index after create table block:</li>
+    add_index :microposts, [:user_id, :created_at]<br />
+  </ol>
+  <li>$ geany spec/models/micropost_spec.rb</li>
+  <ol>
+    <li>Replace pending line in generated spec with initial content:</li>
+    let(:user) { FactoryGirl.create(:user) }<br />
+    before do<br />&nbsp;&nbsp;
+      # This code is wrong!<br />&nbsp;&nbsp;
+      @micropost = Micropost.new(content: "Lorem ipsum", user_id: user.id)<br />
+    end<br />
+
+    subject { @micropost }<br />
+
+    it { should respond_to(:content) }<br />
+    it { should respond_to(:user_id) }<br />
+  </ol>
+  <li>$ rake db:migrate</li>
+  <ol>
+    <li>Result:</li>
+    ==  CreateMicroposts: migrating ===============================================<br />
+    -- create_table(:microposts)<br />&nbsp;&nbsp;&nbsp;
+       -> 0.0807s<br />
+    -- add_index(:microposts, [:user_id, :created_at])<br />&nbsp;&nbsp;&nbsp;
+       -> 0.0032s<br />
+    ==  CreateMicroposts: migrated (0.0859s) ======================================<br />
+  </ol>
+  <li>$ rake db:test:prepare</li>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 81 examples, 0 failures</li>
+  </ol>
+  <li>$ geany </li>
+  <ol>
+    <li>Add when user id is not present test:</li>
+    it { should be_valid }<br />
+
+    describe "when user_id is not present" do<br />&nbsp;&nbsp;
+      before { @micropost.user_id = nil }<br />&nbsp;&nbsp;
+      it { should_not be_valid }<br />
+    end<br />
+    <li>Results (guard still running): ... 4 examples, 1 failure ...</li>
+  </ol>
+  <li>$ geany app/models/micropost.rb</li>
+  <ol>
+    <li>To get tests to pass, add presence validation test here:</li>
+    validates :user_id, presence: true
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 83 examples, 0 failures</li>
+  </ol>
+  <li>$ geany spec/models/micropost_spec.rb</li>
+  <ol>
+    <li>change test to reflect db many-to-1 relationship.  Replace:</li>
+    before do<br />&nbsp;&nbsp;
+      # This code is wrong!<br />&nbsp;&nbsp;
+      @micropost = Micropost.new(content: "Lorem ipsum", user_id: user.id)<br />
+    end<br />
+    <li>With:</li>
+    before { @micropost = user.microposts.build(content: "Lorem ipsum") }<br />
+    <li>Now add test to see if user id is accessible after the user id presence test:</li>
+    describe "accessible attributes" do<br />&nbsp;&nbsp;
+      it "should not allow access to user_id" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        expect do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          Micropost.new(user_id: user.id)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end.should raise_error(ActiveModel::MassAssignmentSecurity::Error)<br />&nbsp;&nbsp;
+      end    <br />
+    end<br />
+  </ol>
+  <li>Results (guard is still running): ... 5 examples, 5 failures ...</li>
+  <li>$ geany config/application.rb</li>
+  <ol>
+    <li>The above mass assignment error should be thrown by default for Rails 3.2.3 but to make sure, check this line:</li>
+    config.active_record.whitelist_attributes = true<br />
+    <li>Verified.  It is there and not commented out.</li>
+  </ol>
+  <li>$ geany app/models/micropost.rb</li>
+  <ol>
+    <li>To make sure user_id isn't accessible, Replace:</li>
+    attr_accessible :content, :user_id<br />
+    <li>With:</li>
+    attr_accessible :content<br />
+  </ol>
+  <li>$ geany spec/models/micropost_spec.rb</li>
+  <ol>
+    <li>To test the user-micropost database relation is present, add this:</li>
+    it { should respond_to(:user) }<br />
+    its(:user) { should == user }<br />
+    <li>Results (guard is still running): ... 7 examples, 7 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Now add test for user-micropost database relation to user side:</li>
+    it { should respond_to(:microposts) }<br />
+    <li>Results (guard is still running): ... 32 examples, 8 failures ...</li>
+  </ol>
+  <li>$ geany app/models/micropost.rb</li>
+  <ol>
+    <li>Now to add the db relationship, add this line to micropost:</li>
+    belongs_to :user<br />
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>To finish relationship, add this line (after has secure password):</li>
+    has_many :microposts<br />
+    <li>Results (guard is still running): ... 32 examples, 0 failures ...</li>
+    <li>And that is how to test for the relationship before adding relationship!</li>
+  </ol>
+  <li>$ geany spec/factories.rb</li>
+  <ol>
+    <li>Add micropost factory under user factory:</li>
+    factory :micropost do<br />&nbsp;&nbsp;
+      content "Lorem ipsum"<br />&nbsp;&nbsp;
+      user<br />
+    end<br />
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add to the bottom of the main user block:</li>
+    describe "micropost associations" do<br />&nbsp;&nbsp;
+
+      before { @user.save }<br />&nbsp;&nbsp;
+      let!(:older_micropost) do <br />&nbsp;&nbsp;&nbsp;&nbsp;
+        FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+      let!(:newer_micropost) do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago)<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      it "should have the right microposts in the right order" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        @user.microposts.should == [newer_micropost, older_micropost]<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 26 examples, 1 failure ...</li>
+    <li>Note: Several new things happening here:</li>
+    <ol>
+      <li>let! ->  The "!" or "bang" tells the compiler to create variable before subsequent code instead of when it is first used - important since we are using the timestamp.</li>
+      <li>FactoryGirl.create(:micropost, user: ...) -> need to call both factories </li>
+      <li>FactoryGirl...created_at: 1.day.ago -> demonstrates the power of FactoryGirl, if it used ActiveRecord we could not set the created_at field since it is automatic and therefore we would have difficulty testing the order (we want microposts to be displayed in reverse chronological order which is not the db default for retrieving records).</li>
+      <li>The test @user.microposts also verifies that an array should be returned (result of has_many relationship) and if the older is first, which is normal, it should fail (just as guard results indicated)</li>
+    </ol>
+  </ol>  
+  <li>$ geany app/models/micropost.rb</li>
+  <ol>
+    <li>Now to get the order test to pass, add:</li>
+    default_scope order: 'microposts.created_at DESC'<br />
+    <li>Results (guard is still running): ... 26 examples, 1 failure ...</li>
+    <li>Oops!  Mistake somewhere - rspec reports "Factory not registered: micropost"</li>
+    <li>Resolved: Re-ran guard -> apparently factory changes aren't picked up while guard is running</li>
+    <li>$ guard</li>
+    <ol>
+      <li>Results: ... 88 examples, 0 failures ...</li>
+    </ol>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add delete test to ensure microposts are deleted with user deletion (place in bottom of micropost association block):</li>
+    it "should destroy associated microposts" do<br />&nbsp;&nbsp;
+      microposts = @user.microposts<br />&nbsp;&nbsp;
+      @user.destroy<br />&nbsp;&nbsp;
+      microposts.each do |micropost|<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        Micropost.find_by_id(micropost.id).should be_nil<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 27 examples, 1 failure ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Add cascading delete.  Replace:</li>
+    has_many :microposts<br />
+    <li>With:</li>
+    has_many :microposts, dependent: :destroy<br />
+    <li>Results (guard is still running): ... 27 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/micropost_spec.rb</li>
+  <ol>
+    <li>Add content tests for blank and too big:</li>
+    describe "with blank content" do<br />&nbsp;&nbsp;
+      before { @micropost.content = " " }<br />&nbsp;&nbsp;
+      it { should_not be_valid }<br />
+    end<br />
+
+    describe "with content that is too long" do<br />&nbsp;&nbsp;
+      before { @micropost.content = "a" * 141 }<br />&nbsp;&nbsp;
+      it { should_not be_valid }<br />
+    end<br />
+    <li>Results (guard is still running): ... 9 examples, 2 failures ...</li>
+  </ol>
+  <li>$ geany app/models/micropost.rb</li>
+  <ol>
+    <li>Add validation:</li>
+    validates :content, presence: true, length: { maximum: 140 }<br />
+    <li>Results (guard is still running): ... 9 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Testing for microposts on users show page.  See <a href="http://ruby.railstutorial.org/chapters/user-microposts#sec:augmenting_the_user_show_page">tutorial</a> for more explanation.</li>
+    <li>Add in the bottom of the main user pages block:</li>
+    describe "profile page" do<br />&nbsp;&nbsp;
+      let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }<br />&nbsp;&nbsp;
+      let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }<br />&nbsp;&nbsp;
+
+      before { visit user_path(user) }<br />&nbsp;&nbsp;
+
+      it { should have_selector('h1',    text: user.name) }<br />&nbsp;&nbsp;
+      it { should have_selector('title', text: user.name) }<br />&nbsp;&nbsp;
+
+      describe "microposts" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_content(m1.content) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_content(m2.content) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_content(user.microposts.count) }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 31 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/views/users/show.html.erb</li>
+  <ol>
+    <li>Add code to display microposts under the aside section:</li>
+    &lt;div class="span8"><br />&nbsp;&nbsp;
+      &lt;% if @user.microposts.any? %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;h3>Microposts (&lt;%= @user.microposts.count %>)&lt;/h3><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;ol class="microposts"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= render @microposts %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/ol><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;%= will_paginate @microposts %><br />&nbsp;&nbsp;
+      &lt;% end %><br />
+    &lt;/div><br />
+    <li>Results (guard is still running): ... 31 examples, 5 failures ...</li>
+  </ol>
+  <li>$ mkdir app/views/microposts</li>
+  <li>$ geany app/views/microposts/_micropost.html.erb</li>
+  <ol>
+    <li>Add the code to this partial referenced by the render in the show page:</li>
+    &lt;li><br />&nbsp;&nbsp;
+      &lt;span class="content">&lt;%= micropost.content %>&lt;/span><br />&nbsp;&nbsp;
+      &lt;span class="timestamp"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        Posted &lt;%= time_ago_in_words(micropost.created_at) %> ago.<br />&nbsp;&nbsp;
+      &lt;/span><br />
+    &lt;/li><br />
+    <li>Results (guard is still running): ... 31 examples, 5 failures ...</li>
+    <li>Note the use of the time_ago_in_words helper method...that's pretty cool</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add microposts line to show def:</li>
+    @microposts = @user.microposts.paginate(page: params[:page])<br />
+    <li>Results (guard is still running): ... 31 examples, 0 failures ...</li>
+    <li>Note: The paginate method is clever enough to use the database relation to get the microposts.</li>
+  </ol>
+  <li>$ geany lib/tasks/sample_data.rake</li>
+  <ol>
+    <li>Make some sample posts add this below the 99 times block:</li>
+    users = User.all(limit: 6)<br />
+    50.times do<br />&nbsp;&nbsp;
+      content = Faker::Lorem.sentence(5)<br />&nbsp;&nbsp;
+      users.each { |user| user.microposts.create!(content: content) }<br />
+    end<br />
+    <li>Note: the limit: 6 ->will limit to the first 6 users</li>
+    <li>Note: The Faker gem method Lorem creates the standard lorem ipsem filler text</li>
+  </ol>
+  <li>$ rake db:reset</li>
+  <li>$ rake db:populate</li>
+  <li>$ rake db:test:prepare</li>
+  <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+  <ol>
+    <li>Add some style:</li>
+    /* microposts */<br />
+
+    .microposts {<br />&nbsp;&nbsp;
+      list-style: none;<br />&nbsp;&nbsp;
+      margin: 10px 0 0 0;<br />&nbsp;&nbsp;
+    <br />
+      li {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        padding: 10px 0;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        border-top: 1px solid #e8e8e8;<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+    .content {<br />&nbsp;&nbsp;
+      display: block;<br />
+    }<br />
+    .timestamp {<br />&nbsp;&nbsp;
+      color: $grayLight;<br />
+    }<br />
+    .gravatar {<br />&nbsp;&nbsp;
+      float: left;<br />&nbsp;&nbsp;
+      margin-right: 10px;<br />
+    }<br />
+    aside {<br />&nbsp;&nbsp;
+      textarea {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        height: 100px;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        margin-bottom: 5px;<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>Add route for microposts (now that we will create the web interface for creating/destroying microposts):</li>
+    resources :microposts, only: [:create, :destroy]
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add in "non sign-in users" of "authorization" block after users controller block:</li>
+    describe "in the Microposts controller" do<br />&nbsp;&nbsp
+
+      describe "submitting to the create action" do<br />&nbsp;&nbsp&nbsp;&nbsp
+        before { post microposts_path }<br />&nbsp;&nbsp&nbsp;&nbsp
+        specify { response.should redirect_to(signin_path) }<br />&nbsp;&nbsp
+      end<br />&nbsp;&nbsp
+
+      describe "submitting to the destroy action" do<br />&nbsp;&nbsp&nbsp;&nbsp
+        before { delete micropost_path(FactoryGirl.create(:micropost)) }<br />&nbsp;&nbsp&nbsp;&nbsp
+        specify { response.should redirect_to(signin_path) }<br />&nbsp;&nbsp
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Cut from private section (so that we may paste into session_helper):</li>
+    def signed_in_user<br />&nbsp;&nbsp;
+      unless signed_in?<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        store_location<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        redirect_to signin_path, notice: "Please sign in."<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  
+  <li>$ geany app/helpers/sessions_helper.rb</li>
+  <ol>
+    <li>Paste in the code cut from users_controller:</li>
+    def signed_in_user<br />&nbsp;&nbsp;
+      unless signed_in?<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        store_location<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        redirect_to signin_path, notice: "Please sign in."<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Note: This was done because the micropost controller needs it too - DRY</li>
+  </ol>
+  <li>$ geany app/controllers/microposts_controller.rb</li>
+  <ol>
+    <li>This is the first time making one from scratch (no call to rails generate).  We did this because the interface for microposts will run primarily through user and staticpages controllers.</li>
+    <li>Add the code to this new file:</li>
+    class MicropostsController < ApplicationController<br />&nbsp;&nbsp;
+      before_filter :signed_in_user<br />&nbsp;&nbsp;
+
+      def create<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      def destroy<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 98 examples, 0 failures ...</li>
+  </ol>
+  <li>$ rails generate integration_test micropost_pages</li>
+  <ol>
+    <li>Result:</li>
+      invoke  rspec<br />
+      create  &nbsp;&nbsp;spec/requests/micropost_pages_spec.rb<br />
+  </ol>
+  <li>$ geany spec/requests/micropost_pages_spec.rb</li>
+  <ol>
+    <li>Replace default describe block with:</li>
+    describe "Micropost pages" do<br />&nbsp;&nbsp;
+
+      subject { page }<br />&nbsp;&nbsp;
+
+      let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      before { sign_in user }<br />&nbsp;&nbsp;
+
+      describe "micropost creation" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit root_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        describe "with invalid information" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          it "should not create a micropost" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            expect { click_button "Post" }.should_not change(Micropost, :count)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          describe "error messages" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            before { click_button "Post" }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            it { should have_content('error') } <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        describe "with valid information" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          before { fill_in 'micropost_content', with: "Lorem ipsum" }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          it "should create a micropost" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            expect { click_button "Post" }.should change(Micropost, :count).by(1)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 101 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/microposts_controller.rb</li>
+  <ol>
+    <li>Add to the create block:</li>
+    @micropost = current_user.microposts.build(params[:micropost])<br />
+    if @micropost.save<br />&nbsp;&nbsp;
+      flash[:success] = "Micropost created!"<br />&nbsp;&nbsp;
+      redirect_to root_path<br />
+    else<br />&nbsp;&nbsp;
+      render 'static_pages/home'<br />
+    end<br />
+    <li>Results (guard is still running): ... 3 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Add to the top:</li>
+    &lt;% if signed_in? %><br />&nbsp;&nbsp;
+      &lt;div class="row"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;aside class="span4"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;section><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= render 'shared/user_info' %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;/section><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;section><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= render 'shared/micropost_form' %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;/section><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/aside><br />&nbsp;&nbsp;
+      &lt;/div>  <br />
+    &lt;% else %><br />
+    <li>Add to the bottom (don't forget to indent the hero group):</li>
+    &lt;% end %><br />
+    <li>Results (guard is still running): ... 13 examples, 3 failures ...</li>
+  </ol>
+  
+  <li>$ geany app/views/shared/_user_info.html.erb</li>
+  <ol>
+    <li>Add to new partial we need to fulfill the render call in home:</li>
+    &lt;a href="&lt;%= user_path(current_user) %>"><br />&nbsp;&nbsp;
+      &lt;%= gravatar_for current_user, size: 52 %><br />
+    &lt;/a><br />
+    &lt;h1><br />&nbsp;&nbsp;
+      &lt;%= current_user.name %><br />
+    &lt;/h1><br />
+    &lt;span><br />&nbsp;&nbsp;
+      &lt;%= link_to "view my profile", current_user %><br />
+    &lt;/span><br />
+    &lt;span><br />&nbsp;&nbsp;
+      &lt;%= pluralize(current_user.microposts.count, "micropost") %><br />
+    &lt;/span><br />
+    <li>Results (guard is still running): ... 13 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/views/shared/_micropost_form.html.erb</li>
+  <ol>
+    <li>Add code in this new partial (required from second render call added to home):</li>
+    &lt;%= form_for(@micropost) do |f| %><br />&nbsp;&nbsp;
+      &lt;%= render 'shared/error_messages', object: f.object %><br />&nbsp;&nbsp;
+      &lt;div class="field"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;%= f.text_area :content, placeholder: "Compose new micropost..." %><br />&nbsp;&nbsp;
+      &lt;/div><br />&nbsp;&nbsp;
+      &lt;%= f.submit "Post", class: "btn btn-large btn-primary" %><br />
+    &lt;% end %><br />
+    <li>Results (guard is still running): ... 13 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/static_pages_controller.rb</li>
+  <ol>
+    <li>Add this line to home def:</li>
+    @micropost = current_user.microposts.build if signed_in?
+  </ol>
+  <li>$ geany app/views/shared/_error_messages.html.erb</li>
+  <ol>
+    <li>Change this page so that it works with other objects aside from just @user.  Replace:</li>
+    &lt;% if @user.errors.any? %>
+    <li>With:</li>
+    &lt;% if object.errors.any? %>
+    <li>And Replace:</li>
+    The form contains &lt;%= pluralize(@user.errors.count, "error") %>.<br />
+    <li>With:</li>
+    The form contains &lt;%= pluralize(object.errors.count, "error") %>.<br />
+    <li>And Replace:</li>
+    &lt;% @user.errors.full_messages.each do |msg| %><br />
+    <li>With:</li>
+    &lt;% object.errors.full_messages.each do |msg| %><br />
+    <li>Results (guard is still running): ... 13 examples, 1 failure ...</li>
+    <li>Oops! Should be error free. No wait, only micropost tests should be error free</li>
+    <li>$ rspec spec/requests/micropost_pages_spec.rb</li>
+    <ol>
+      <li>Results: ... 3 examples, 0 failures ...</li>
+      <li>Bingo!</li>
+    </ol>
+  </ol>
+  <li>$ geany app/views/users/new.html.erb</li>
+  <ol>
+    <li>To fix error message here Replace:</li>
+    &lt;%= render 'shared/error_messages' %><br />
+    <li>With:</li>
+    &lt;%= render 'shared/error_messages', object: f.object %><br />
+  </ol>
+  <li>$ geany app/views/users/edit.html.erb</li>
+  <ol>
+    <li>As with new, Replace:</li>
+    &lt;%= render 'shared/error_messages' %><br />
+    <li>With:</li>
+    &lt;%= render 'shared/error_messages', object: f.object %><br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 101 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add "feed" tests in the bottom of micropost associations block:</li>
+    describe "status" do<br />&nbsp;&nbsp;
+      let(:unfollowed_post) do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      its(:feed) { should include(newer_micropost) }<br />&nbsp;&nbsp;
+      its(:feed) { should include(older_micropost) }<br />&nbsp;&nbsp;
+      its(:feed) { should_not include(unfollowed_post) }<br />
+    end<br />
+    <li>Results (guard is still running): ... 30 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Add preliminary feed def:</li>
+    def feed<br />&nbsp;&nbsp;
+      # This is preliminary. See "Following users" for the full implementation.<br />&nbsp;&nbsp;
+      Micropost.where("user_id = ?", id)<br />
+    end<br />
+    <li>Note that the "?" in "user_id = ?" is there to escape id.  This ensures avoiding sql injection security threat.</li>
+    <li>Note as well that this where statement could be replaced with one word: "microposts" but it used this way due to changes coming up.</li>
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Add in the bottom of the home page block:</li>
+    describe "for signed-in users" do<br />&nbsp;&nbsp;
+      let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      before do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        sign_in user<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        visit root_path<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      it "should render the user's feed" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        user.feed.each do |item|<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector("li##{item.id}", text: item.content)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Note: in the "li##{item.id}", the first # is Capybara syntax for a CSS id and the second # is part of the #{} ruby string interpolation.</li>
+  </ol>
+  <li>$ geany app/controllers/static_pages_controller.rb</li>
+  <ol>
+    <li>Replace the content of the home def with:</li>
+    if signed_in?<br />&nbsp;&nbsp;
+      @micropost  = current_user.microposts.build<br />&nbsp;&nbsp;
+      @feed_items = current_user.feed.paginate(page: params[:page])<br />
+    end<br />
+  </ol>
+  <li>$ geany app/views/shared/_feed.html.erb</li>
+  <ol>
+    <li>Add the code to this new partial:</li>
+    &lt;% if @feed_items.any? %><br />&nbsp;&nbsp;
+      &lt;ol class="microposts"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;%= render partial: 'shared/feed_item', collection: @feed_items %><br />&nbsp;&nbsp;
+      &lt;/ol><br />&nbsp;&nbsp;
+      &lt;%= will_paginate @feed_items %><br />
+    &lt;% end %><br />
+    <li>Note the call to the secondary partial requires the word partial: because of the collection parameter at the end.</li>
+  </ol>
+  <li>$ geany app/views/shared/_feed_item.html.erb</li>
+  <ol>
+    <li>Add code to this new partial:</li>
+    &lt;li id="&lt;%= feed_item.id %>"><br />&nbsp;&nbsp;
+      &lt;%= link_to gravatar_for(feed_item.user), feed_item.user %><br />&nbsp;&nbsp;
+      &lt;span class="user"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;%= link_to feed_item.user.name, feed_item.user %><br />&nbsp;&nbsp;
+      &lt;/span><br />&nbsp;&nbsp;
+      &lt;span class="content">&lt;%= feed_item.content %>&lt;/span><br />&nbsp;&nbsp;
+      &lt;span class="timestamp"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        Posted &lt;%= time_ago_in_words(feed_item.created_at) %> ago.<br />&nbsp;&nbsp;
+      &lt;/span><br />
+    &lt;/li><br />
+  </ol>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Add feed code after aside in the signed-in section:</li>
+    &lt;div class="span8"><br />&nbsp;&nbsp;
+      &lt;h3>Micropost Feed&lt;/h3><br />&nbsp;&nbsp;
+      &lt;%= render 'shared/feed' %><br />
+    &lt;/div><br />
+  </ol>
+  <li>$ geany app/controllers/microposts_controller.rb</li>
+  <ol>
+    <li>Add to the else of the save:</li>
+    @feed_items = []<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 105 examples, 0 failures ...</li>
+  </ol>
+  <li>$ rails s</li>
+  <ol>
+    <li>Lookin good!</li>
+  </ol>
+  <li>$ geany app/views/microposts/_micropost.html.erb</li>
+  <ol>
+    <li>Add delete link code after last span tag:</li>
+    &lt;% if current_user?(micropost.user) %><br />&nbsp;&nbsp;
+      &lt;%= link_to "delete", micropost, method: :delete,<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                       data: { confirm: "You sure?" },<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                       title: micropost.content %><br />
+    &lt;% end %><br />
+  </ol>
+  <li>$ geany app/views/shared/_feed_item.html.erb</li>
+  <ol>
+    <li>Add delete link code after last span tag:</li>
+    &lt;% if current_user?(feed_item.user) %><br />&nbsp;&nbsp;
+      &lt;%= link_to "delete", feed_item, method: :delete,<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                       data: { confirm: "You sure?" },<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                       title: feed_item.content %><br />
+    &lt;% end %><br />
+  </ol>
+  <li>$ geany spec/requests/micropost_pages_spec.rb</li>
+  <ol>
+    <li>Add in the bottom of the main block:</li>
+    describe "micropost destruction" do<br />&nbsp;&nbsp;
+      before { FactoryGirl.create(:micropost, user: user) }<br />&nbsp;&nbsp;
+
+      describe "as correct user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit root_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it "should delete a micropost" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect { click_link "delete" }.should change(Micropost, :count).by(-1)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany app/controllers/microposts_controller.rb</li>
+  <ol>
+    <li>Add a correct_user before_filter:</li>
+    before_filter :correct_user,   only: :destroy<br />
+    <li>Replace:</li>
+    def destroy<br />
+    end<br />
+    <li>With:</li>
+    def destroy<br />&nbsp;&nbsp;
+      @micropost.destroy<br />&nbsp;&nbsp;
+      redirect_to root_path<br />
+    end<br />
+
+    private<br />&nbsp;&nbsp;
+
+      def correct_user<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        @micropost = current_user.microposts.find_by_id(params[:id])<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        redirect_to root_path if @micropost.nil?<br />&nbsp;&nbsp;
+      end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 106 examples, 0 failures ...</li>
+  </ol>
+  <li>$ rails s</li>
+  <ol>
+    <li>Delete works</li>
+  </ol>
+  <li>$ git add . && git commit -m "Finished rails tutorial ch10 user microposts"</li>
+  <li>$ git co master</li>
+  <li>$ git merge user-microposts</li>
+  <li>$ git push</li>
+  <li>$ git push heroku</li>
+  
+</ol>

@@ -1,4 +1,4 @@
-<h3>Rails Tutorial Chapter 8: Sign In/Sign Out - step-by-step</h3>
+<h3>Rails Tutorial Chapter 9: Updating, Showing and Deleting Users - step-by-step</h3>
 <br />
 <ol>
   <li>Start <a href="http://ruby.railstutorial.org/chapters/updating-showing-and-deleting-users#top">Rails Tutorial - Chapter 9</a></li>
@@ -436,5 +436,231 @@
   <li>$ rake db:reset</li>
   <li>$ rake db:populate</li>
   <li>$ rake db:test:prepare</li>
+  <li>$ geany spec/factories.rb</li>
+  <ol>
+    <li>Replace user factory so that we can easily generate multiple users (needed for testing pagination).  Replace:</li>
+    factory :user do<br />&nbsp;&nbsp;
+      name     "Michael Hartl"<br />&nbsp;&nbsp;
+      email    "michael@example.com"<br />&nbsp;&nbsp;
+      password "foobar"<br />&nbsp;&nbsp;
+      password_confirmation "foobar"<br />
+    end<br />
+    <li>With:</li>
+    factory :user do<br />&nbsp;&nbsp;
+      sequence(:name)  { |n| "Person #{n}" }<br />&nbsp;&nbsp;
+      sequence(:email) { |n| "person_#{n}@example.com"}<br />&nbsp;&nbsp;
+      password "foobar"<br />&nbsp;&nbsp;
+      password_confirmation "foobar"<br />
+    end<br />
+    <li>Note: What sequence does here is that for each call to this factory, the value of n is increased.</li>
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Replace (in index block):</li>
+    before do<br />&nbsp;&nbsp;
+      sign_in FactoryGirl.create(:user)<br />&nbsp;&nbsp;
+      FactoryGirl.create(:user, name: "Bob", email: "bob@example.com")<br />&nbsp;&nbsp;
+      FactoryGirl.create(:user, name: "Ben", email: "ben@example.com")<br />&nbsp;&nbsp;
+      visit users_path<br />
+    end<br />
+    <li>With:</li>
+    let(:user) { FactoryGirl.create(:user) }<br />
+  
+    before(:all) { 30.times { FactoryGirl.create(:user) } }<br />
+    after(:all)  { User.delete_all }<br />
+    
+    before(:each) do<br />&nbsp;&nbsp;
+      sign_in user<br />&nbsp;&nbsp;
+      visit users_path<br />
+    end<br />
+    <li>Also, Replace:</li>
+    it "should list each user" do<br />
+      User.all.each do |user|<br />
+        page.should have_selector('li', text: user.name)<br />
+      end<br />
+    end<br />
+    <li>With:</li>
+    describe "pagination" do<br />&nbsp;&nbsp;
 
+      it { should have_selector('div.pagination') }<br />&nbsp;&nbsp;
+
+      it "should list each user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        User.paginate(page: 1).each do |user|<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          page.should have_selector('li', text: user.name)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany app/views/users/index.html.erb</li>
+  <ol>
+    <li>Add will_paginate gem call above and below users list (so add this twice in total):</li>
+    &lt;%= will_paginate %><br />
+    <li>Note: This gem automatically looks for an @users object of class ActiveRecord::Relation which is exacly what the Users.paginate returns.</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Change the @users line in the index def to use pagination as well.  Replace:</li>
+    @users = User.all<br />
+    <li>With:</li>
+    @users = User.paginate(page: params[:page])<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 71 examples, 0 failures</li>
+  </ol>
+  <li>$ geany app/views/users/index.html.er</li>
+  <ol>
+    <li>Refactoring to make use of Rails power.  Given that we can use render to call a partial up AND Rails will infer that rendering @users relates to multiple instances of user.</li>
+    <li>Replace:</li>
+    &lt;ul class="users"><br />&nbsp;&nbsp;
+      &lt;% @users.each do |user| %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;li><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= gravatar_for user, size: 52 %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= link_to user.name, user %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/li><br />&nbsp;&nbsp;
+      &lt;% end %><br />
+    &lt;/ul><br />
+    <li>With:</li>
+    &lt;ul class="users"><br />&nbsp;&nbsp;
+      &lt;%= render @users %><br />
+    &lt;/ul><br />
+  </ol>
+  <li>$ geany app/views/users/_user.html.erb</li>
+  <ol>
+    <li>Add code to new partial:</li>
+    &lt;li><br />&nbsp;&nbsp;
+      &lt;%= gravatar_for user, size: 52 %><br />&nbsp;&nbsp;
+      &lt;%= link_to user.name, user %><br />
+    &lt;/li><br /> 
+  </ol>  
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 71 examples, 0 failures</li>
+    <li>Successful refactor.  Confidence high because of good tests.</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>For the delete user function, we need an admin.</li>
+    <li>Add test for admin field above the :authenticate field test:</li>
+    it { should respond_to(:admin) }<br />
+    <li>Then add below the should be_valid test:</li>
+    it { should_not be_admin }<br />
+    <li>Finally, add admin test block just below last addition:</li>
+    describe "with admin attribute set to 'true'" do<br />&nbsp;&nbsp;
+      before { @user.toggle!(:admin) }<br />&nbsp;&nbsp;
+
+      it { should be_admin }<br />
+    end<br />
+  </ol>
+  <li>$ rails generate migration add_admin_to_users admin:boolean</li>
+  <ol>
+    <li>Result:</li>
+      invoke  active_record<br />
+      create  &nbsp;&nbsp;db/migrate/20120617033707_add_admin_to_users.rb<br />
+  </ol>
+  <li>$ geany db/migrate/20120617033707_add_admin_to_users.rb</li>
+  <ol>
+    <li>Replace:</li>
+    add_column :users, :admin, :boolean<br />
+    <li>With:</li>
+    add_column :users, :admin, :boolean, default: false<br />
+  </ol>
+  <li>$ rake db:migrate</li>
+  <li>$ rake db:test:prepare</li>
+  <li>$ rspec spec/models/user_spec.rb</li>
+  <ol>
+    <li>Results: ... 24 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany lib/tasks/sample_data.rake</li>
+  <ol>
+    <li>Replace:</li>
+    User.create!(name: "Example User",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                 email: "example@railstutorial.org",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                 password: "foobar",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                 password_confirmation: "foobar")<br />
+    <li>With:</li>
+    admin = User.create!(name: "Example User",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                 email: "example@railstutorial.org",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                 password: "foobar",<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                 password_confirmation: "foobar")<br />
+    admin.toggle!(:admin)
+  </ol>
+  <li>$ rake db:reset</li>
+  <li>$ rake db:populate</li>
+  <li>$ rake db:test:prepare</li>  
+  <li>$ geany app/spec/factories.rb</li>
+  <ol>
+    <li>Add admin factory inside the bottom of user factory:</li>
+    factory :admin do<br />&nbsp;&nbsp;
+      admin true<br />
+    end<br />
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Add delete link test inside bottom of index block:</li>
+    describe "delete links" do<br />&nbsp;&nbsp;
+
+      it { should_not have_link('delete') }<br />&nbsp;&nbsp;
+
+      describe "as an admin user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        let(:admin) { FactoryGirl.create(:admin) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          sign_in admin<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit users_path<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it { should have_link('delete', href: user_path(User.first)) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it "should be able to delete another user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect { click_link('delete') }.to change(User, :count).by(-1)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should_not have_link('delete', href: user_path(admin)) }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany app/views/users/_user.html.erb</li>
+  <ol>
+    <li>Add just after link_to insert:</li>
+    &lt;% if current_user.admin? && !current_user?(user) %><br />&nbsp;&nbsp;&nbsp;
+      | &lt;%= link_to "delete", user, method: :delete,
+                                    data: { confirm: "You sure?" } %><br />
+    &lt;% end %><br />
+    <li>Note: Rails fakes a Destroy with the delete method by using javascript - a form must be used if not enabling javascript</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add destroy action below create action:</li>
+    def destroy<br />&nbsp;&nbsp;
+      User.find(params[:id]).destroy<br />&nbsp;&nbsp;
+      flash[:success] = "User destroyed."<br />&nbsp;&nbsp;
+      redirect_to users_path<br />
+    end<br />
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add to the end inside authorization block:</li>
+    describe "as non-admin user" do<br />
+      let(:user) { FactoryGirl.create(:user) }<br />
+      let(:non_admin) { FactoryGirl.create(:user) }<br />
+
+      before { sign_in non_admin }<br />
+
+      describe "submitting a DELETE request to the Users#destroy action" do<br />
+        before { delete user_path(user) }<br />
+        specify { response.should redirect_to(root_path) }        <br />
+      end<br />
+    end<br />
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Add another before_filter for admin to top:</li>
+    before_filter :admin_user,     only: :destroy<br />
+    <li>Also, add admin_user def in private area at the bottom:</li>
+    def admin_user<br />&nbsp;&nbsp;
+      redirect_to(root_path) unless current_user.admin?<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 79 examples, 0 failures</li>
+  </ol>
 </ol>
