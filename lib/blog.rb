@@ -84,4 +84,8 @@ module Blog
     m = 'environment/' + m
     erb :index, :locals => {:content => m}
   end
+  
+  get '/notes' do 
+    erb :index, :locals => {:content => "notes"}
+  end
 end

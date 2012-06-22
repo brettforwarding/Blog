@@ -1,0 +1,699 @@
+<h3>Rails Tutorial Chapter 10: User Microposts - step-by-step</h3>
+<br />
+<ol>
+  <li>Start <a href="http://ruby.railstutorial.org/chapters/following-users#top">Rails Tutorial - Chapter 11</a></li>
+  <li>$ git branch</li>
+  <ol>
+    <li>Result:  </li>
+    * master<br />
+    modeling-users<br />
+    sign-in-out<br />
+    sign-up<br />
+    updating-users<br />
+    user-microposts<br />
+  </ol>
+  <li>$ git co -b following-users</li>
+  <li>$ rails generate model Relationship follower_id:integer followed_id:integer</li>
+  <ol>
+    <li>Result:</li>
+      invoke  active_record<br />
+      create  &nbsp;&nbsp;db/migrate/20120618121320_create_relationships.rb<br />
+      create  &nbsp;&nbsp;app/models/relationship.rb<br />
+      invoke  &nbsp;&nbsp;rspec<br />
+      create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/relationship_spec.rb<br />
+    <li>This part of the tutorial is a little awkward.  Since users are the source and destination  of "following", in SQL this would be a circular many-to-many join.  Saying this in a non-SQL way is...verbose.  Basically the join table is a 2-col primary key: 1 col is the user id of the follower and the 2nd is the user id of the followed.</li>
+  </ol>
+  </li>
+  <li>$ geany db/migrate/20120618121320_create_relationships.rb</li>
+  <ol>
+    <li>Add the indices after the create table block:</li>
+    add_index :relationships, :follower_id<br />
+    add_index :relationships, :followed_id<br />
+    add_index :relationships, [:follower_id, :followed_id], unique: true<br />
+    <li>Note: this must be standard for creating a 2-col primary key.  Now, we need the joins.</li>
+    <li>Note also how Hartl named the table: relationships.  That's a weird name for a join table.</li>
+  </ol>
+  <li>$ rake db:migrate</li>
+  <li>$ rake db:test:prepare</li>
+  <li>$ geany spec/models/relationship_spec.rb</li>
+  <ol>
+    <li>Replace generated relationship def content with:</li>
+    let(:follower) { FactoryGirl.create(:user) }<br />
+    let(:followed) { FactoryGirl.create(:user) }<br />
+    let(:relationship) { follower.relationships.build(followed_id: followed.id) }<br />
+
+    subject { relationship }<br />
+
+    it { should be_valid }<br />
+
+    describe "accessible attributes" do<br />&nbsp;&nbsp;
+      it "should not allow access to follower_id" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        expect do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          Relationship.new(follower_id: follower.id)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end.should raise_error(ActiveModel::MassAssignmentSecurity::Error)<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Note: So, this is testing the creation of a new row with follower_id only it seems to me even though it's in the subject of a user relationship.  Not sure I fully understand what exactly is going on here.  Also, the reason I don't like the table name Relationships is obvious here.</li>
+    <li>Note also, again, that the model is "Relationship" but the table is "relationships" - auto-pluralization by rails generator.  There is more to the structure than a direct mapping to SQL.</li>
+  </ol>
+  
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add, after feed, a test for the relationships attribute:</li>
+    it { should respond_to(:relationships) }<br />
+  </ol>
+  
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Add the relationship to the "relationships"table:</li>
+    has_many :relationships, foreign_key: "follower_id", dependent: :destroy<br />
+    <li>Note: Unlike with the micropost relationship, the foreign key has to be explicit here since it is not the same name as the primary key of the source table so rails can't infer it.</li>
+  </ol>
+  <li>$ geany spec/models/relationship_spec.rb</li>
+  <ol>
+    <li>Add in the bottom of the main block, the tests for the relationship from the relationships table to the user table:</li>
+    describe "follower methods" do    <br />&nbsp;&nbsp;
+      it { should respond_to(:follower) }<br />&nbsp;&nbsp;
+      it { should respond_to(:followed) }<br />&nbsp;&nbsp;
+      its(:follower) { should == follower }<br />&nbsp;&nbsp;
+      its(:followed) { should == followed }<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 112 examples, 5 failures ...</li>
+  </ol>
+  <li>$ geany app/models/relationship.rb</li>
+  <ol>
+    <li>Replace:</li>
+    attr_accessible :followed_id, :follower_id<br />
+    <li>With:</li>
+    attr_accessible :followed_id<br />
+
+    belongs_to :follower, class_name: "User"<br />
+    belongs_to :followed, class_name: "User"<br />
+    <li>Note that we've made follower id non-accessible and that we defined relationships to user table for both fields.</li>
+    <li>Results (guard is still running): ... 6 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/relationship_spec.rb</li>
+  <ol>
+    <li>Add standard required field tests in the bottom of the main block:</li>
+    describe "when followed id is not present" do<br />&nbsp;&nbsp;
+      before { relationship.followed_id = nil }<br />&nbsp;&nbsp;
+      it { should_not be_valid }<br />
+    end<br />
+
+    describe "when follower id is not present" do<br />&nbsp;&nbsp;
+      before { relationship.follower_id = nil }<br />&nbsp;&nbsp;
+      it { should_not be_valid }<br />
+    end<br />
+    <li>Results (guard is still running): ... 8 examples, 2 failures ...</li>
+  </ol>
+  <li>$ geany app/models/relationship.rb</li>
+  <ol>
+    <li>Add field validations to make the tests succeed:</li>
+    validates :follower_id, presence: true<br />
+    validates :followed_id, presence: true<br />
+    <li>Results (guard is still running): ... 8 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add test for the new relationship association to be defined:</li>
+    it { should respond_to(:followed_users) }<br />
+    <li>Results (guard is still running): ... 33 examples, 1 failure ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Add the new relationship:</li>
+    has_many :followed_users, through: :relationships, source: :followed<br />
+    <li>Results (guard is still running): ... 33 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add tests for following method we will define:</li>
+    it { should respond_to(:following?) }<br />
+    it { should respond_to(:follow!) }<br />
+    <li>Also, add in the bottom of the main block:</li>
+    describe "following" do<br />&nbsp;&nbsp;
+      let(:other_user) { FactoryGirl.create(:user) }    <br />&nbsp;&nbsp;
+      before do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        @user.save<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        @user.follow!(other_user)<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      it { should be_following(other_user) }<br />&nbsp;&nbsp;
+      its(:followed_users) { should include(other_user) }<br />
+    end<br />
+    <li>Results (guard is still running): ... 37 examples, 4 failures ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Add the two new methods after the feed def:</li>
+    def following?(other_user)<br />&nbsp;&nbsp;
+      relationships.find_by_followed_id(other_user.id)<br />
+    end<br />
+
+    def follow!(other_user)<br />&nbsp;&nbsp;
+      relationships.create!(followed_id: other_user.id)<br />
+    end<br />
+    <li>Results (guard is still running): ... 37 examples, 0 failures ...</li>
+    <li>Note that the "!" in "follow!" signifies that an exception be raised upon failure</li>
+    <li>Note also that relationships.create! is the same as self.relationships.create!.  Putting the self is optional, it can be inferred.</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add test for an unfollow! method to be defined:</li>
+    it { should respond_to(:unfollow!) }<br />
+    <li>And Add in the bottom of the follow block:</li>
+    describe "and unfollowing" do<br />&nbsp;&nbsp;
+      before { @user.unfollow!(other_user) }<br />&nbsp;&nbsp;
+
+      it { should_not be_following(other_user) }<br />&nbsp;&nbsp;
+      its(:followed_users) { should_not include(other_user) }<br />
+    end<br />
+    <li>Results (guard is still running): ... 40 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Add the unfollow! def:</li>
+    def unfollow!(other_user)<br />&nbsp;&nbsp;
+      relationships.find_by_followed_id(other_user.id).destroy<br />
+    end<br />
+    <li>Results (guard is still running): ... 40 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add the test for followers (instead of followed users):</li>
+    it { should respond_to(:reverse_relationships) }<br />
+    it { should respond_to(:followers) }<br />
+    <li>And Add above the "and unfollowing" block:</li>
+    describe "followed user" do<br />&nbsp;&nbsp;
+      subject { other_user }<br />&nbsp;&nbsp;
+      its(:followers) { should include(@user) }<br />
+    end<br />
+    <li>Results (guard is still running): ... 43 examples, 3 failures ...</li>
+    <li>Note: The subject was switched!!</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Another confusing tutorial description.  Hartl refers to the reverse_relationships like a temporary table.  It would seem more like just another sql relation definition.  However, there is some inteference here as I noted earlier.  The model is Relationship and that is what is referenced.</li>
+    <li>Add the followers relationship definition:</li>
+    has_many :reverse_relationships, foreign_key: "followed_id",
+                                     class_name:  "Relationship",
+                                     dependent:   :destroy<br />
+    has_many :followers, through: :reverse_relationships, source: :follower<br />
+    <li>Results (guard is still running): ... 43 examples, 0 failures ...</li>
+    <li>Note: the "source: :follower" could have been left off since Rails could have infered it by singularizing :followers.  Don't forget that :follower is defined in the relationship.rb model.</li>
+  </ol>
+  <li>$ geany lib/tasks/sample_data.rake</li>
+  <ol>
+    <li>A little refactoring to make pretty first.  Replace top 3 lines with:</li>
+    namespace :db do<br />
+      desc "Fill database with sample data"<br />
+      task populate: :environment do<br />
+        make_users<br />
+        make_microposts<br />
+        make_relationships<br />
+      end<br />
+    end<br />
+    <li>Then, put the user creation section and the micropost creation section in their respective blocks with name's as indicated above.</li>
+    <li>Finally add the make_relationships block to the bottom:</li>
+    def make_relationships<br />&nbsp;&nbsp;
+      users = User.all<br />&nbsp;&nbsp;
+      user  = users.first<br />&nbsp;&nbsp;
+      followed_users = users[2..50]<br />&nbsp;&nbsp;
+      followers      = users[3..40]<br />&nbsp;&nbsp;
+      followed_users.each { |followed| user.follow!(followed) }<br />&nbsp;&nbsp;
+      followers.each      { |follower| follower.follow!(user) }<br />
+    end<br />
+  </ol>
+  <li>$ rake db:migrate</li>
+  <li>$ rake db:populate</li>
+  <li>$ rake db:test:prepare</li>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>Replace:</li>
+    resources :users<br />
+    <li>With:</li>
+    resources :users do<br />&nbsp;&nbsp;
+      member do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        get :following, :followers<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Note the use of the method "member" this will cause the Rails router to tie it in with user ids</li>
+  </ol>
+  <li>$ geany spec/requests/static_pages_spec.rb</li>
+  <ol>
+    <li>Add the test block under the feed test block for signed-in users:</li>
+    describe "follower/following counts" do<br />&nbsp;&nbsp;
+      let(:other_user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      before do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        other_user.follow!(user)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        visit root_path<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      it { should have_link("0 following", href: following_user_path(user)) }<br />&nbsp;&nbsp;
+      it { should have_link("1 followers", href: followers_user_path(user)) }<br />
+    end<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 129 examples, 2 failures ...</li>
+  </ol>
+  <li>$ geany app/views/shared/_stats.html.erb</li>
+  <ol>
+    <li>Add code into new partial:</li>
+    &lt;% @user ||= current_user %><br />
+    &lt;div class="stats"><br />&nbsp;&nbsp;
+      &lt;a href="&lt;%= following_user_path(@user) %>"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;strong id="following" class="stat"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= @user.followed_users.count %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/strong><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        following<br />&nbsp;&nbsp;
+      &lt;/a><br />&nbsp;&nbsp;
+      &lt;a href="&lt;%= followers_user_path(@user) %>"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;strong id="followers" class="stat"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= @user.followers.count %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/strong><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        followers<br />&nbsp;&nbsp;
+      &lt;/a><br />
+    &lt;/div><br />
+  </ol>
+  <li>$ geany app/views/static_pages/home.html.erb</li>
+  <ol>
+    <li>Add the partial reference between the references to user info and microposts in if signed_in?:</li>
+    &lt;section><br />&nbsp;&nbsp;
+      &lt;%= render 'shared/stats' %><br />
+    &lt;/section><br />
+    <li>Results (guard is still running): ... 13 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany app/assets/stylesheets/custom.css.scss</li>
+  <ol>
+    <li>Add to the bottom of the sidebar section:</li>
+    .stats {<br />&nbsp;&nbsp;
+      overflow: auto;<br />&nbsp;&nbsp;
+      a {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        float: left;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        padding: 0 10px;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        border-left: 1px solid $grayLighter;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        color: gray;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &:first-child {<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          padding-left: 0;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          border: 0;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &:hover {<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          text-decoration: none;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          color: $blue;<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        }<br />&nbsp;&nbsp;
+      }<br />&nbsp;&nbsp;
+      strong {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        display: block;<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+    <br />
+    .user_avatars {<br />&nbsp;&nbsp;
+      overflow: auto;<br />&nbsp;&nbsp;
+      margin-top: 10px;<br />&nbsp;&nbsp;
+      .gravatar {<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        margin: 1px 1px;<br />&nbsp;&nbsp;
+      }<br />
+    }<br />
+  </ol>
+  <li>$ geany app/views/users/_follow_form.html.erb</li>
+  <ol>
+    <li>Add code to this new partial:</li>
+    &lt;% unless current_user?(@user) %><br />&nbsp;&nbsp;
+      &lt;div id="follow_form"><br />&nbsp;&nbsp;
+      &lt;% if current_user.following?(@user) %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;%= render 'unfollow' %><br />&nbsp;&nbsp;
+      &lt;% else %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;%= render 'follow' %><br />&nbsp;&nbsp;
+      &lt;% end %><br />&nbsp;&nbsp;
+      &lt;/div><br />
+    &lt;% end %><br />
+    <li>Results (guard is still running): ... 44 examples, 3 failures ...</li>
+  </ol>
+  <li>$ geany config/routes.rb</li>
+  <ol>
+    <li>Add routes for relationships:</li>
+    resources :relationships, only: [:create, :destroy]<br />
+  </ol>
+  <li>$ guard</li>
+  <ol>
+    <li>Results: ... 129 examples, 0 failures ...</li>
+    <li>Note: Tests would have passed earlier had I restarted.</li>
+  </ol>
+  <li>$ geany app/views/users/_follow.html.erb</li>
+  <ol>
+    <li>Add code to new partial:</li>
+    &lt;%= form_for(current_user.relationships.build(followed_id: @user.id)) do |f| %><br />&nbsp;&nbsp;
+      &lt;div>&lt;%= f.hidden_field :followed_id %>&lt;/div><br />&nbsp;&nbsp;
+      &lt;%= f.submit "Follow", class: "btn btn-large btn-primary" %><br />
+    &lt;% end %><br />
+    <li>Results (guard is still running): ... 31 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany app/views/users/_unfollow.html.erb</li>
+  <ol>
+    <li>Add code to new partial:</li>
+    &lt;%= form_for(current_user.relationships.find_by_followed_id(@user),<br />&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; html: { method: :delete }) do |f| %><br />&nbsp;&nbsp;
+      &lt;%= f.submit "Unfollow", class: "btn btn-large" %><br />
+    &lt;% end %><br />
+    <li>Results (guard is still running): ... 31 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany app/views/users/show.html.erb</li>
+  <ol>
+    <li>Add this to the bottom of the aside:</li>
+    &lt;section><br />&nbsp;&nbsp;
+      &lt;%= render 'shared/stats' %><br />
+    &lt;/section><br />
+    <li>And Add just below span8 div:</li>
+    &lt;%= render 'follow_form' if signed_in? %><br />
+    <li>Results (guard is still running): ... 31 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add into the bottom of the users controller block for authorization,not signed in:</li>
+    describe "visiting the following page" do<br />&nbsp;&nbsp;
+      before { visit following_user_path(user) }<br />&nbsp;&nbsp;
+      it { should have_selector('title', text: 'Sign in') }<br />
+    end<br />
+
+    describe "visiting the followers page" do<br />&nbsp;&nbsp;
+      before { visit followers_user_path(user) }<br />&nbsp;&nbsp;
+      it { should have_selector('title', text: 'Sign in') }<br />
+    end<br />
+    <li>Results (guard is still running): ... 23 examples, 2 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Add in the bottom of the main block:</li>
+    describe "following/followers" do<br />&nbsp;&nbsp;
+      let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      let(:other_user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      before { user.follow!(other_user) }<br />&nbsp;&nbsp;
+
+      describe "followed users" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          sign_in user<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit following_user_path(user)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it { should have_selector('title', text: full_title('Following')) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('h3', text: 'Following') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_link(other_user.name, href: user_path(other_user)) }<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      describe "followers" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          sign_in other_user<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit followers_user_path(other_user)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it { should have_selector('title', text: full_title('Followers')) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_selector('h3', text: 'Followers') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        it { should have_link(user.name, href: user_path(user)) }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 60 examples, 8 failures ...</li>
+  </ol>
+  <li>$ geany app/controllers/users_controller.rb</li>
+  <ol>
+    <li>Replace:</li>
+    before_filter :signed_in_user, only: [:index, :edit, :update]<br />
+    <li>With:</li>
+    before_filter :signed_in_user, <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  only: [:index, :edit, :update, :destroy, :following, :followers]<br />
+    <li>Add defs for following and followers:</li>
+    def following<br />&nbsp;&nbsp;
+      @title = "Following"<br />&nbsp;&nbsp;
+      @user = User.find(params[:id])<br />&nbsp;&nbsp;
+      @users = @user.followed_users.paginate(page: params[:page])<br />&nbsp;&nbsp;
+      render 'show_follow'<br />
+    end<br />
+
+    def followers<br />&nbsp;&nbsp;
+      @title = "Followers"<br />&nbsp;&nbsp;
+      @user = User.find(params[:id])<br />&nbsp;&nbsp;
+      @users = @user.followers.paginate(page: params[:page])<br />&nbsp;&nbsp;
+      render 'show_follow'<br />
+    end<br />
+    <li>Results (guard is still running): ... 60 examples, 6 failures ...</li>
+    <li>Note that both defs make a render call to show_follow.  We define that next.</li>
+  </ol>
+  <li>$ geany app/views/users/show_follow.html.erb</li>
+  <ol>
+    <li>Add the code to the new page:</li>
+    &lt;% provide(:title, @title) %><br />
+    &lt;div class="row"><br />&nbsp;&nbsp;
+      &lt;aside class="span4"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;section><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= gravatar_for @user %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;h1>&lt;%= @user.name %>&lt;/h1><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;span>&lt;%= link_to "view my profile", @user %>&lt;/span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;span>&lt;b>Microposts:&lt;/b> &lt;%= @user.microposts.count %>&lt;/span><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/section><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;section><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= render 'shared/stats' %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;% if @users.any? %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;div class="user_avatars"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;% @users.each do |user| %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;%= link_to gravatar_for(user, size: 30), user %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &lt;% end %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;/div><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;% end %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;/section><br />&nbsp;&nbsp;
+      &lt;/aside><br />&nbsp;&nbsp;
+      &lt;div class="span8"><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;h3>&lt;%= @title %>&lt;/h3><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;% if @users.any? %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;ul class="users"><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &lt;%= render @users %><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;/ul><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &lt;%= will_paginate %><br />&nbsp;&nbsp;&nbsp;&nbsp;
+        &lt;% end %><br />&nbsp;&nbsp;
+      &lt;/div><br />
+    &lt;/div><br />
+    <li>Results (guard is still running): ... 60 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/user_pages_spec.rb</li>
+  <ol>
+    <li>Add tests in bottom of profile page block:</li>
+    describe "follow/unfollow buttons" do<br />&nbsp;&nbsp;
+      let(:other_user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      before { sign_in user }<br />&nbsp;&nbsp;
+
+      describe "following a user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { visit user_path(other_user) }<br />&nbsp;&nbsp;
+
+        it "should increment the followed user count" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            click_button "Follow"<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end.to change(user.followed_users, :count).by(1)<br />&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+
+        it "should increment the other user's followers count" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          expect do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            click_button "Follow"<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          end.to change(other_user.followers, :count).by(1)<br />&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+
+        describe "toggling the button" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          before { click_button "Follow" }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          it { should have_selector('input', value: 'Unfollow') }<br />&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      describe "unfollowing a user" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          user.follow!(other_user)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          visit user_path(other_user)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it "should decrement the followed user count" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            click_button "Unfollow"<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end.to change(user.followed_users, :count).by(-1)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it "should decrement the other user's followers count" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            click_button "Unfollow"<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end.to change(other_user.followers, :count).by(-1)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        describe "toggling the button" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          before { click_button "Unfollow" }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          it { should have_selector('input', value: 'Follow') }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 43 examples, 6 failures ...</li>
+  </ol>
+  <li>$ geany spec/requests/authentication_pages_spec.rb</li>
+  <ol>
+    <li>Add tests for relationship controller (to be defined) under the user controller block:</li>
+    describe "in the Relationships controller" do<br />&nbsp;&nbsp;
+      describe "submitting to the create action" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { post relationships_path }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        specify { response.should redirect_to(signin_path) }<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      describe "submitting to the destroy action" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        before { delete relationship_path(1) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        specify { response.should redirect_to(signin_path) }<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 68 examples, 8 failures ...</li>
+    <li>Note the redirect test doesn't require a relationship object so, for simplicity, the relationship id 1 is hard-coded. This works because the user should be redirected before the application ever tries to retrieve the relationship with this id.</li>
+  </ol>
+  <li>$ geany app/controllers/relationships_controller.rb</li>
+  <ol>
+    <li>Add the code to the new controller:</li>
+    class RelationshipsController < ApplicationController<br />&nbsp;&nbsp;
+      before_filter :signed_in_user<br />&nbsp;&nbsp;
+
+      def create<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        @user = User.find(params[:relationship][:followed_id])<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        current_user.follow!(@user)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        redirect_to @user<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      def destroy<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        @user = Relationship.find(params[:id]).followed<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        current_user.unfollow!(@user)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        redirect_to @user<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 68 examples, 8 failures ...</li>
+  </ol>
+  <li>$ geany app/views/users/_follow.html.erb</li>
+  <ol>
+    <li>Add inside end of the form_for parentheses:</li>
+    , remote: true<br />
+    <li>Results (guard is still running): ... 43 examples, 0 failures ...</li>
+    <li>Note: This allows more Rails magic!  This is invokes a Rails two step process to convert the form to an Ajax form.</li>
+  </ol>
+  <li>$ geany app/views/users/_unfollow.html.erb</li>
+  <ol>
+    <li>Again, Add inside the end of the form_for parentheses</li>
+    , remote: true<br />
+    <li>Results (guard is still running): ... 43 examples, 0 failures ...</li>
+  </ol>
+  <li>$ mkdir spec/controllers</li>
+  <li>$ geany spec/controllers/relationships_controller_spec.rb</li>
+  <ol>
+    <li>Add test code to this new controller test file (first time using controller tests instead of integration tests):</li>
+    require 'spec_helper'<br />
+
+    describe RelationshipsController do<br />&nbsp;&nbsp;
+
+      let(:user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+      let(:other_user) { FactoryGirl.create(:user) }<br />&nbsp;&nbsp;
+
+      before { sign_in user }<br />&nbsp;&nbsp;
+
+      describe "creating a relationship with Ajax" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it "should increment the Relationship count" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            xhr :post, :create, relationship: { followed_id: other_user.id }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end.should change(Relationship, :count).by(1)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it "should respond with success" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          xhr :post, :create, relationship: { followed_id: other_user.id }<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          response.should be_success<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />&nbsp;&nbsp;
+
+      describe "destroying a relationship with Ajax" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        before { user.follow!(other_user) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        let(:relationship) { user.relationships.find_by_followed_id(other_user) }<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it "should decrement the Relationship count" do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          expect do<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            xhr :delete, :destroy, id: relationship.id<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          end.should change(Relationship, :count).by(-1)<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;&nbsp;&nbsp;
+
+        it "should respond with success" do<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          xhr :delete, :destroy, id: relationship.id<br />&nbsp;&nbsp;&nbsp;&nbsp;
+          response.should be_success<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        end<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 4 examples, 2 failures ...</li>
+    <li>Note: Hartl favors the integration tests new to Rails 3 but the xhr method isn't available in those so he's had to go back to controller tests for that feature.</li>
+  </ol>
+  <li>$ geany app/controllers/relationships_controller.rb</li>
+  <ol>
+    <li>Replace "redirect_to @user" in BOTH defs With:</li>
+    respond_to do |format|<br />&nbsp;&nbsp;
+      format.html { redirect_to @user }<br />&nbsp;&nbsp;
+      format.js<br />
+    end<br />
+    <li>Results (guard is still running): ... 4 examples, 2 failures ...</li>
+    <li>Note: the reason for replacing this is due to the change to an Ajax call in the form partials</li>
+    <li>Note also that the behaviour is not obvious, see the <a href="http://ruby.railstutorial.org/chapters/following-users#sec:a_working_follow_button_with_ajax">tutorial</a> for more.</li>
+  </ol>
+  <li>$ mkdir app/views/relationships</li>
+  <li>$ geany app/views/relationships/create.js.erb</li>
+  <ol>
+    <li>Add js code to new erb:</li>
+    $("#follow_form").html("<%= escape_javascript(render('users/unfollow')) %>")<br />
+    $("#followers").html('<%= @user.followers.count %>')<br />
+    <li>Results (guard is still running): ... 4 examples, 1 failures ...</li>
+  </ol>
+  <li>$ geany app/views/relationships/destroy.js.erb</li>
+  <ol>
+    <li>Add similar js code to another new erb:</li>
+    $("#follow_form").html("<%= escape_javascript(render('users/follow')) %>")<br />
+    $("#followers").html('<%= @user.followers.count %>')<br />
+    <li>Results (guard is still running): ... 4 examples, 0 failures ...</li>
+  </ol>
+  <li>$ geany spec/models/user_spec.rb</li>
+  <ol>
+    <li>Add under the let(:unfollowed_post) block in the micropost associations status block:</li>
+    let(:followed_user) { FactoryGirl.create(:user) }<br />
+
+    before do<br />&nbsp;&nbsp;
+      @user.follow!(followed_user)<br />&nbsp;&nbsp;
+      3.times { followed_user.microposts.create!(content: "Lorem ipsum") }<br />
+    end<br />
+    <li>Add to the bottom of the same block:</li>
+    its(:feed) do<br />&nbsp;&nbsp;
+      followed_user.microposts.each do |micropost|<br />&nbsp;&nbsp;&nbsp;&nbsp;
+        should include(micropost)<br />&nbsp;&nbsp;
+      end<br />
+    end<br />
+    <li>Results (guard is still running): ... 44 examples, 1 failure ...</li>
+  </ol>
+  <li>$ geany app/models/user.rb</li>
+  <ol>
+    <li>Replace current feed def content with:</li>
+    Micropost.from_users_followed_by(self)<br />
+    <li>Results (guard is still running): ... 44 examples, 4 failure ...</li>
+  </ol>
+  <li>$ geany app/models/micropost.rb</li>
+  <ol>
+    <li>Add in bottom of main block:</li>
+    def self.from_users_followed_by(user)<br />&nbsp;&nbsp;
+      followed_user_ids = "SELECT followed_id FROM relationships<br />&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WHERE follower_id = :user_id"<br />&nbsp;&nbsp;
+      where("user_id IN (#{followed_user_ids}) OR user_id = :user_id", <br />&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user_id: user.id)<br />
+    end<br />
+    <li>Results (guard is still running): ... 53 examples, 0 failure ...</li>
+    <li>Note: See the <a href="http://ruby.railstutorial.org/chapters/following-users#sec:scopes_subselects_and_a_lambda">tutorial</a> for the development of this scalable followed_by def</li>
+  </ol>
+  <li>$ git add . && git commit -m "Finished rails tutorial ch 11 - following users" </li>
+  <li>$ git co master</li>
+  <li>$ git merge following-users</li>
+  <li>$ git push</li>
+  <li>$ git push heroku</li>
+  <li>$ heroku run rake db:reset</li>
+  <li>$ heroku run rake db:migrate</li>
+  <li>$ heroku run rake db:populate</li>
+</ol>
