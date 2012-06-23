@@ -98,6 +98,69 @@ This page was started in real weekend 25 (Jun23 - 24 [sat-sun])<br />
     <li>$ git add . && git commit -m "Removed index.html with git command"</li>
     <li>$ git push heroku</li>
     <li>$ heroku open  -> looks good now</li>
+    <li>$ rails generate controller Users new --no-test-framework</li>
+    <ol>
+      <li>Result:</li>
+      create  app/controllers/users_controller.rb
+       route  get "users/new"
+      invoke  erb
+      create  &nbsp;&nbsp;app/views/users
+      create  &nbsp;&nbsp;app/views/users/new.html.erb
+      invoke  helper
+      create  &nbsp;&nbsp;app/helpers/users_helper.rb
+      invoke  assets
+      invoke  &nbsp;&nbsp;coffee
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/users.js.coffee
+      invoke  &nbsp;&nbsp;scss
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/users.css.scss
+    </ol>
+    <li>$ rails generate integration_test user_pages</li> 
+    <li>Add base tests, same as sample app, to newly created user_pages_spec.rb</li>
+    <li>$ rails generate model User name:string email:string</li>
+    <ol>
+      <li>Result:</li>
+      invoke  active_record
+      create    db/migrate/20120623131111_create_users.rb
+      create    app/models/user.rb
+      invoke    rspec
+      create      spec/models/user_spec.rb
+    </ol>
+    <li>$ rake db:migrate</li>
+    <li>$ annotate --position before</li>
+    <li>Add base tests to newly created user_spec.rb</li>
+    <li>Tests: Red -> Green</li>
+    <ol>
+      <li>$ rake db:test:prepare</li>
+      <li>Forgot to change home page static test before to be "before { visit root_path }"</li>
+      <li>Add /signup as users#new to routes</li>
+      <li>Copy /users/new.html.erb from sample app and comment out fields not yet added</li>
+      <li>Replaced the Get '/users' line with a resources :users at the top of routes</li>
+      <li>Full green after commenting out entire form_for in new.html.erb due to @users referenc</li>
+    </ol>    
+    <li>Added should_be valid test and name/email presence tests to user_spec.rb</li>
+    <li>Tests: Red -> Green</li>
+    <ol>
+      <li>Added validates lines to user.rb model</li>
+    </ol>
+    <li>Add test for name length - 50 chars as in sample app</li>
+    <li>Add length max to validates in user.rb model</li>
+    <li>Add email format tests (valid and invalid) as in sample app</li>
+    <li>Add regex constant and format validation to email validates line in user.rb model</li>
+    <li>Add email uniqueness (case insensitive) test to user_spec.rb and add uniqueness to email validates line in user.rb model</li> 
+    <li>$ rails generate migration add_index_to_users_email</li>
+    <li>Add the add_index line to the change def generated</li>
+    <li>$ rake db:migrate</li>
+    <li>Add before_save line for email downcasing to user.rb model</li>
+    <li>$ rspec spec/  -> all green</li>
+    <li>Add password_digest respond_to test to user_spec.rb</li>
+    <li>$ rails generate migration add_password_digest_to_users password_digest:string</li>
+    <li>Add virtual fields password and password_confirmation to before line and add respond_to tests for user_spec.rb</li>
+    <li>Make the tests in user_spec.rb same as for sample app EXCEPT for remember_token, microposts and follow</li>
+    <li>Tests: Red -> Green</li>
+    <ol>
+      <li>Added password and password_confirmation to attr_accessible and add has_secure_password line to user.rb</li>
+      <li>Added validates lines for password and password_confirmation</li>
+    </ol>
     
   </ol>
 </ol>
