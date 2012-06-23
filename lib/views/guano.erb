@@ -1,0 +1,112 @@
+<h3>Guano:</h3><br />
+<p>
+<b>Guano is my detailed app notes in semi-organized fashion.</b><br />
+<br />
+This page was started in real weekend 25 (Jun23 - 24 [sat-sun])<br />
+<br />
+<b>Projects and project ideas:</b>
+<ol>
+  <li><a href="#twotepad">Twotepad</a></li>
+  <li><a href="#virtual move">Virtual Move</a></li>
+</ol>
+<br /><br />
+<a name="twotepad"><b>Twotepad</b></a>
+<ol>
+  <li>Starting Plan</li>
+  <ol>
+    <li>Follow Sample App of Rails tut and my notes to create initial setup</li>
+    <ol>
+      <li></li>
+    </ol>
+    <li>Add twitter gem to bundle</li>
+    <li>Create a twitter page that reproduces basic user home of twitter - manual</li>
+    <li>Play around with twitter gem functionality</li>
+    <li>Create twotepad signed-in home</li>
+  </ol>
+  <li>Step-by-Step</li>
+  <ol>
+    <li>Choose name:  Thought of tweet-ore, tweachers, big tweets, twizer, field of tweets, tweaders, twizard's apprentice ->settled on twotepad (a notepad for twitter quotes)</li>
+    <li>$ rails new twotepad --skip-test-unit</li>
+    <li>$ gem list twitter -all -r</li>
+    <li>Add to Gemfile: twitter 2.5.0</li>
+    <li>$ bundle install --without production</li>
+    <li>Add to .gitignore: doc/, *.swp, *~, .project and .DS_Store</li>
+    <li>$ rails generate rspec:install</li>
+    <li>$ git init</li>
+    <li>$ git add .</li>
+    <li>$ git commit -m "Initial Commit"</li>
+    <li>Modify README</li>
+    <li>$ git mv README.rdoc README.md</li>
+    <li>$ git commit -a -m "Improve the README"</li>
+    <li>$ git remote add origin git@github.com:brettforwarding/twotepad.git</li>
+    <li>Visited github and added twotepad repository</li>
+    <li>$ git push -u origin master</li>
+    <li>$ heroku create --stack cedar</li>
+    <li>$ git push heroku master</li>
+    <li>Decided to stick with static_pages setup as in tutorial</li>
+    <li>$ git co -b static-pages</li>
+    <li>$ rails generate controller StaticPages home help about contact --no-test-framework</li>
+    <ol>
+      <li>Result:</li>
+      create  app/controllers/static_pages_controller.rb<br>
+       route  get "static_pages/contact"<br>
+       route  get "static_pages/about"<br>
+       route  get "static_pages/help"<br>
+       route  get "static_pages/home"<br>
+      invoke  erb<br>
+      create  &nbsp;&nbsp;app/views/static_pages<br>
+      create  &nbsp;&nbsp;app/views/static_pages/home.html.erb<br>
+      create  &nbsp;&nbsp;app/views/static_pages/help.html.erb<br>
+      create  &nbsp;&nbsp;app/views/static_pages/about.html.erb<br>
+      create  &nbsp;&nbsp;app/views/static_pages/contact.html.erb<br>
+      invoke  helper<br>
+      create  &nbsp;&nbsp;app/helpers/static_pages_helper.rb<br>
+      invoke  assets<br>
+      invoke  &nbsp;&nbsp;coffee<br>
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/static_pages.js.coffee<br>
+      invoke  &nbsp;&nbsp;scss<br>
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/static_pages.css.scss<br>
+    </ol>
+    <li>$ rails generate integration_test static_pages</li>
+    <li>Copied help, about, contact describe blocks from tutorial sample app spec and created a similar describe block for home.</li>
+    <li>$ rspec spec/requests/static_pages_spec.rb</li>
+    <li>Copied layout files from sample app (application, _header, _footer, _shim :.html.erb)</li>
+    <li>$ guard init spork</li>
+    <ol>
+      <li>This was out of order, should be last before running guard for the first time, still should work</li>
+    </ol>
+    <li>$ spork --bootstrap</li>
+    <li>Added --drb line to .rspec</li>
+    <li>copied Guardfile from sample app</li>
+    <li>$ guard</li>
+    <li>Added route to for home page and match to for the others in routes</li>
+    <li>$ rm public/index.html  ->note, this was corrected later, should have been git rm public/index.html</li>
+    <li>Added provided line of embedded code to top of each page and changed h1</li>
+    <li>Copied application_helper content from sample app into file of the same name.</li>
+    <li>Created spec/support/utilities.rb and copied full_title def from same locale in sample app.</li>
+    <li>$ guard  -> passed</li>
+    <li>Copied custom.css.scss from sample app</li>
+    <li>$ rails s  -> looks good</li>
+    <li>$ git add . && git commit -m "Initial Hartl static pages and their tests"</li>
+    <li>$ git co master</li>
+    <li>$ git merge static-pages</li>
+    <li>$ git push</li>
+    <li>$ git push heroku</li>
+    <li>$ heroku open  -> still showing rails index, no route to home</li>
+    <li>$ touch public/index.html</li>
+    <li>$ git rm -f public/index.html</li>
+    <li>$ git add . && git commit -m "Removed index.html with git command"</li>
+    <li>$ git push heroku</li>
+    <li>$ heroku open  -> looks good now</li>
+    
+  </ol>
+</ol>
+<br /><br />
+
+<a name="virtual move"><b>Virtual Move</b></a>
+<ol>
+  <li>Starting Plan</li>
+  <ol>
+    <li></li>
+  </ol>
+</ol>

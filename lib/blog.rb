@@ -87,5 +87,8 @@ module Blog
   
   get '/notes' do 
     erb :index, :locals => {:content => "notes"}
+  end  
+  get '/guano' do 
+    erb :index, :locals => {:content => "guano"}
   end
 end
