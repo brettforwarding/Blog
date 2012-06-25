@@ -15,11 +15,25 @@ This page was started in real weekend 25 (Jun23 - 24 [sat-sun])<br />
   <li>Starting Plan</li>
   <ol>
     <li>Follow Sample App of Rails tut and my notes to create initial setup</li>
-    <ol>
-      <li></li>
-    </ol>
     <li>Add twitter gem to bundle</li>
     <li>Create a twitter page that reproduces basic user home of twitter - manual</li>
+    <ol>
+      <li>Designs:</li>
+      <ol>
+        <li>User page where signed in user adds/removes twitter accounts</li>
+        <ol>
+          <li>Create a controller because there will be a page for signed in users to view their twitter accounts</li>
+          <li>Still to do: define syntax for generate controller and generate model</li>
+          <li>Call controller TwitterAccounts and model TwitterAccount</li>
+          <li>Create the tests for id access to user from twitter_accounts_controller.rb that is generated</li>
+          <li>Create the rest of the tests somewhat like micropost with some extra tests added on</li>
+          <li>Add has_many to User.rb and belongs_to to TwitterAccount.rb</li>
+        </ol>
+        <li>From user twitter accounts page, select account and get twitter gurus page</li>
+        <li>From twitter gurus page, user selects the followed to track as gurus and categorizes them</li>
+        
+      </ol>
+    </ol>
     <li>Play around with twitter gem functionality</li>
     <li>Create twotepad signed-in home</li>
   </ol>
@@ -161,6 +175,100 @@ This page was started in real weekend 25 (Jun23 - 24 [sat-sun])<br />
       <li>Added password and password_confirmation to attr_accessible and add has_secure_password line to user.rb</li>
       <li>Added validates lines for password and password_confirmation</li>
     </ol>
+    <li>$ git add . && git commit -m "Finish user model name,email,password"</li>
+    <li>Pushed to git and heroku</li>
+    <li>user model name,email,password"</li>
+    <li>Copy content of users_controller.rb from sample app</li>
+    <li>Copy remainder of user_spec.rb and user_pages_spec.rb from sample app</li>
+    <li>Copy factories.rb from sample app</li>
+    <li>$ rails generate controller Sessions --no-test-framework</li>
+    <ol>
+      <li>Result:</li>
+      create  app/controllers/sessions_controller.rb
+      invoke  erb
+      create  &nbsp;&nbsp;app/views/sessions
+      invoke  helper
+      create  &nbsp;&nbsp;app/helpers/sessions_helper.rb
+      invoke  assets
+      invoke  &nbsp;&nbsp;coffee
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/sessions.js.coffee
+      invoke  &nbsp;&nbsp;scss
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/sessions.css.scss
+    </ol>  
+    <li>$ rails generate integration_test authentication_pages</li>
+    <li>Add bcrypt min_cost function to config/environments/test.rb</li>
+    <li>Copy content from sessions_helper.rb of sample app</li>
+    <li>Copy content from users_helper.rb of sample app</li>
+    <li>Add ssl restriction to config/environments/production.rb</li>
+    <li>$ rails generate controller Sessions --no-test-framework</li>
+    <ol>
+      <li>Result (conflict on helper because I already added it):</li>
+       identical  app/controllers/sessions_controller.rb
+          invoke  erb
+           exist  &nbsp;&nbsp;app/views/sessions
+          invoke  helper
+        conflict  &nbsp;&nbsp;app/helpers/sessions_helper.rb
+    </ol>
+    <li>$ rails generate migration add_remember_token_to_users</li>
+    <li>Added remember_token column and index def to user table change</li>
+    <li>$ rake db:migrate</li>
+    <li>$ rake db:test:prepare</li>
+    <li>Add //= require bootstrap to application.js (above require tree line)</li>
+    <li>Copy signin def from app/support/utilities.rb of sample app</li>
+    <li>$ rspec spec/  -> 96 examples, 66 failures</li>
+    <li>$ rails generate migration add_admin_to_users admin:boolean</li>
+    <li>Add default :false to the column to be added</li>
+    <li>$ rake db:migrate</li>
+    <li>$ rake db:test:prepare</li>
+    <li>$ rails generate model Micropost content:string user_id:integer</li>
+    <ol>
+      <li>Result:</li>
+      invoke  active_record
+      create  &nbsp;&nbsp;db/migrate/20120624110847_create_microposts.rb
+      create  &nbsp;&nbsp;app/models/micropost.rb
+      invoke  &nbsp;&nbsp;rspec
+      create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/micropost_spec.rb
+    </ol>
+    <li>Copied micropost_spec.rb from sample app</li>
+    <li>$ rspec spec/  -> 109 examples, 76 failures</li>
+    <li>$ rake db:migrate</li>
+    <li>$ rake db:test:prepare</li>
+    <li>$ rails generate integration_test micropost_pages  </li>
+    <li>Copied micropost_pages_spec.rb from sample app</li>
+    <li>$ rails generate model Relationship follower_id:integer followed_id:integer</li>
+    <ol>
+      <li>Result:</li>
+      invoke  active_record
+      create  &nbsp;&nbsp;db/migrate/20120624113136_create_relationships.rb
+      create  &nbsp;&nbsp;app/models/relationship.rb
+      invoke  &nbsp;&nbsp;rspec
+      create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/relationship_spec.rb
+    </ol>
+    <li>Added 3 indices to Relationship model migration, for each field and for 2-col primary key</li>
+    <li>$ rake db:migrate</li>
+    <li>$ rake db:test:prepare</li>
+    <li>Copied remaining from sample app routes</li>
+    <li>Copied all controllers from sample app</li>
+    <li>Copied relationship and micropost models from sample app</li>
+    <li>Created spec/controllers/ and copied relationships_contoroller_spec.rb from sample app</li>
+    <li>Copied sample_data.rake from sample_app/lib/tasks/  to get rspec to run</li>
+    <li>Tests: Red -> Green  (starting with 114 examples, 50 failures, 1 pending)</li>
+    <ol>
+      <li>Copied the relationship_spec.rb from sample app to get rid of pending (121/50/0 [examples/failures/pending])</li>
+      <li>replaced content of en.yml to have an entry for password_digest (this was so password can be used in place of password_digest for readability)</li>
+      <li>Add include SessionsHelper to application_controller.rb as in sample app (121/52/0)</li>
+      <li>Copied the home.html.erb from sample app and replaced sample app with twotepad (121/52/0)</li>
+      <li>Create folder app/views/sessions/  and copied sessions/new.html.erb from sample app (121/52/0)</li>
+      <li>Copied folder app/views/shared/ and all partials within from sample app (121/22/0)</li>
+      <li>Copied folders app/views/relationships/ and app/views/microposts/ from sample app (121/7/0)</li>
+      <li>Added the if signed_in? to home def in static_pages_controller.rb (121/3/0)</li>
+      <li>Overwrote header partial in layouts with that from sample app (121/1/0)</li>
+      <li>Replaced generated authentication_pages_spec.rb with that from sample app (145/0/0)</li>
+      <li>Replaced static_pages_spec.rb with that from sample app and replaced text "Sample App" with "Twotepad" (149/0/0)</li>
+      <li>Replaced user_spec.rb with a copy from sample app (150/0/0 -> matches test results of sample app now)</li>
+    </ol>
+    <li>Ended up with a direct copy of sample app but I got impatient with copying 1 by 1 and it was worth the memory-jog to do it this way</li>
+    <li>Replace logo text in header partial with "Twotepad"</li>
     
   </ol>
 </ol>
