@@ -10,274 +10,338 @@ This page was started in real weekend 25 (Jun23 - 24 [sat-sun])<br />
   <li><a href="#virtual move">Virtual Move</a></li>
 </ol>
 <br /><br />
-<a name="twotepad"><b>Twotepad</b></a>
 <ol>
-  <li>Starting Plan</li>
+<li><a name="twotepad"><b>Twotepad</b></a></li>
   <ol>
-    <li>Follow Sample App of Rails tut and my notes to create initial setup</li>
-    <li>Add twitter gem to bundle</li>
-    <li>Create a twitter page that reproduces basic user home of twitter - manual</li>
+    <li>Starting Plan</li>
     <ol>
-      <li>Designs:</li>
+      <li>Follow Sample App of Rails tut and my notes to create initial setup</li>
+      <li>Add twitter gem to bundle</li>
+      <li>Create a twitter page that reproduces basic user home of twitter - manual</li>
       <ol>
-        <li>User page where signed in user adds/removes twitter accounts</li>
+        <li>Designs:</li>
         <ol>
-          <li>Create a controller because there will be a page for signed in users to view their twitter accounts</li>
-          <li>Still to do: define syntax for generate controller and generate model</li>
-          <li>Call controller TwitterAccounts and model TwitterAccount</li>
-          <li>Create the tests for id access to user from twitter_accounts_controller.rb that is generated</li>
-          <li>Create the rest of the tests somewhat like micropost with some extra tests added on</li>
-          <li>Add has_many to User.rb and belongs_to to TwitterAccount.rb</li>
+          <li>User page where signed in user adds/removes twitter accounts</li>
+          <ol>
+            <li>Create a controller because there will be a page for signed in users to view their twitter accounts</li>
+            <li>Call controller TwitterAccounts and model TwitterAccount</li>
+            <ol>
+              <li>$ rails generate model TwitterAccount email:string username:string user_id:integer</li>
+              <li>$ rails generate controller TwitterAccounts --no-test-framework</li>
+              <li>$ rails generate integration_test twitter_accounts</li>
+            </ol>
+            <li>Create the model tests in twitter_account_spec.rb</li>
+            <ol>
+              <li>Add the user generation (same as for micropost_spec.rb)</li>
+              <li>Add field presence tests</li>
+              <li>Add test for user_id inaccessibility</li>
+              <li>Add mass assignment error test</li>
+              <li>Add test to user_spec.rb for twitter_accounts</li>
+              <li>Change user generation to use "user through" record creation</li>
+            </ol>
+            <li>Change user model to contain has_many twitter_accounts</li>
+            <li>Change twitter_account model to contain belongs_to user</li>
+            <li>Add regex email format validation and validation test as with user in sample app</li>
+            <li>*Note: Not including email uniqueness in this one.  Twotepad users can share twitter account access.  Just have to make sure that the record is kept ONLY if twitter access is validated.</li>
+            <li>Add twitter account password_digest field, password and password_confirmation virtual fields and all the related tests as was done for user</li>
+            
+            <li>Create the rest of the tests somewhat like micropost with some extra tests added on</li>
+            <li>Create the tests for id access to user from twitter_accounts_controller.rb that is generated</li>
+          </ol>
+          <li>From user twitter accounts page, select account and get twitter gurus page</li>
+          <li>From twitter gurus page, user selects the followed to track as gurus and categorizes them</li>
+          
         </ol>
-        <li>From user twitter accounts page, select account and get twitter gurus page</li>
-        <li>From twitter gurus page, user selects the followed to track as gurus and categorizes them</li>
-        
       </ol>
+      <li>Play around with twitter gem functionality</li>
+      <li>Create twotepad signed-in home</li>
     </ol>
-    <li>Play around with twitter gem functionality</li>
-    <li>Create twotepad signed-in home</li>
-  </ol>
-  <li>Step-by-Step</li>
-  <ol>
-    <li>Choose name:  Thought of tweet-ore, tweachers, big tweets, twizer, field of tweets, tweaders, twizard's apprentice ->settled on twotepad (a notepad for twitter quotes)</li>
-    <li>$ rails new twotepad --skip-test-unit</li>
-    <li>$ gem list twitter -all -r</li>
-    <li>Add to Gemfile: twitter 2.5.0</li>
-    <li>$ bundle install --without production</li>
-    <li>Add to .gitignore: doc/, *.swp, *~, .project and .DS_Store</li>
-    <li>$ rails generate rspec:install</li>
-    <li>$ git init</li>
-    <li>$ git add .</li>
-    <li>$ git commit -m "Initial Commit"</li>
-    <li>Modify README</li>
-    <li>$ git mv README.rdoc README.md</li>
-    <li>$ git commit -a -m "Improve the README"</li>
-    <li>$ git remote add origin git@github.com:brettforwarding/twotepad.git</li>
-    <li>Visited github and added twotepad repository</li>
-    <li>$ git push -u origin master</li>
-    <li>$ heroku create --stack cedar</li>
-    <li>$ git push heroku master</li>
-    <li>Decided to stick with static_pages setup as in tutorial</li>
-    <li>$ git co -b static-pages</li>
-    <li>$ rails generate controller StaticPages home help about contact --no-test-framework</li>
+    <li>Step-by-Step</li>
     <ol>
-      <li>Result:</li>
-      create  app/controllers/static_pages_controller.rb<br>
-       route  get "static_pages/contact"<br>
-       route  get "static_pages/about"<br>
-       route  get "static_pages/help"<br>
-       route  get "static_pages/home"<br>
-      invoke  erb<br>
-      create  &nbsp;&nbsp;app/views/static_pages<br>
-      create  &nbsp;&nbsp;app/views/static_pages/home.html.erb<br>
-      create  &nbsp;&nbsp;app/views/static_pages/help.html.erb<br>
-      create  &nbsp;&nbsp;app/views/static_pages/about.html.erb<br>
-      create  &nbsp;&nbsp;app/views/static_pages/contact.html.erb<br>
-      invoke  helper<br>
-      create  &nbsp;&nbsp;app/helpers/static_pages_helper.rb<br>
-      invoke  assets<br>
-      invoke  &nbsp;&nbsp;coffee<br>
-      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/static_pages.js.coffee<br>
-      invoke  &nbsp;&nbsp;scss<br>
-      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/static_pages.css.scss<br>
-    </ol>
-    <li>$ rails generate integration_test static_pages</li>
-    <li>Copied help, about, contact describe blocks from tutorial sample app spec and created a similar describe block for home.</li>
-    <li>$ rspec spec/requests/static_pages_spec.rb</li>
-    <li>Copied layout files from sample app (application, _header, _footer, _shim :.html.erb)</li>
-    <li>$ guard init spork</li>
-    <ol>
-      <li>This was out of order, should be last before running guard for the first time, still should work</li>
-    </ol>
-    <li>$ spork --bootstrap</li>
-    <li>Added --drb line to .rspec</li>
-    <li>copied Guardfile from sample app</li>
-    <li>$ guard</li>
-    <li>Added route to for home page and match to for the others in routes</li>
-    <li>$ rm public/index.html  ->note, this was corrected later, should have been git rm public/index.html</li>
-    <li>Added provided line of embedded code to top of each page and changed h1</li>
-    <li>Copied application_helper content from sample app into file of the same name.</li>
-    <li>Created spec/support/utilities.rb and copied full_title def from same locale in sample app.</li>
-    <li>$ guard  -> passed</li>
-    <li>Copied custom.css.scss from sample app</li>
-    <li>$ rails s  -> looks good</li>
-    <li>$ git add . && git commit -m "Initial Hartl static pages and their tests"</li>
-    <li>$ git co master</li>
-    <li>$ git merge static-pages</li>
-    <li>$ git push</li>
-    <li>$ git push heroku</li>
-    <li>$ heroku open  -> still showing rails index, no route to home</li>
-    <li>$ touch public/index.html</li>
-    <li>$ git rm -f public/index.html</li>
-    <li>$ git add . && git commit -m "Removed index.html with git command"</li>
-    <li>$ git push heroku</li>
-    <li>$ heroku open  -> looks good now</li>
-    <li>$ rails generate controller Users new --no-test-framework</li>
-    <ol>
-      <li>Result:</li>
-      create  app/controllers/users_controller.rb
-       route  get "users/new"
-      invoke  erb
-      create  &nbsp;&nbsp;app/views/users
-      create  &nbsp;&nbsp;app/views/users/new.html.erb
-      invoke  helper
-      create  &nbsp;&nbsp;app/helpers/users_helper.rb
-      invoke  assets
-      invoke  &nbsp;&nbsp;coffee
-      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/users.js.coffee
-      invoke  &nbsp;&nbsp;scss
-      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/users.css.scss
-    </ol>
-    <li>$ rails generate integration_test user_pages</li> 
-    <li>Add base tests, same as sample app, to newly created user_pages_spec.rb</li>
-    <li>$ rails generate model User name:string email:string</li>
-    <ol>
-      <li>Result:</li>
-      invoke  active_record
-      create    db/migrate/20120623131111_create_users.rb
-      create    app/models/user.rb
-      invoke    rspec
-      create      spec/models/user_spec.rb
-    </ol>
-    <li>$ rake db:migrate</li>
-    <li>$ annotate --position before</li>
-    <li>Add base tests to newly created user_spec.rb</li>
-    <li>Tests: Red -> Green</li>
-    <ol>
+      <li>Choose name:  Thought of tweet-ore, tweachers, big tweets, twizer, field of tweets, tweaders, twizard's apprentice ->settled on twotepad (a notepad for twitter quotes)</li>
+      <li>$ rails new twotepad --skip-test-unit</li>
+      <li>$ gem list twitter -all -r</li>
+      <li>Add to Gemfile: twitter 2.5.0</li>
+      <li>$ bundle install --without production</li>
+      <li>Add to .gitignore: doc/, *.swp, *~, .project and .DS_Store</li>
+      <li>$ rails generate rspec:install</li>
+      <li>$ git init</li>
+      <li>$ git add .</li>
+      <li>$ git commit -m "Initial Commit"</li>
+      <li>Modify README</li>
+      <li>$ git mv README.rdoc README.md</li>
+      <li>$ git commit -a -m "Improve the README"</li>
+      <li>$ git remote add origin git@github.com:brettforwarding/twotepad.git</li>
+      <li>Visited github and added twotepad repository</li>
+      <li>$ git push -u origin master</li>
+      <li>$ heroku create --stack cedar</li>
+      <li>$ git push heroku master</li>
+      <li>Decided to stick with static_pages setup as in tutorial</li>
+      <li>$ git co -b static-pages</li>
+      <li>$ rails generate controller StaticPages home help about contact --no-test-framework</li>
+      <ol>
+        <li>Result:</li>
+        create  app/controllers/static_pages_controller.rb<br>
+         route  get "static_pages/contact"<br>
+         route  get "static_pages/about"<br>
+         route  get "static_pages/help"<br>
+         route  get "static_pages/home"<br>
+        invoke  erb<br>
+        create  &nbsp;&nbsp;app/views/static_pages<br>
+        create  &nbsp;&nbsp;app/views/static_pages/home.html.erb<br>
+        create  &nbsp;&nbsp;app/views/static_pages/help.html.erb<br>
+        create  &nbsp;&nbsp;app/views/static_pages/about.html.erb<br>
+        create  &nbsp;&nbsp;app/views/static_pages/contact.html.erb<br>
+        invoke  helper<br>
+        create  &nbsp;&nbsp;app/helpers/static_pages_helper.rb<br>
+        invoke  assets<br>
+        invoke  &nbsp;&nbsp;coffee<br>
+        create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/static_pages.js.coffee<br>
+        invoke  &nbsp;&nbsp;scss<br>
+        create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/static_pages.css.scss<br>
+      </ol>
+      <li>$ rails generate integration_test static_pages</li>
+      <li>Copied help, about, contact describe blocks from tutorial sample app spec and created a similar describe block for home.</li>
+      <li>$ rspec spec/requests/static_pages_spec.rb</li>
+      <li>Copied layout files from sample app (application, _header, _footer, _shim :.html.erb)</li>
+      <li>$ guard init spork</li>
+      <ol>
+        <li>This was out of order, should be last before running guard for the first time, still should work</li>
+      </ol>
+      <li>$ spork --bootstrap</li>
+      <li>Added --drb line to .rspec</li>
+      <li>copied Guardfile from sample app</li>
+      <li>$ guard</li>
+      <li>Added route to for home page and match to for the others in routes</li>
+      <li>$ rm public/index.html  ->note, this was corrected later, should have been git rm public/index.html</li>
+      <li>Added provided line of embedded code to top of each page and changed h1</li>
+      <li>Copied application_helper content from sample app into file of the same name.</li>
+      <li>Created spec/support/utilities.rb and copied full_title def from same locale in sample app.</li>
+      <li>$ guard  -> passed</li>
+      <li>Copied custom.css.scss from sample app</li>
+      <li>$ rails s  -> looks good</li>
+      <li>$ git add . && git commit -m "Initial Hartl static pages and their tests"</li>
+      <li>$ git co master</li>
+      <li>$ git merge static-pages</li>
+      <li>$ git push</li>
+      <li>$ git push heroku</li>
+      <li>$ heroku open  -> still showing rails index, no route to home</li>
+      <li>$ touch public/index.html</li>
+      <li>$ git rm -f public/index.html</li>
+      <li>$ git add . && git commit -m "Removed index.html with git command"</li>
+      <li>$ git push heroku</li>
+      <li>$ heroku open  -> looks good now</li>
+      <li>$ rails generate controller Users new --no-test-framework</li>
+      <ol>
+        <li>Result:</li>
+        create  app/controllers/users_controller.rb
+         route  get "users/new"
+        invoke  erb
+        create  &nbsp;&nbsp;app/views/users
+        create  &nbsp;&nbsp;app/views/users/new.html.erb
+        invoke  helper
+        create  &nbsp;&nbsp;app/helpers/users_helper.rb
+        invoke  assets
+        invoke  &nbsp;&nbsp;coffee
+        create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/users.js.coffee
+        invoke  &nbsp;&nbsp;scss
+        create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/users.css.scss
+      </ol>
+      <li>$ rails generate integration_test user_pages</li> 
+      <li>Add base tests, same as sample app, to newly created user_pages_spec.rb</li>
+      <li>$ rails generate model User name:string email:string</li>
+      <ol>
+        <li>Result:</li>
+        invoke  active_record
+        create    db/migrate/20120623131111_create_users.rb
+        create    app/models/user.rb
+        invoke    rspec
+        create      spec/models/user_spec.rb
+      </ol>
+      <li>$ rake db:migrate</li>
+      <li>$ annotate --position before</li>
+      <li>Add base tests to newly created user_spec.rb</li>
+      <li>Tests: Red -> Green</li>
+      <ol>
+        <li>$ rake db:test:prepare</li>
+        <li>Forgot to change home page static test before to be "before { visit root_path }"</li>
+        <li>Add /signup as users#new to routes</li>
+        <li>Copy /users/new.html.erb from sample app and comment out fields not yet added</li>
+        <li>Replaced the Get '/users' line with a resources :users at the top of routes</li>
+        <li>Full green after commenting out entire form_for in new.html.erb due to @users referenc</li>
+      </ol>    
+      <li>Added should_be valid test and name/email presence tests to user_spec.rb</li>
+      <li>Tests: Red -> Green</li>
+      <ol>
+        <li>Added validates lines to user.rb model</li>
+      </ol>
+      <li>Add test for name length - 50 chars as in sample app</li>
+      <li>Add length max to validates in user.rb model</li>
+      <li>Add email format tests (valid and invalid) as in sample app</li>
+      <li>Add regex constant and format validation to email validates line in user.rb model</li>
+      <li>Add email uniqueness (case insensitive) test to user_spec.rb and add uniqueness to email validates line in user.rb model</li> 
+      <li>$ rails generate migration add_index_to_users_email</li>
+      <li>Add the add_index line to the change def generated</li>
+      <li>$ rake db:migrate</li>
+      <li>Add before_save line for email downcasing to user.rb model</li>
+      <li>$ rspec spec/  -> all green</li>
+      <li>Add password_digest respond_to test to user_spec.rb</li>
+      <li>$ rails generate migration add_password_digest_to_users password_digest:string</li>
+      <li>Add virtual fields password and password_confirmation to before line and add respond_to tests for user_spec.rb</li>
+      <li>Make the tests in user_spec.rb same as for sample app EXCEPT for remember_token, microposts and follow</li>
+      <li>Tests: Red -> Green</li>
+      <ol>
+        <li>Added password and password_confirmation to attr_accessible and add has_secure_password line to user.rb</li>
+        <li>Added validates lines for password and password_confirmation</li>
+      </ol>
+      <li>$ git add . && git commit -m "Finish user model name,email,password"</li>
+      <li>Pushed to git and heroku</li>
+      <li>user model name,email,password"</li>
+      <li>Copy content of users_controller.rb from sample app</li>
+      <li>Copy remainder of user_spec.rb and user_pages_spec.rb from sample app</li>
+      <li>Copy factories.rb from sample app</li>
+      <li>$ rails generate controller Sessions --no-test-framework</li>
+      <ol>
+        <li>Result:</li>
+        create  app/controllers/sessions_controller.rb
+        invoke  erb
+        create  &nbsp;&nbsp;app/views/sessions
+        invoke  helper
+        create  &nbsp;&nbsp;app/helpers/sessions_helper.rb
+        invoke  assets
+        invoke  &nbsp;&nbsp;coffee
+        create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/sessions.js.coffee
+        invoke  &nbsp;&nbsp;scss
+        create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/sessions.css.scss
+      </ol>  
+      <li>$ rails generate integration_test authentication_pages</li>
+      <li>Add bcrypt min_cost function to config/environments/test.rb</li>
+      <li>Copy content from sessions_helper.rb of sample app</li>
+      <li>Copy content from users_helper.rb of sample app</li>
+      <li>Add ssl restriction to config/environments/production.rb</li>
+      <li>$ rails generate controller Sessions --no-test-framework</li>
+      <ol>
+        <li>Result (conflict on helper because I already added it):</li>
+         identical  app/controllers/sessions_controller.rb
+            invoke  erb
+             exist  &nbsp;&nbsp;app/views/sessions
+            invoke  helper
+          conflict  &nbsp;&nbsp;app/helpers/sessions_helper.rb
+      </ol>
+      <li>$ rails generate migration add_remember_token_to_users</li>
+      <li>Added remember_token column and index def to user table change</li>
+      <li>$ rake db:migrate</li>
       <li>$ rake db:test:prepare</li>
-      <li>Forgot to change home page static test before to be "before { visit root_path }"</li>
-      <li>Add /signup as users#new to routes</li>
-      <li>Copy /users/new.html.erb from sample app and comment out fields not yet added</li>
-      <li>Replaced the Get '/users' line with a resources :users at the top of routes</li>
-      <li>Full green after commenting out entire form_for in new.html.erb due to @users referenc</li>
-    </ol>    
-    <li>Added should_be valid test and name/email presence tests to user_spec.rb</li>
-    <li>Tests: Red -> Green</li>
-    <ol>
-      <li>Added validates lines to user.rb model</li>
-    </ol>
-    <li>Add test for name length - 50 chars as in sample app</li>
-    <li>Add length max to validates in user.rb model</li>
-    <li>Add email format tests (valid and invalid) as in sample app</li>
-    <li>Add regex constant and format validation to email validates line in user.rb model</li>
-    <li>Add email uniqueness (case insensitive) test to user_spec.rb and add uniqueness to email validates line in user.rb model</li> 
-    <li>$ rails generate migration add_index_to_users_email</li>
-    <li>Add the add_index line to the change def generated</li>
-    <li>$ rake db:migrate</li>
-    <li>Add before_save line for email downcasing to user.rb model</li>
-    <li>$ rspec spec/  -> all green</li>
-    <li>Add password_digest respond_to test to user_spec.rb</li>
-    <li>$ rails generate migration add_password_digest_to_users password_digest:string</li>
-    <li>Add virtual fields password and password_confirmation to before line and add respond_to tests for user_spec.rb</li>
-    <li>Make the tests in user_spec.rb same as for sample app EXCEPT for remember_token, microposts and follow</li>
-    <li>Tests: Red -> Green</li>
-    <ol>
-      <li>Added password and password_confirmation to attr_accessible and add has_secure_password line to user.rb</li>
-      <li>Added validates lines for password and password_confirmation</li>
-    </ol>
-    <li>$ git add . && git commit -m "Finish user model name,email,password"</li>
-    <li>Pushed to git and heroku</li>
-    <li>user model name,email,password"</li>
-    <li>Copy content of users_controller.rb from sample app</li>
-    <li>Copy remainder of user_spec.rb and user_pages_spec.rb from sample app</li>
-    <li>Copy factories.rb from sample app</li>
-    <li>$ rails generate controller Sessions --no-test-framework</li>
-    <ol>
-      <li>Result:</li>
-      create  app/controllers/sessions_controller.rb
+      <li>Add //= require bootstrap to application.js (above require tree line)</li>
+      <li>Copy signin def from app/support/utilities.rb of sample app</li>
+      <li>$ rspec spec/  -> 96 examples, 66 failures</li>
+      <li>$ rails generate migration add_admin_to_users admin:boolean</li>
+      <li>Add default :false to the column to be added</li>
+      <li>$ rake db:migrate</li>
+      <li>$ rake db:test:prepare</li>
+      <li>$ rails generate model Micropost content:string user_id:integer</li>
+      <ol>
+        <li>Result:</li>
+        invoke  active_record
+        create  &nbsp;&nbsp;db/migrate/20120624110847_create_microposts.rb
+        create  &nbsp;&nbsp;app/models/micropost.rb
+        invoke  &nbsp;&nbsp;rspec
+        create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/micropost_spec.rb
+      </ol>
+      <li>Copied micropost_spec.rb from sample app</li>
+      <li>$ rspec spec/  -> 109 examples, 76 failures</li>
+      <li>$ rake db:migrate</li>
+      <li>$ rake db:test:prepare</li>
+      <li>$ rails generate integration_test micropost_pages  </li>
+      <li>Copied micropost_pages_spec.rb from sample app</li>
+      <li>$ rails generate model Relationship follower_id:integer followed_id:integer</li>
+      <ol>
+        <li>Result:</li>
+        invoke  active_record
+        create  &nbsp;&nbsp;db/migrate/20120624113136_create_relationships.rb
+        create  &nbsp;&nbsp;app/models/relationship.rb
+        invoke  &nbsp;&nbsp;rspec
+        create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/relationship_spec.rb
+      </ol>
+      <li>Added 3 indices to Relationship model migration, for each field and for 2-col primary key</li>
+      <li>$ rake db:migrate</li>
+      <li>$ rake db:test:prepare</li>
+      <li>Copied remaining from sample app routes</li>
+      <li>Copied all controllers from sample app</li>
+      <li>Copied relationship and micropost models from sample app</li>
+      <li>Created spec/controllers/ and copied relationships_contoroller_spec.rb from sample app</li>
+      <li>Copied sample_data.rake from sample_app/lib/tasks/  to get rspec to run</li>
+      <li>Tests: Red -> Green  (starting with 114 examples, 50 failures, 1 pending)</li>
+      <ol>
+        <li>Copied the relationship_spec.rb from sample app to get rid of pending (121/50/0 [examples/failures/pending])</li>
+        <li>replaced content of en.yml to have an entry for password_digest (this was so password can be used in place of password_digest for readability)</li>
+        <li>Add include SessionsHelper to application_controller.rb as in sample app (121/52/0)</li>
+        <li>Copied the home.html.erb from sample app and replaced sample app with twotepad (121/52/0)</li>
+        <li>Create folder app/views/sessions/  and copied sessions/new.html.erb from sample app (121/52/0)</li>
+        <li>Copied folder app/views/shared/ and all partials within from sample app (121/22/0)</li>
+        <li>Copied folders app/views/relationships/ and app/views/microposts/ from sample app (121/7/0)</li>
+        <li>Added the if signed_in? to home def in static_pages_controller.rb (121/3/0)</li>
+        <li>Overwrote header partial in layouts with that from sample app (121/1/0)</li>
+        <li>Replaced generated authentication_pages_spec.rb with that from sample app (145/0/0)</li>
+        <li>Replaced static_pages_spec.rb with that from sample app and replaced text "Sample App" with "Twotepad" (149/0/0)</li>
+        <li>Replaced user_spec.rb with a copy from sample app (150/0/0 -> matches test results of sample app now)</li>
+      </ol>
+      <li>Ended up with a direct copy of sample app but I got impatient with copying 1 by 1 and it was worth the memory-jog to do it this way</li>
+      <li>Replace logo text in header partial with "Twotepad"</li>
+      <li>$ rails generate model TwitterAccount email:string username:string user_id:integer</li>
+      invoke  active_record
+      create  &nbsp;&nbsp;db/migrate/20120628113441_create_twitter_accounts.rb
+      create  &nbsp;&nbsp;app/models/twitter_account.rb
+      invoke  &nbsp;&nbsp;rspec
+      create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/twitter_account_spec.rb
+      <li>$ rails generate controller TwitterAccounts --no-test-framework</li>
+      create  app/controllers/twitter_accounts_controller.rb
       invoke  erb
-      create  &nbsp;&nbsp;app/views/sessions
+      create  &nbsp;&nbsp;app/views/twitter_accounts
       invoke  helper
-      create  &nbsp;&nbsp;app/helpers/sessions_helper.rb
+      create  &nbsp;&nbsp;app/helpers/twitter_accounts_helper.rb
       invoke  assets
       invoke  &nbsp;&nbsp;coffee
-      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/sessions.js.coffee
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/javascripts/twitter_accounts.js.coffee
       invoke  &nbsp;&nbsp;scss
-      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/sessions.css.scss
-    </ol>  
-    <li>$ rails generate integration_test authentication_pages</li>
-    <li>Add bcrypt min_cost function to config/environments/test.rb</li>
-    <li>Copy content from sessions_helper.rb of sample app</li>
-    <li>Copy content from users_helper.rb of sample app</li>
-    <li>Add ssl restriction to config/environments/production.rb</li>
-    <li>$ rails generate controller Sessions --no-test-framework</li>
-    <ol>
-      <li>Result (conflict on helper because I already added it):</li>
-       identical  app/controllers/sessions_controller.rb
-          invoke  erb
-           exist  &nbsp;&nbsp;app/views/sessions
-          invoke  helper
-        conflict  &nbsp;&nbsp;app/helpers/sessions_helper.rb
+      create  &nbsp;&nbsp;&nbsp;&nbsp;app/assets/stylesheets/twitter_accounts.css.scss
+      <li>$ rails generate integration_test twitter_accounts</li>
+      invoke  rspec
+      create  &nbsp;&nbsp;spec/requests/twitter_accounts_spec.rb
+      <li>Add multi-key index to 20120628113441_create_twitter_accounts.rb on user_id and email</li>
+      <li>$ rake db:migrate</li>
+      <li>$ rake db:test:prepare</li>
+      <li>$ annotate --position before</li>
+      <li>$ rspec spec/models/twitter_account_spec.rb  -> 3 examples, 0 failures</li>
+      <li>Add valid test to model spec</li>
+      <li>Add "when user_id is not present" test to model spec as micropost in sample app</li>
+      <li>Remove user_id from attr_accessible from model</li>
+      <li>Add accessible attributes test in model spec and put "should not allow access to user_id" test within that block</li>
+      <li>Change record creation method in model spec's before block from TwitterAccount.new to user.twitter_accounts.new and remove user_id assignment</li>
+      <li>Add to has_many :twitter_accounts to user model</li>
+      <li>Add belongs_to :user to TwitterAccount model</li>
+      <li>Add it { should respond_to(:twitter_accounts) } to the user model spec</li>
+      <li>$ rspec spec/  -> 158 examples, 1 failure  (failure is just the twitter_accounts controller spec default test since I haven't touched it yet)</li>
+      <li>Add email format tests to spec and validation restriction to model</li>
+      <li>Add password_digest presence test to spec</li>
+      <li>$ rspec spec/models/twitter_account_spec.rb  -> 11 examples, 1 failure</li>
+      <li>$ rails generate migration add_password_digest_to_twitter_accounts password_digest:string</li>
+      <li>$ rake db:migrate</li>
+      <li>$ rake db:test:prepare</li>
+      <li>$ rspec spec/models/twitter_account_spec.rb  -> 11 examples, 0 failures</li>
+      <li>Followed steps to add password for twitter_account as was done for the user model in sample app</li>
+      <li>Created gmail account to test: twotepadtest999@gmail.com | password999</li>
+      <li>Signed up for twitter - username: twotepadtest999 (username max length is 15)</li>
+      <li>Confirmed twitter signup from gmail</li>
     </ol>
-    <li>$ rails generate migration add_remember_token_to_users</li>
-    <li>Added remember_token column and index def to user table change</li>
-    <li>$ rake db:migrate</li>
-    <li>$ rake db:test:prepare</li>
-    <li>Add //= require bootstrap to application.js (above require tree line)</li>
-    <li>Copy signin def from app/support/utilities.rb of sample app</li>
-    <li>$ rspec spec/  -> 96 examples, 66 failures</li>
-    <li>$ rails generate migration add_admin_to_users admin:boolean</li>
-    <li>Add default :false to the column to be added</li>
-    <li>$ rake db:migrate</li>
-    <li>$ rake db:test:prepare</li>
-    <li>$ rails generate model Micropost content:string user_id:integer</li>
-    <ol>
-      <li>Result:</li>
-      invoke  active_record
-      create  &nbsp;&nbsp;db/migrate/20120624110847_create_microposts.rb
-      create  &nbsp;&nbsp;app/models/micropost.rb
-      invoke  &nbsp;&nbsp;rspec
-      create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/micropost_spec.rb
-    </ol>
-    <li>Copied micropost_spec.rb from sample app</li>
-    <li>$ rspec spec/  -> 109 examples, 76 failures</li>
-    <li>$ rake db:migrate</li>
-    <li>$ rake db:test:prepare</li>
-    <li>$ rails generate integration_test micropost_pages  </li>
-    <li>Copied micropost_pages_spec.rb from sample app</li>
-    <li>$ rails generate model Relationship follower_id:integer followed_id:integer</li>
-    <ol>
-      <li>Result:</li>
-      invoke  active_record
-      create  &nbsp;&nbsp;db/migrate/20120624113136_create_relationships.rb
-      create  &nbsp;&nbsp;app/models/relationship.rb
-      invoke  &nbsp;&nbsp;rspec
-      create  &nbsp;&nbsp;&nbsp;&nbsp;spec/models/relationship_spec.rb
-    </ol>
-    <li>Added 3 indices to Relationship model migration, for each field and for 2-col primary key</li>
-    <li>$ rake db:migrate</li>
-    <li>$ rake db:test:prepare</li>
-    <li>Copied remaining from sample app routes</li>
-    <li>Copied all controllers from sample app</li>
-    <li>Copied relationship and micropost models from sample app</li>
-    <li>Created spec/controllers/ and copied relationships_contoroller_spec.rb from sample app</li>
-    <li>Copied sample_data.rake from sample_app/lib/tasks/  to get rspec to run</li>
-    <li>Tests: Red -> Green  (starting with 114 examples, 50 failures, 1 pending)</li>
-    <ol>
-      <li>Copied the relationship_spec.rb from sample app to get rid of pending (121/50/0 [examples/failures/pending])</li>
-      <li>replaced content of en.yml to have an entry for password_digest (this was so password can be used in place of password_digest for readability)</li>
-      <li>Add include SessionsHelper to application_controller.rb as in sample app (121/52/0)</li>
-      <li>Copied the home.html.erb from sample app and replaced sample app with twotepad (121/52/0)</li>
-      <li>Create folder app/views/sessions/  and copied sessions/new.html.erb from sample app (121/52/0)</li>
-      <li>Copied folder app/views/shared/ and all partials within from sample app (121/22/0)</li>
-      <li>Copied folders app/views/relationships/ and app/views/microposts/ from sample app (121/7/0)</li>
-      <li>Added the if signed_in? to home def in static_pages_controller.rb (121/3/0)</li>
-      <li>Overwrote header partial in layouts with that from sample app (121/1/0)</li>
-      <li>Replaced generated authentication_pages_spec.rb with that from sample app (145/0/0)</li>
-      <li>Replaced static_pages_spec.rb with that from sample app and replaced text "Sample App" with "Twotepad" (149/0/0)</li>
-      <li>Replaced user_spec.rb with a copy from sample app (150/0/0 -> matches test results of sample app now)</li>
-    </ol>
-    <li>Ended up with a direct copy of sample app but I got impatient with copying 1 by 1 and it was worth the memory-jog to do it this way</li>
-    <li>Replace logo text in header partial with "Twotepad"</li>
-    
   </ol>
-</ol>
-<br /><br />
+  <br /><br />
 
-<a name="virtual move"><b>Virtual Move</b></a>
-<ol>
-  <li>Starting Plan</li>
+  <li><a name="virtual move"><b>Virtual Move</b></a></li>
   <ol>
-    <li></li>
+    <li>Starting Plan</li>
+    <ol>
+      <li></li>
+    </ol>
   </ol>
 </ol>
