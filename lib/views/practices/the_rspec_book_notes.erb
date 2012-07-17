@@ -1,0 +1,210 @@
+<h3>Notes from The Rspec Book:</h3>
+
+<b>Skimming the beginning:</b><br />
+<br />
+<ol>
+  <li>Book focuses on Behaviour-Driven-Development (BDD) including Test-Driven-Developmnet (TDD) techniques</li>
+  <li>Start with Agile/Extreme Programming techniques:</li>
+  <ol>
+    <li>Define user roles</li>
+    <li>Create scenarios for user roles as they would be served by application - simple sentences only</li>
+    
+  </ol>
+  <li>Three principles of BDD (page 139):</li>
+  <ol>
+    <li>Enough is enough Up-front planning, analysis, and design all have
+      a diminishing return. We shouldn’t do less than we need to get
+      started, but any more than that is wasted effort. This also applies
+      to process automation. Have an automated build and deployment,
+      but avoid trying to automate everything.</li>
+    <li>Deliver stakeholder value If you are doing something that isn’t either
+      delivering value or increasing your ability to deliver value, stop
+      doing it, and do something else instead.</li>
+    <li>It’s all behavior Whether at the code level, the application level, or
+      beyond, we can use the same thinking and the same linguistic
+      constructs to describe behavior at any level of granularity.</li>
+  </ol>
+  <li>Stakeholders:</li>
+  <ol>
+    <li>Core stakeholders:  People whose problem is trying to be solved</li>
+    <ol>
+      <li>Pre-dev stage responsibility: Define the vision. That's it!</li>
+      <li>Defining the vision involves:</li>
+      <ol>
+        <li>Identify outcomes or goals</li>
+        <li>Define endpoint: When the project has acheived its purpose.</li>
+        <li>Expectations:  What will they be able to do that they can't do now.</li>
+        <li>Scope:  There should be only 1 or at most a few outcomes or goals for the project.  More outcomes or goals will entail more projects.  2 weeks for a project is a good average.</li>
+        
+      </ol>
+    </ol>
+    <li>Incidental stakeholders:  People who are going to solve the problem (everyone involved who isn't a core stakeholder.)</li>
+    <ol>
+      <li>Pre-dev stage responsibility: Help core stakeholders understand what's possible, at what cost and with what likelihood.  That's it!</li>
+      <li>Helping to define what's possible involves:</li>
+      <ol>
+        <li>Identify high-level feature sets or themes (venacular is interchangeable).  Examples are reporting, customer registration, accounting integration, etc</li>
+        <li>Identify specific features or stories for the themes.</li>
+        <li>Stop there!  Now mitigate problems by identifying the risky areas.</li>
+        <li>Keep a log of the risks and assumptions - this is at least as important as the breakdown of the project objectives.</li>
+      </ol>
+    </ol>
+  </ol>
+  <li>Cycle of Delivery</li>
+  <ol>
+    <li>Stakeholder discusses requirement with business analyst (these are roles and a person may have more than one role)</li>
+    <ol>
+      <li>The requirement may be a problem to solve or an idea they've had.</li>
+      <li>The analyst helps the stakeholder articulate the requirement in terms of features that make sence to the stakeholder.</li>
+      <li>The analyst uses the stakeholder's domain terms not implementation technology terms</li>
+      <li>They may proceed to further define in small, verifiable chunks known as stories</li>
+      <li>Stories represent no more than a few days work.</li>
+    </ol>
+    <li>Stakeholder and business analyst work with a tester to determin the stories' scope.</li>
+    <ol>
+      <li>What does "done" look like for each story?</li>
+    </ol>
+    <li>Business analysts think in abstract terms (eg: it should be possible to withdraw money from a checking account).</li>
+    <li>A tester thinks in terms of concrete scenarios (eg: If an account has $100, what hapins if I withdraw $80?  What happens if I try $120.)</li>
+    <li>It is important to identify the scenarious that are important to the story before dev starts.</li>
+    <li>The stakeholder can specify exactly how many scenarios they want the programmers to do or how much dev effort they want.</li>
+    <li>The developers will only implement enough to satisfy the agreed scenarios, and NO MORE!</li>
+    <li>The final task before the programmers start implementing the story: scenario automation (where sensible.)</li>
+    <ol>
+      <li>This is one of the most important characteristics of BDD: scenarious are easy to automate yet are still easily understandable to the stakeholder.</li>
+      <li>Defining and automating these scenarios is the realm of Cucumber.</li>
+    </ol>
+    <li>Development:</li>
+    <ol>
+      <li>Developer(s) user RSpec to code by example to get scenario working.</li>
+      <ol>
+        <li>Red: Write a code example to describe the behaviour we want</li>
+        <li>Green: Implement the code to make example work</li>
+        <li>Refactor</li>
+      </ol>
+    </ol>
+    <li>Iteration:</li>
+    <li>Create a handful of stories to fit into a 1 week (actually can be 1/2 day to 4 weeks, shorter cycles are better for productivity but require more consistent effort) cycle</li>
+    <li>Estimates are probably wrong but since stories can't go above 2 days, at least 1 should get down</li>
+    <li>At the end of this iteration, present stakeholder with a "showcase" the stories completed</li>
+    <li>In the same "showcase" meeting, plan the next week with the stakeholder using his requests - obviously interacting with business analyst</li>
+  </ol>
+  <li>Stories in, Features out (good sidebar occupying all of p.144):</li>
+  <ol>
+    <li>Stories should be readable by the stakeholder.</li>
+    <li>Input is in stories (Cucumber) but the scenarios are re-arranged after to present cohesive features at the end.</li>
+    <li>This seems like design refactoring and, in a way it probably is and is probably a necessity.  This is clarified in the following book pages (see "What's in a story?")</li>
+  </ol>
+  <li>What's in a story? (p.145)</li>
+  <ol>
+    <li>Components of a story:</li>
+    <ol>
+      <li>Title:</li>
+      <ol>
+        <li>So we know which story we are talking about.</li>
+      </ol>
+      <li>Narative:</li>
+      <ol>
+        <li>Tells us what the story is about.</li>
+        <li>Narative formats:</li>
+        <ol>
+          <li>Connextra:  as a [stakeholder], I want [feature] so that [benefit].</li>
+          <li>Benefit First:  to [benefit], a [stakeholder] wants to [feature].</li>
+          <li>Other format:  Must contain essentials.  Essentials are:</li>
+          <ol>
+            <li>The "feature" the stakeholder wants</li>
+            <li>The reason they want this feature (when reading the other formats, I can infer that this essential can be built into the feature and benefit descriptions depending on how it's worded)</li>
+            <li>The benefit expected from this feature</li>
+          </ol>
+        </ol>
+      </ol>
+      <li>Acceptance Criteria:</li>
+      <ol>
+        <li>So we know when we are done.</li>
+        <li>In BDD, the acceptance criteria take the form of a number of scenarios made up of individual steps.</li>
+      </ol>
+    </ol>
+    <li>Business analyst ensures the store uses the language of the stakeholders.</li>
+    <ol>
+      <li>Reference: <a href="http://domaindrivendesign.org/books/evans_2003">Domain-Driven Design</a> by Eric Evans</li>
+    </ol>
+    
+  </ol>
+</ol>
+<br /><br />
+<b>Applying to My Twotepad</b><br />
+<br />
+<ol>
+  <li>Identify Users:</li>
+  <ol>
+    <li>Self-teaching student:</li>
+    <ol>
+      <li>Description:</li>
+      <ol>
+        <li>Anyone* who wants to follow, record and organize tweets by experts in a given field of interest to the student</li>
+        <ol>
+          <li>* Population restricted to those able to go online and create a Twitter account</li>
+        </ol>
+        <li>Goal:  Learn the latest developments of a given field of study</li>
+        <li>Methodology:  Using MyTwotepad: identify the field, find experts in that field on Twitter, follow the experts' tweets, record useful tweets and organize them for study.</li>
+      </ol>
+      <li>Scenarios:</li>
+      <ol>
+        <li>Non-user visit to MyTwotepad:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Create user account:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Setup user twotepad:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Identify Field 1:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Identify Field 1 experts on Twitter:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Create following list for Field 1:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Create organizational rules for Field 1:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>View results for Field 1:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Update organizational rules for Field 1:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Update following list for Field 1:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Print results for Field 1:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Export results for Field 1:</li>
+        <ol>
+          <li></li>
+        </ol>
+        <li>Identify Field 2:</li>
+        <ol>
+          <li></li>
+        </ol>
+        
+      </ol>
+    </ol>
+  </ol>
+</ol>
+
