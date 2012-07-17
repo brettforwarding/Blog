@@ -1,7 +1,5 @@
 <h3>Notes from The Rspec Book:</h3>
 
-<b>Skimming the beginning:</b><br />
-<br />
 <ol>
   <li>Book focuses on Behaviour-Driven-Development (BDD) including Test-Driven-Developmnet (TDD) techniques</li>
   <li>Start with Agile/Extreme Programming techniques:</li>
@@ -117,16 +115,28 @@
             <li>The benefit expected from this feature</li>
           </ol>
         </ol>
+        <li>Business analyst ensures the story uses the language of the stakeholders.</li>
+        <ol>
+          <li>Reference: <a href="http://domaindrivendesign.org/books/evans_2003">Domain-Driven Design</a> by Eric Evans</li>
+          <li>The idea is that the domain words find their way right into the code base, as the names of objects, methods, variables, and even modules and namespaces.</li>
+        </ol>
       </ol>
       <li>Acceptance Criteria:</li>
       <ol>
         <li>So we know when we are done.</li>
         <li>In BDD, the acceptance criteria take the form of a number of scenarios made up of individual steps.</li>
+        <li>Discussed by team but owned by tester(s)</li>
+        <li>Scenario breakdown:</li>
+        <ol>
+          <li>Title: Each scenario has a title. You can think of scenario names like the titles of Friends episodes, so they are all “The one where...” for example [The one where] the account is locked or [the one where] the password is invalid.</li>
+          <li>Contains a "given", an "event" or an "outcome"</li>
+          <ol>
+            <li>Given:  Setting something up in a known state.</li>
+            <li>Event:  Exercising some behavior.</li>
+            <li>Outcome:  Verifying something happened.</li>
+          </ol>
+        </ol>
       </ol>
-    </ol>
-    <li>Business analyst ensures the store uses the language of the stakeholders.</li>
-    <ol>
-      <li>Reference: <a href="http://domaindrivendesign.org/books/evans_2003">Domain-Driven Design</a> by Eric Evans</li>
     </ol>
     
   </ol>
