@@ -129,11 +129,16 @@
         <li>Scenario breakdown:</li>
         <ol>
           <li>Title: Each scenario has a title. You can think of scenario names like the titles of Friends episodes, so they are all “The one where...” for example [The one where] the account is locked or [the one where] the password is invalid.</li>
-          <li>Contains a "given", an "event" or an "outcome"</li>
+          <li>Each step contains a "given", an "event" or an "outcome"</li>
           <ol>
             <li>Given:  Setting something up in a known state.</li>
             <li>Event:  Exercising some behavior.</li>
             <li>Outcome:  Verifying something happened.</li>
+          </ol>
+          <li>Separating steps is useful because we only care about the event steps</li>
+          <ol>
+            <li>Since these are not integration tests, we don't care about how the state is setup (data from db or flat file for example)</li>
+            <li>We also don't care how we verify the outcome, just as long as it is verified.</li>
           </ol>
         </ol>
       </ol>

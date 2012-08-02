@@ -80,7 +80,6 @@ module Blog
   end
   
   get '/environment/:machine' do |m|
-    #pt = ":'practices/" + pt + "'"
     m = 'environment/' + m
     erb :index, :locals => {:content => m}
   end

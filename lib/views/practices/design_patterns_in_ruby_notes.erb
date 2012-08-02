@@ -1,0 +1,174 @@
+<h3>Notes from Design Patterns in Ruby:</h3>
+
+<ol>
+  <li>The Template Method Pattern:</li>
+  <ol>
+    <li>Create an abstract class with a skeletal method (output_report in example)</li>
+    <ol>
+      class Report<br />
+      &nbsp;&nbsp;def initialize<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;@title = 'Monthly Report'<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;@text = ['Things are going','really well.']<br /> 
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_report #Template method<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;output_start<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;output_head<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;output_body_start<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;output_body<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;output_body_end<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;output_end<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_start<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;raise 'Called abstract method: output_start'<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_head<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;raise 'Called abstract method: output_head'<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_body_start<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;raise 'Called abstract method: output_body_start'<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_body<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;@text.each do |line|<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;output_line(line)<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_line<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;raise 'Called abstract method: output_line'<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_body_end<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;raise 'Called abstract method: output_body_end'<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_end<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;raise 'Called abstract method: output_end'<br />
+      &nbsp;&nbsp;end<br /> 
+    </ol>
+    <li>Create sublclasses that call abstract class methods</li>
+    <ol>
+      class HTMLReport < Report<br />
+      &nbsp;&nbsp;def output_start<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts('< html>')<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_head<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(' < head>')<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(" < title>#{@title}< / title>")<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(' < / head>')<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_body_start<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts('< body>')<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_line(line)<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(" < p>#{line}< / p>")<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_body_end<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts('< / body>')<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_end<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts('< / html>')<br />
+      &nbsp;&nbsp;end<br />
+      end
+    </ol>
+    <li>Notice how the template method (output_report) is NOT defined in 
+        subclass - that's the abstraction of the static portion</li>
+    <li>To use:</li>
+    <ol>
+      report = HTMLReport.new<br />
+      report.output_report<br />
+      # or, another example would be:<br />
+      report = PlainTextReport.new<br />
+      report.output_report<br />
+    </ol>
+    <li>The worst mistake you can make is to overdo things
+      in an effort to cover every conceivable possibility. The Template Method pattern is at
+      its best when it is at its leanest—that is, when every abstract method and hook is there
+      for a reason. Try to avoid creating a template class that requires each subclass to override
+      a huge number of obscure methods just to cover every conceivable possibility. You
+      also do not want to create a template class that is encrusted with a multitude of hook
+      methods that no one will ever override.</li>
+  </ol>
+  <li>The Strategy Pattern:</li>
+  <ol>
+    <li>Pull the algorithm out into a separate object.  Define a family of 
+        strategy objects that all do the same thing.</li>
+    <ol>
+      class Formatter<br />
+      &nbsp;&nbsp;def output_report( title, text )<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;raise 'Abstract method called'<br />
+      &nbsp;&nbsp;end<br />
+      end<br />
+      class HTMLFormatter < Formatter<br />
+      &nbsp;&nbsp;def output_report( title, text )<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts('< html>')<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(' < head>')<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(" < title>#{title}< / title>")<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(' < / head>')<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(' < body>')<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;text.each do |line|<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts(" < p>#{line}< / p>" )<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;puts(' < / body>')<br />
+      &nbsp;&nbsp;puts('< / html>')<br />
+      end<br />
+      class Report<br />
+      &nbsp;&nbsp;attr_reader :title, :text<br />
+      &nbsp;&nbsp;attr_accessor :formatter<br />
+      &nbsp;&nbsp;def initialize(formatter)<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;@title = 'Monthly Report'<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;@text = [ 'Things are going', 'really, really well.' ]<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;@formatter = formatter<br />
+      &nbsp;&nbsp;end<br />
+      &nbsp;&nbsp;def output_report<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;@formatter.output_report( @title, @text )<br />
+      &nbsp;&nbsp;end<br />
+      end<br />
+    </ol>
+    <li>Each strategy would inherit from the abstract class</li>
+    <li>A more ruby way to do this would be to use procs and blocks (p.84):</li>
+    <ol>
+      <li>This is a bit confusing but basically you can define procs (strategies) 
+        on-the-fly and pass them into the report object.  This works if the strategy 
+        has only one method inside.</li>
+      <li>This allows us to dump the abstract class so all that's needed is strategies (formatters) and context (report)</li>
+      <ol>
+        class Report<br />
+        &nbsp;&nbsp;attr_reader :title, :text<br />
+        &nbsp;&nbsp;attr_accessor :formatter<br />
+        &nbsp;&nbsp;def initialize(&formatter)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@title = 'Monthly Report'<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@text = [ 'Things are going', 'really, really well.' ]<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@formatter = formatter<br />
+        &nbsp;&nbsp;end<br />
+        &nbsp;&nbsp;def output_report<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@formatter.call( self )<br />
+        &nbsp;&nbsp;end<br />
+        end<br />
+        HTML_FORMATTER = lambda do |context|<br />
+        &nbsp;&nbsp;puts('< html>')<br />
+        &nbsp;&nbsp;puts(' < head>')<br />
+        &nbsp;&nbsp;puts(" < title>#{context.title}< / title>")<br />
+        &nbsp;&nbsp;puts(' < / head>')<br />
+        &nbsp;&nbsp;puts(' < body>')<br />
+        &nbsp;&nbsp;context.text.each do |line|<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;puts(" < p>#{line}< / p>" )<br />
+        &nbsp;&nbsp;end<br />
+        &nbsp;&nbsp;puts(' < / body>')<br />
+        &nbsp;&nbsp;puts('< / html>')<br />
+        end
+      </ol>
+      <li>Calling this requires 2 lines:</li>
+      <ol><pre>
+        report = Report.new &HTML_FORMATTER
+        report.output_report</pre>
+      </ol>
+      <li>You could also do the formatter on the fly (text example):</li>
+      <ol>
+        report = Report.new do |context|<br />
+        &nbsp;&nbsp;puts("****** #{context.title} ******")<br />
+        &nbsp;&nbsp;context.text.each do |line|<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;puts(line)<br />
+        &nbsp;&nbsp;end<br />
+        end<br />
+      </ol>
+    </ol>
+  </ol>
+  <li>The Observer Pattern</li>
+</ol>
