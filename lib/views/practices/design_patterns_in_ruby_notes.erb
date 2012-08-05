@@ -171,4 +171,158 @@
     </ol>
   </ol>
   <li>The Observer Pattern</li>
+  <ol>
+    <li>To observe changes in important objects we can user an observer pattern:</li>
+    <ol>
+      <li>Subject:  The object that is the source of news.</li>
+      <li>Observer: The consumer of news.</li>
+    </ol>
+    <li>Example:</li>
+    <ol>
+      <li>Subject: Employee (object)</li>
+      <li>Observer 1: Payroll (object)</li>
+      <li>Observer 2: Taxman (object)</li>
+      <li>Implementation 1: The inheritance way</li>
+      <ol>
+        <li>Create a Subject base class:</li>
+        <ol>
+          class Subject<br />
+          &nbsp;&nbsp;def initialize<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@observers=[]<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def add_observer(observer)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@observers << observer<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def delete_observer(observer)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@observers.delete(observer)<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def notify_observers<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@observers.each do |observer|<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;observer.update(self)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>News source object Employee inherits from Subject class:</li>
+        <ol>
+          class Employee < Subject<br />
+          &nbsp;&nbsp;attr_reader :name, :address<br />
+          &nbsp;&nbsp;attr_reader :salary<br />
+          &nbsp;&nbsp;def initialize( name, title, salary)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;super()<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@name = name<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@title = title<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@salary = salary<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def salary=(new_salary)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@salary = new_salary<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;notify_observers<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>So, let's try it out.  Given two objects (over-simplified):</li>
+        <ol>
+          class Payroll<br />
+          &nbsp;&nbsp;def update( changed_employee )<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;puts("Cut a new check for #{changed_employee.name}!")<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;puts("His salary is now #{changed_employee.salary}!")<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+          class TaxMan<br />
+          &nbsp;&nbsp;def update( changed_employee )<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;puts("Send #{changed_employee.name} a new tax bill!")<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Then using the subject/context method becomes:</li>
+        <ol>
+          fred = Employee.new('Fred', 'Crane Operator', 30000.0)<br />
+          payroll = Payroll.new<br />
+          tax_man = TaxMan.new<br />
+          fred.add_observer( payroll )<br />
+          fred.add_observer( tax_man )<br />
+          fred.salary = 40000.0<br />
+        </ol>
+        <li>And the output:</li>
+        <ol>
+          Cut a new check for Fred!
+          His salary is now 40000.0!
+          Send Fred a new tax bill!
+        </ol>
+      </ol>
+      <li>Implementation 2:  The Java-like Ruby way</li>
+      <ol>
+        <li>Replace the subject class with an include of the ruby library's Observer module:</li>
+        <ol>
+          require 'observer'<br /><br />
+          class Employee<br />
+          &nbsp:&nbsp;include Observable<br />
+          &nbsp:&nbsp;attr_reader :name, :address<br />
+          &nbsp:&nbsp;attr_reader :salary<br />
+          &nbsp:&nbsp;def initialize( name, title, salary)<br />
+          &nbsp:&nbsp;&nbsp:&nbsp;@name = name<br />
+          &nbsp:&nbsp;&nbsp:&nbsp;@title = title<br />
+          &nbsp:&nbsp;@salary = salary<br />
+          &nbsp:&nbsp;end<br />
+          &nbsp:&nbsp;def salary=(new_salary)<br />
+          &nbsp:&nbsp;&nbsp:&nbsp;@salary = new_salary<br />
+          &nbsp:&nbsp;&nbsp:&nbsp;changed<br />
+          &nbsp:&nbsp;&nbsp:&nbsp;notify_observers(self)<br />
+          &nbsp:&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Notice the call to method "changed".  The observer model requires this assertion
+            to prevent un-necessary messages.</li>
+      </ol>
+      <li>Implementation 3: The Ruby code-block way</li>
+      <ol>
+        <li>Define subject as module and include observer code block as parameter to add_observer:</li>
+        <ol>
+          module Subject<br />
+            &nbsp:&nbsp;def initialize<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;@observers=[]<br />
+            &nbsp:&nbsp;end<br />
+            &nbsp:&nbsp;def add_observer(&observer)<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;@observers << observer<br />
+            &nbsp:&nbsp;end<br />
+            &nbsp:&nbsp;def delete_observer(observer)<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;@observers.delete(observer)<br />
+            &nbsp:&nbsp;end<br />
+            &nbsp:&nbsp;def notify_observers<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;@observers.each do |observer|<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;&nbsp:&nbsp;observer.call(self)<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;end<br />
+            &nbsp:&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>The source (employee) is straight forward but with a "super()" call in the initialize method:</li>
+        <ol>
+          class Employee<br />
+            &nbsp:&nbsp;include Subject<br />
+            &nbsp:&nbsp;attr_accessor :name, :title, :salary<br />
+            &nbsp:&nbsp;def initialize( name, title, salary )<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;super()<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;@name = name<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;@title = title<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;@salary = salary<br />
+            &nbsp:&nbsp;end<br />
+            &nbsp:&nbsp;def salary=(new_salary)<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;@salary = new_salary<br />
+            &nbsp:&nbsp;&nbsp:&nbsp;notify_observers<br />
+            &nbsp:&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>The advantage of this implementation is that we don't need to pre-define observers.  Instead:</li>
+          fred = Employee.new('Fred', 'Crane Operator', 30000)<br />
+          fred.add_observer do |changed_employee|<br />
+            &nbsp:&nbsp;puts(“Cut a new check for #{changed_employee.name}!”)<br />
+            &nbsp:&nbsp;puts(“His salary is now #{changed_employee.salary}!”)<br />
+          end<br />
+      </ol>
+    </ol>
+  </ol>
+  <li>The Composite Pattern</li>
+  <ol>
+    <li></li>
+  </ol>
 </ol>
