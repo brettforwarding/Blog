@@ -256,19 +256,19 @@
         <ol>
           require 'observer'<br /><br />
           class Employee<br />
-          &nbsp:&nbsp;include Observable<br />
-          &nbsp:&nbsp;attr_reader :name, :address<br />
-          &nbsp:&nbsp;attr_reader :salary<br />
-          &nbsp:&nbsp;def initialize( name, title, salary)<br />
-          &nbsp:&nbsp;&nbsp:&nbsp;@name = name<br />
-          &nbsp:&nbsp;&nbsp:&nbsp;@title = title<br />
-          &nbsp:&nbsp;@salary = salary<br />
-          &nbsp:&nbsp;end<br />
-          &nbsp:&nbsp;def salary=(new_salary)<br />
-          &nbsp:&nbsp;&nbsp:&nbsp;@salary = new_salary<br />
-          &nbsp:&nbsp;&nbsp:&nbsp;changed<br />
-          &nbsp:&nbsp;&nbsp:&nbsp;notify_observers(self)<br />
-          &nbsp:&nbsp;end<br />
+          &nbsp;&nbsp;include Observable<br />
+          &nbsp;&nbsp;attr_reader :name, :address<br />
+          &nbsp;&nbsp;attr_reader :salary<br />
+          &nbsp;&nbsp;def initialize( name, title, salary)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@name = name<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@title = title<br />
+          &nbsp;&nbsp;@salary = salary<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def salary=(new_salary)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@salary = new_salary<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;changed<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;notify_observers(self)<br />
+          &nbsp;&nbsp;end<br />
           end<br />
         </ol>
         <li>Notice the call to method "changed".  The observer model requires this assertion
@@ -279,50 +279,184 @@
         <li>Define subject as module and include observer code block as parameter to add_observer:</li>
         <ol>
           module Subject<br />
-            &nbsp:&nbsp;def initialize<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;@observers=[]<br />
-            &nbsp:&nbsp;end<br />
-            &nbsp:&nbsp;def add_observer(&observer)<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;@observers << observer<br />
-            &nbsp:&nbsp;end<br />
-            &nbsp:&nbsp;def delete_observer(observer)<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;@observers.delete(observer)<br />
-            &nbsp:&nbsp;end<br />
-            &nbsp:&nbsp;def notify_observers<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;@observers.each do |observer|<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;&nbsp:&nbsp;observer.call(self)<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;end<br />
-            &nbsp:&nbsp;end<br />
+            &nbsp;&nbsp;def initialize<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;@observers=[]<br />
+            &nbsp;&nbsp;end<br />
+            &nbsp;&nbsp;def add_observer(&observer)<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;@observers << observer<br />
+            &nbsp;&nbsp;end<br />
+            &nbsp;&nbsp;def delete_observer(observer)<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;@observers.delete(observer)<br />
+            &nbsp;&nbsp;end<br />
+            &nbsp;&nbsp;def notify_observers<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;@observers.each do |observer|<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;observer.call(self)<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;end<br />
+            &nbsp;&nbsp;end<br />
           end<br />
         </ol>
         <li>The source (employee) is straight forward but with a "super()" call in the initialize method:</li>
         <ol>
           class Employee<br />
-            &nbsp:&nbsp;include Subject<br />
-            &nbsp:&nbsp;attr_accessor :name, :title, :salary<br />
-            &nbsp:&nbsp;def initialize( name, title, salary )<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;super()<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;@name = name<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;@title = title<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;@salary = salary<br />
-            &nbsp:&nbsp;end<br />
-            &nbsp:&nbsp;def salary=(new_salary)<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;@salary = new_salary<br />
-            &nbsp:&nbsp;&nbsp:&nbsp;notify_observers<br />
-            &nbsp:&nbsp;end<br />
+            &nbsp;&nbsp;include Subject<br />
+            &nbsp;&nbsp;attr_accessor :name, :title, :salary<br />
+            &nbsp;&nbsp;def initialize( name, title, salary )<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;super()<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;@name = name<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;@title = title<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;@salary = salary<br />
+            &nbsp;&nbsp;end<br />
+            &nbsp;&nbsp;def salary=(new_salary)<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;@salary = new_salary<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;notify_observers<br />
+            &nbsp;&nbsp;end<br />
           end<br />
         </ol>
         <li>The advantage of this implementation is that we don't need to pre-define observers.  Instead:</li>
           fred = Employee.new('Fred', 'Crane Operator', 30000)<br />
           fred.add_observer do |changed_employee|<br />
-            &nbsp:&nbsp;puts(“Cut a new check for #{changed_employee.name}!”)<br />
-            &nbsp:&nbsp;puts(“His salary is now #{changed_employee.salary}!”)<br />
+            &nbsp;&nbsp;puts(“Cut a new check for #{changed_employee.name}!”)<br />
+            &nbsp;&nbsp;puts(“His salary is now #{changed_employee.salary}!”)<br />
           end<br />
       </ol>
     </ol>
   </ol>
-  <li>The Composite Pattern</li>
+  <li>The Composite Pattern (p. 111)</li>
   <ol>
-    <li></li>
+    <li>A tree of objects where some behaviour of the top node (or sum of all components)
+    is reflected in each node.</li>
+    <li>Each branch can be treated as a single node where the modeled behaviour is concerned.</li>
+    <li>Requirements:</li>
+    <ol>
+      <li>Sum:  The top of the hierarchy.</li>
+      <li>Behaviour(s):  The patterned quality or action that is repeated throughout.</li>
+      <li>Component:  Common Base Class</li>
+      <li>Leaf:  Indivisible parts</li>
+      <li>Composite:  Base class modelling components with child components.</li>
+    </ol>
+    <li>Example: Making a cake at a cake manufacturer.</li>
+    <ol>
+      <li>Sum:  Making a cake</li>
+      <li>Behaviour:  Time required</li>
+      <li>Component:  Task (class defined below)</li>
+      <li>Leaf:  Pre-measured cake ingredients and base actions (such as setting oven temp.)</li>
+      <li>Composite:  All non-leaf tasks (class defined below)</li>
+      <li>First Implementation:</li>
+      <ol>
+        <li>Task:</li>
+        <ol>
+          class Task<br />
+          &nbsp;&nbsp;attr_reader :name<br />
+          &nbsp;&nbsp;def initialize(name)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@name = name<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def get_time_required<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;0.0<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Composite:</li>
+        <ol>
+          class CompositeTask < Task<br />
+          &nbsp;&nbsp;def initialize(name)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;super(name)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks = []<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def add_sub_task(task)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks << task<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def remove_sub_task(task)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks.delete(task)<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def get_time_required<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;time=0.0<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks.each {|task| time += task.get_time_required}<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;time<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Example Task:</li>
+        <ol>
+          class AddDryIngredientsTask < Task<br />
+          &nbsp;&nbsp;def initialize<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;super('Add dry ingredients')<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def get_time_required<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;1.0   # 1 minute to add flour and sugar<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Example Composite:</li>
+        <ol>
+          class MakeBatterTask < CompositeTask<br />
+          &nbsp;&nbsp;def initialize<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;super('Make batter')<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;add_sub_task( AddDryIngredientsTask.new )<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;add_sub_task( AddLiquidsTask.new )<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;add_sub_task( MixTask.new )<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+      </ol>
+      <li>Second Implementation (with operators and parent reference):</li>
+      <ol>
+        <li>Task:  (add parent reference to allow travel up the tree)</li>
+        <ol>
+          class Task<br />
+          &nbsp;&nbsp;attr_accessor :name, :parent<br />
+          &nbsp;&nbsp;def initialize(name)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@name = name<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@parent = nil<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def get_time_required<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;0.0<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Composite: (add parent ref. create/delete and replace add_sub_tesk method name with << and add index operators to access sub-tasks by index)</li>
+        <ol>
+          class CompositeTask < Task<br />
+          &nbsp;&nbsp;def initialize(name)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;super(name)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks = []<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def <<(task)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks << task<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;task.parent = self<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def remove_sub_task(task)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks.delete(task)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;task.parent = nil<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def [](index)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks[index]<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def []=(index, new_value)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks[index] = new_value<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def get_time_required<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;time=0.0<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@sub_tasks.each {|task| time += task.get_time_required}<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;time<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Examples using composites with operators:</li>
+        <ol>
+          composite = CompositeTask.new('example')<br />
+          composite << MakeBatterTask.new<br />
+          puts(composite[0].get_time_required)<br />
+          composite[1] = AddDryIngredientsTask.new<br />
+        </ol>
+        <li>Example traveling up the tree:</li>
+        <ol>
+          while task<br />
+          &nbsp;&nbsp;puts("task: #{task}")<br />
+          &nbsp;&nbsp;task = task.parent<br />
+          end<br />
+        </ol>
+      </ol>
+    </ol>
+    
   </ol>
 </ol>
