@@ -457,6 +457,128 @@
         </ol>
       </ol>
     </ol>
-    
+  </ol>
+  <li>The Iterator Pattern (p.127)</li>
+  <ol>
+    <li>Sequentially accessing a collection.</li>
+    <li>Two types of iterators:</li>
+    <ol>
+      <li>External:</li>
+      <ol>
+        <li>Not as commonly used in Ruby.</li>
+        <li>Advantage: the client controls the iteration (a client driven merge sort was given as an example)</li>
+        <li>An external iterator similar to the java version (java.util.iterator) 
+            could be defined as:</li>
+        <ol>
+          class ArrayIterator<br />
+          &nbsp;&nbsp;def initialize(array)<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@array = array<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@index = 0<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def has_next?<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@index < @array.length<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def item<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@array[@index]<br />
+          &nbsp;&nbsp;end<br />
+          &nbsp;&nbsp;def next_item<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;value = @array[@index]<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;@index += 1<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;value<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Example using this iterator:</li>
+        <ol>
+          array = ['red', 'green', 'blue']<br /><br />
+          i = ArrayIterator.new(array)<br />
+          while i.has_next?<br />
+          &nbsp;&nbsp;puts("item: #{i.next_item}")<br />
+          end<br />
+        </ol>
+      </ol>
+      <li>Internal:</li>
+      <ol>
+        <li>Defining a method (proc) inside the collection class to take a single-parameter 
+            code block and execute it for each element.</li>
+        <li>Advantage: simplicity and code clarity - no need to ask if a call to the 
+            next item has been done yet.  Also, Ruby has many pre-defined internal 
+            iterators that are extremely useful.</li>
+        <li>Here's an example for an array (even though the array in Ruby already contains iterators, this is to exemplify):</li>
+        <ol>
+          def for_each_element(array)<br />
+          &nbsp;&nbsp;i = 0<br />
+          &nbsp;&nbsp;while i < array.length<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;yield(array[i])<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;i += 1<br />
+          &nbsp;&nbsp;end<br />
+          end<br />
+        </ol>
+        <li>Example use:  pass in the code block (between curly braces) so that yield can execute it for each element:</li>
+        <ol>
+          a = [10, 20, 30]<br />
+          for_each_element(a) {|element| puts("The element is #{element}")}<br />
+        </ol>
+        <li>Of course, the Ruby array iterator "each" serves this purpose already but this example highlights how this is accomplished.</li>
+      </ol>
+    </ol>
+    <li>Ruby Enumerator Module:</li>
+    <ol>
+      <li>A mixin way to easily add an iterator to your class.</li>
+      <li>To mix in Enumerable, you need only make sure that your internal iterator 
+          method is named each and that the individual elements that you are going 
+          to iterate over have a reasonable implementation of the <=> comparison operator.</li>
+      <li>Example:</li>
+      <ol>
+        class Account<br />
+        &nbsp;&nbsp;attr_accessor :name, :balance<br />
+        &nbsp;&nbsp;def initialize(name, balance)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@name = name<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@balance = balance<br />
+        &nbsp;&nbsp;end<br />
+        &nbsp;&nbsp;def <=>(other)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;balance <=> other.balance<br />
+        &nbsp;&nbsp;end<br />
+        end<br />
+        class Portfolio<br />
+        &nbsp;&nbsp;include Enumerable<br />
+        &nbsp;&nbsp;def initialize<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@accounts = []<br />
+        &nbsp;&nbsp;end<br />
+        &nbsp;&nbsp;def each(&block)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@accounts.each(&block)<br />
+        &nbsp;&nbsp;end<br />
+        &nbsp;&nbsp;def add_account(account)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;@accounts << account<br />
+        &nbsp;&nbsp;end<br />
+        end<br />
+      </ol>
+      <li>This can be used in many ways, including:</li>
+      <ol>
+        my_portfolio.each {|account| puts("#{account.name} has a balance of #{account.balance}")}<br />
+        my_portfolio.any? {|account| account.balance > 2000}<br />
+        my_portfolio.all? {|account| account.balance > = 10}<br />
+      </ol>
+    </ol>
+    <li>Other cool Ruby internal iterators:</li>
+    <ol>
+      <li><b>scan</b> method in the string class:  Takes a regular expression and iterates
+          over each match that is found in the string.
+      <li><b>each_line</b> method in the string class:  Iterates over each line of the string.</li>
+      <li><b>each_byte</b> method in the string class:  Iterates over each byte of the string.</li>
+      <li><b>each_key</b> method of the hash class:  Iterates over each key.</li>
+      <li><b>each_value</b> method of the hash class:  Iterates over each value.</li>
+      <li><b>each_filename</b> method of the pathname class:  Iterates over each component (folders and file) of the path.</li>
+      <li><b>each_entry</b> method of the pathname class:  Iterates over the contents of the directory indicated by the path.</li>
+      <li><b>each_object</b> method of the ObjectSpace class:  Iterates over each object in Ruby - very powerful.</li>
+      <li><b>each_object([class or module])</b> method of the ObjectSpace class:  An optional version of the above iterator 
+          that will only show the instances of the passed module or class.</li>
+      <ol>
+        <li>Example printing all the numbers known to ruby (like pi, e, speed of light, etc):</li>
+        <ol>
+          ObjectSpace.each_object(Numeric) {|n| puts("The number is #{n}")}<br />
+        </ol>
+      </ol>
+    </ol>
   </ol>
 </ol>
