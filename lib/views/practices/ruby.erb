@@ -132,6 +132,70 @@
           <li>Browse to localhost:3000</li>
           <li>Rails default screen loaded - success!</li>
         </ol>
+        <li>$ git init</li>
+        <li>$ git add .</li>
+        <li>$ git commit -m 'first commit'</li>
+        <li>$ git remote add origin https://github.com/brettforwarding/RP.git</li>
+        <li>$ git push</li>
+        <li>$ git remote set-url origin git@github.com:brettforwarding/RP.git</li>
+        <ol>
+          <li>HTTPS version requires username/pass too much so switched to SSH</li>
+        </ol>
+        <li>Copy gemfile from RoR Tutorial</li>
+        <li>$ bundle install</li>
+        <ol>
+          <li>Error on installing pg gem (PostGre)</li>
+        </ol>
+        <li>$ bundle install --without production</li>
+        <li>$ heroku create</li>
+        <ol>
+          <li>Creating blooming-basin-5030... done, stack is cedar<br />
+              http://blooming-basin-5030.herokuapp.com/</li>
+        </ol>
+        <li>$ git push heroku master</li>
+        <ol>
+          <li>failed on sqlite3 - not available on heroku (probably because I forgot to commit last bundle install)</li>
+          <li>heroku recommends not using sqlite for dev so I'll try postgre</li>
+        </ol>
+        <li>$ sudo apt-get install postgresql-9.1</li>
+        <ol>
+          <li>Suggested on <a href="https://devcenter.heroku.com/articles/local-postgresql#ubuntu">https://devcenter.heroku.com/articles/local-postgresql#ubuntu</a></li>
+          <li>Error related to debian backports</li>
+          <li>Found fix at: <a href="http://pkgs.org/debian-squeeze/debian-backports-main-i386/postgresql-client_9.1+134~bpo60+1_all.deb.html">http://pkgs.org/debian-squeeze/debian-backports-main-i386/postgresql-client_9.1+134~bpo60+1_all.deb.html</a></li>
+          <li>Replaced in file /etc/apt/sources.list:<br />
+              deb http://backports.debian.org/debian-backports squeeze-backports main contrib non-free<br />
+              with<br />
+              deb http://backports.debian.org/debian-backports squeeze-backports main</li>
+          <li>$ sudo apt-get update</li>
+        </ol>
+        <li>$ sudo apt-get install postgresql-client</li>
+        <li>Edit gemfile to use pg for all environments</li>
+        <li>$ bundle install</li>
+        <ol>
+          <li>Error installing pg gem - no pg config found</li>
+          <li>Tried extensively to get gem to install - seems a problem with Debian Squeeze and Postgre or Crunchbang specifically</li>
+          <li>Edited Gemfile to us Postgre (pg) gem only for production as required by Heroku and use Sqlite for dev/test as in RoR tutorial</li>
+        </ol>
+        <li>$ bundle install --without production</li>
+        <ol>
+          <li>Error with railties and jquery version</li>
+          <li>Removed version specification on rails gem and jquery gem - success</li>
+        </ol>
+        <li>$ git add . && git commit</li>
+        <li>$ git push</li>
+        <li>$ git push heroku master</li>
+        <li>Add gem 'omniauth-facebook' to Gemfile</li>
+        <li>$ bundle install</li>
+        <li>$ rails generate scaffold User name:string email:string</li>
+        <li>Add, commit, push master to Git and Heroku</li>
+        <li>$ rails s</li>
+        <ol>
+          <li>webrick launched -> localhost:3000/users success</li>
+        </ol>
+        <li>https://blooming-basin-5030.herokuapp.com/users failed ("We're sorry, but something went wrong.")</li>
+        <ol>
+          <li>$ heroku run rake db:reset  {Worked!  Yay!}</li>
+        </ol>
       </ol>
     </ol>
   </ol>
